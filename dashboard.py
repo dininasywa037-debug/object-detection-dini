@@ -11,8 +11,8 @@ import cv2
 # ==========================
 @st.cache_resource
 def load_models():
-    yolo_model = YOLO("model/Mulya Syira_Laporan 4.pt")  # Model deteksi objek
-    classifier = tf.keras.models.load_model("model/Mulya_Syira_Laporan2.h5")  # Model klasifikasi
+    yolo_model = YOLO("model/DINI ARIFATUL NASYWA_Laporan 4.pt")  # Model deteksi objek
+    classifier = tf.keras.models.load_model("Dini_Arifatul_Nasywa_laporan2.h5")  # Model klasifikasi
     return yolo_model, classifier
 
 yolo_model, classifier = load_models()

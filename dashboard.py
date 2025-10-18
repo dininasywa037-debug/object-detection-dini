@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 
 # ==========================================
-# FIX: Konfigurasi YOLO agar tidak error di Streamlit Cloud
+# Konfigurasi YOLO agar tidak error
 # ==========================================
 os.environ["YOLO_CONFIG_DIR"] = "/tmp/Ultralytics"
 
@@ -34,7 +34,6 @@ if uploaded_file is not None:
             return model
 
         yolo_model = load_yolo()
-
         results = yolo_model(img)
         result_img = results[0].plot()
         st.image(result_img, caption="Hasil Deteksi", use_container_width=True)

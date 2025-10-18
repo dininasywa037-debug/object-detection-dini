@@ -99,7 +99,7 @@ elif model_choice == "TensorFlow - ResNet50":
         @st.cache_resource
         def load_tensorflow():
             return tf.keras.models.load_model(
-                'model/Balqis Isaura_Laporan2.h5',
+                'model/Dini_Arifatul_Nasywa_laporan2.h5',
                 compile=False
             )
         

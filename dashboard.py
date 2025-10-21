@@ -183,168 +183,88 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ===================== DECORATIVE ELEMENTS =====================
-st.markdown("""
-    <div class="decoration star1">⭐</div>
-    <div class="decoration star2">✨</div>
-    <div class="decoration star3">💫</div>
-    <div class="decoration heart">💖</div>
-""", unsafe_allow_html=True)
-
 # ===================== HEADER =====================
 st.markdown("# ✨ DASHBOARD MODEL ✨")
 st.markdown('<p class="subtitle">GROUP PROJECT PRESENTATION - BALQIS ISAURA</p>', unsafe_allow_html=True)
 
-# ===================== TWO COLUMNS =====================
 col1, col2 = st.columns(2, gap="medium")
 
-# ===================== PROCESS 1 - YOLO OBJECT DETECTION =====================
+# ===================== PROCESS 1 - YOLO =====================
 with col1:
-    st.markdown("""
-        <div class="process-card">
-            <h2>📸 PROCESS 1</h2>
-            <h3>YOLO Object Detection</h3>
-            <div class="process-card-content">
-    """, unsafe_allow_html=True)
-    
+    st.markdown("""<div class="process-card"><h2>📸 PROCESS 1</h2><h3>YOLO Object Detection</h3><div class="process-card-content">""", unsafe_allow_html=True)
     try:
         @st.cache_resource
         def load_yolo_model():
             return YOLO("model/DINI ARIFATUL NASYWA_Laporan 4.pt")
-        
         with st.spinner("🔄 Memuat model YOLO..."):
             yolo_model = load_yolo_model()
         st.success("✅ Model YOLO berhasil dimuat!")
-
-        uploaded_file_yolo = st.file_uploader(
-            "Upload gambar untuk deteksi objek:", 
-            type=["jpg", "jpeg", "png"], 
-            key="yolo"
-        )
-
+        uploaded_file_yolo = st.file_uploader("Upload gambar untuk deteksi objek:", type=["jpg","jpeg","png"], key="yolo")
         if uploaded_file_yolo:
             img = Image.open(uploaded_file_yolo)
             st.image(img, caption="📷 Gambar Input", use_container_width=True)
-
             if st.button("🚀 Jalankan Deteksi", key="detect_btn"):
                 with st.spinner("✨ Mendeteksi objek..."):
                     results = yolo_model(img)
                     result_img = results[0].plot()
                     st.image(result_img, caption="🎯 Hasil Deteksi", use_container_width=True)
-
-                    st.markdown("#### 📋 Detail Deteksi")
                     boxes = results[0].boxes
-                    if len(boxes) > 0:
-                        for i, box in enumerate(boxes, 1):
+                    if len(boxes)>0:
+                        for i, box in enumerate(boxes,1):
                             label = yolo_model.names[int(box.cls)]
                             conf = box.conf[0]
                             st.write(f"{i}. **{label}** — Confidence: *{conf:.2%}*")
                     else:
                         st.info("Tidak ada objek terdeteksi.")
-                        
     except Exception as e:
         st.error(f"❌ Error YOLO: {e}")
-        st.info("💡 Pastikan file .pt ada di folder model/.")
-    
-    st.markdown("""
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
 
-# ===================== PROCESS 2 - TENSORFLOW CLASSIFICATION (Pizza / Not Pizza) =====================
+# ===================== PROCESS 2 - TF MODEL =====================
 with col2:
-    st.markdown("""
-        <div class="process-card">
-            <h2>🧠 PROCESS 2</h2>
-            <h3>TensorFlow Classification (Pizza / Not Pizza)</h3>
-            <div class="process-card-content">
-    """, unsafe_allow_html=True)
-    
+    st.markdown("""<div class="process-card"><h2>🧠 PROCESS 2</h2><h3>TensorFlow Classification (Pizza / Not Pizza)</h3><div class="process-card-content">""", unsafe_allow_html=True)
     try:
-        # Google Drive File ID untuk model .h5 kamu
-        FILE_ID = "1JCYISlbpPHMd6Vx4gC8j968NYzSJXqbd"
+        FILE_ID = "1qXBcdzV9iThApnTDj1GP0DWFxfnzMQCH"
         MODEL_PATH = "model/model_pizza_notpizza.h5"
-
-        # Jika model belum ada secara lokal, unduh dulu
         if not os.path.exists(MODEL_PATH):
             with st.spinner("⬇ Mengunduh model dari Google Drive..."):
                 gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", MODEL_PATH, quiet=False)
             st.success("✅ Model berhasil diunduh!")
-
-        # Nama kelas
         class_names = ["Not Pizza", "Pizza"]
 
-        # Kalau model kamu punya custom layer “GetItem”, definisikan dummy-nya agar bisa load
         class GetItem(Layer):
-            def __init__(self, **kwargs):
-                super(GetItem, self).__init__(**kwargs)
-            def call(self, inputs):
-                return inputs
+            def call(self, inputs): return inputs
 
         @st.cache_resource
         def load_tf_model():
             return load_model(MODEL_PATH, compile=False, custom_objects={'GetItem': GetItem})
-
         with st.spinner("🔄 Memuat model TensorFlow..."):
             model = load_tf_model()
         st.success("✅ Model TensorFlow berhasil dimuat!")
 
-        uploaded_file_tf = st.file_uploader(
-            "Upload gambar untuk klasifikasi:", 
-            type=["jpg", "jpeg", "png"], 
-            key="tf_pizza"
-        )
-
+        uploaded_file_tf = st.file_uploader("Upload gambar untuk klasifikasi:", type=["jpg","jpeg","png"], key="tf_pizza")
         if uploaded_file_tf:
             img = Image.open(uploaded_file_tf)
             st.image(img, caption="📷 Gambar Input", use_container_width=True)
-
             if st.button("🔮 Prediksi Gambar", key="predict_pizza"):
                 with st.spinner("✨ Melakukan prediksi..."):
-                    img_array = np.array(img.resize((224, 224))) / 255.0
-                    if len(img_array.shape) == 2:
-                        img_array = np.stack([img_array]*3, axis=-1)
-                    elif img_array.shape[-1] == 4:
-                        img_array = img_array[..., :3]
-                    img_array = np.expand_dims(img_array, axis=0)
-
+                    img_array = np.array(img.resize((224,224))) / 255.0
+                    if len(img_array.shape)==2: img_array = np.stack([img_array]*3,axis=-1)
+                    elif img_array.shape[-1]==4: img_array = img_array[...,:3]
+                    img_array = np.expand_dims(img_array,axis=0)
                     predictions = model.predict(img_array, verbose=0)
-                    # Jika model output satu neuron (sigmoid)
-                    if predictions.shape[-1] == 1:
+                    if predictions.shape[-1]==1:
                         confidence = float(predictions[0][0])
-                        predicted_class = "Pizza" if confidence >= 0.5 else "Not Pizza"
-                        confidence = confidence if predicted_class == "Pizza" else (1 - confidence)
+                        predicted_class = "Pizza" if confidence>=0.5 else "Not Pizza"
+                        confidence = confidence if predicted_class=="Pizza" else (1-confidence)
                     else:
-                        predicted_index = np.argmax(predictions[0])
-                        predicted_class = class_names[predicted_index]
-                        confidence = predictions[0][predicted_index]
-
+                        idx = np.argmax(predictions[0])
+                        predicted_class = class_names[idx]
+                        confidence = predictions[0][idx]
                     col_a, col_b = st.columns(2)
-                    with col_a:
-                        st.metric("🎯 Kelas Prediksi", predicted_class)
-                    with col_b:
-                        st.metric("📊 Confidence", f"{confidence:.2%}")
-
-                    with st.expander("📊 Probabilitas Tiap Kelas"):
-                        if predictions.shape[-1] == 1:
-                            st.progress(confidence, text=f"{predicted_class}: {confidence:.4f}")
-                        else:
-                            for i, prob in enumerate(predictions[0]):
-                                st.progress(float(prob), text=f"{class_names[i]}: {prob:.4f}")
-                            
+                    with col_a: st.metric("🎯 Kelas Prediksi", predicted_class)
+                    with col_b: st.metric("📊 Confidence", f"{confidence:.2%}")
     except Exception as e:
         st.error(f"❌ Error TensorFlow: {e}")
-        st.info("""
-        💡 *Tips:*
-        - Pastikan model .h5 kamu hanya punya dua kelas: Pizza dan Not Pizza  
-        - Jika output layer = Dense(1, activation='sigmoid') → model keluaran satu nilai  
-        - Jika output layer = Dense(2, activation='softmax') → model keluaran dua neuron  
-        """)
-    
-    st.markdown("""
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
 
 # ===================== FOOTER =====================
 st.markdown("""

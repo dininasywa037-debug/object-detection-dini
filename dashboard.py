@@ -168,7 +168,7 @@ elif model_choice == "TensorFlow - ResNet50":
             if st.button("🔮 Prediksi", type="primary"):
                 with st.spinner("Melakukan prediksi..."):
                     # Preprocess
-                    img_array = np.array(image.resize((224, 224)))
+                    img_array = np.array(image.resize((128, 128)))
                     
                     # Convert RGBA to RGB jika perlu
                     if img_array.shape[-1] == 4:

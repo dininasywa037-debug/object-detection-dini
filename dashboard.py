@@ -28,7 +28,7 @@ if model_choice == "PyTorch - YOLO":
         # Load YOLO model
         @st.cache_resource
         def load_yolo():
-            return YOLO('model/Balqis Isaura_Laporan 4.pt')
+            return YOLO('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
         
         with st.spinner("Loading YOLO model..."):
             model = load_yolo()
@@ -99,7 +99,7 @@ elif model_choice == "TensorFlow - ResNet50":
         @st.cache_resource
         def load_tensorflow():
             return tf.keras.models.load_model(
-                'model/Balqis Isaura_Laporan2.h5',
+                'model/DINIARIFATUL_Laporan2.h5',
                 compile=False
             )
         
@@ -120,7 +120,7 @@ elif model_choice == "TensorFlow - ResNet50":
                 import keras
                 keras.config.disable_traceback_filtering()
                 return tf.keras.models.load_model(
-                    'model/Balqis Isaura_Laporan2.h5',
+                    'model/DINIARIFATUL_Laporan2.h5',
                     compile=False,
                     safe_mode=False
                 )

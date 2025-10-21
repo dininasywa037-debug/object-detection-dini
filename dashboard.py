@@ -223,48 +223,78 @@ with col1:
 with col2:
     st.markdown("""<div class="process-card"><h2>🧠 PROCESS 2</h2><h3>TensorFlow Classification (Pizza / Not Pizza)</h3><div class="process-card-content">""", unsafe_allow_html=True)
     try:
-        FILE_ID = "1qXBcdzV9iThApnTDj1GP0DWFxfnzMQCH"
+        import gdown
+        import os
+        from tensorflow.keras.layers import Layer
+        from tensorflow.keras.models import load_model
+        import numpy as np
+        from PIL import Image
+
+        # ===================== PASTIKAN FOLDER MODEL ADA =====================
+        os.makedirs("model", exist_ok=True)
+
+        # ===================== LINK MODEL GOOGLE DRIVE =====================
+        FILE_ID = "1qXBcdzV9iThApnTDj1GP0DWFxfnzMQCH"  # dari link Drive yang kamu kasih
         MODEL_PATH = "model/model_pizza_notpizza.h5"
-        if not os.path.exists(MODEL_PATH):
+        DRIVE_URL = f"https://drive.google.com/uc?id={FILE_ID}"
+
+        # ===================== DOWNLOAD MODEL JIKA BELUM ADA =====================
+        if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1024:
             with st.spinner("⬇ Mengunduh model dari Google Drive..."):
-                gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", MODEL_PATH, quiet=False)
+                gdown.download(DRIVE_URL, MODEL_PATH, quiet=False)
             st.success("✅ Model berhasil diunduh!")
+
+        # ===================== NAMA KELAS =====================
         class_names = ["Not Pizza", "Pizza"]
 
+        # ===================== CUSTOM LAYER (jika diperlukan) =====================
         class GetItem(Layer):
-            def call(self, inputs): return inputs
+            def call(self, inputs): 
+                return inputs
 
+        # ===================== LOAD MODEL DENGAN CACHE =====================
         @st.cache_resource
         def load_tf_model():
             return load_model(MODEL_PATH, compile=False, custom_objects={'GetItem': GetItem})
+
         with st.spinner("🔄 Memuat model TensorFlow..."):
             model = load_tf_model()
         st.success("✅ Model TensorFlow berhasil dimuat!")
 
+        # ===================== UPLOAD & PREDIKSI GAMBAR =====================
         uploaded_file_tf = st.file_uploader("Upload gambar untuk klasifikasi:", type=["jpg","jpeg","png"], key="tf_pizza")
         if uploaded_file_tf:
             img = Image.open(uploaded_file_tf)
             st.image(img, caption="📷 Gambar Input", use_container_width=True)
             if st.button("🔮 Prediksi Gambar", key="predict_pizza"):
                 with st.spinner("✨ Melakukan prediksi..."):
+                    # Preprocessing gambar
                     img_array = np.array(img.resize((224,224))) / 255.0
-                    if len(img_array.shape)==2: img_array = np.stack([img_array]*3,axis=-1)
-                    elif img_array.shape[-1]==4: img_array = img_array[...,:3]
-                    img_array = np.expand_dims(img_array,axis=0)
+                    if len(img_array.shape) == 2: 
+                        img_array = np.stack([img_array]*3, axis=-1)
+                    elif img_array.shape[-1] == 4: 
+                        img_array = img_array[...,:3]
+                    img_array = np.expand_dims(img_array, axis=0)
+
+                    # Prediksi
                     predictions = model.predict(img_array, verbose=0)
-                    if predictions.shape[-1]==1:
+                    if predictions.shape[-1] == 1:
                         confidence = float(predictions[0][0])
-                        predicted_class = "Pizza" if confidence>=0.5 else "Not Pizza"
+                        predicted_class = "Pizza" if confidence >= 0.5 else "Not Pizza"
                         confidence = confidence if predicted_class=="Pizza" else (1-confidence)
                     else:
                         idx = np.argmax(predictions[0])
                         predicted_class = class_names[idx]
                         confidence = predictions[0][idx]
+
+                    # Tampilkan hasil
                     col_a, col_b = st.columns(2)
                     with col_a: st.metric("🎯 Kelas Prediksi", predicted_class)
                     with col_b: st.metric("📊 Confidence", f"{confidence:.2%}")
+
     except Exception as e:
         st.error(f"❌ Error TensorFlow: {e}")
+
 
 # ===================== FOOTER =====================
 st.markdown("""

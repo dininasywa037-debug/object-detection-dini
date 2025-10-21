@@ -1,147 +1,199 @@
 import streamlit as st
-from tensorflow.keras.models import load_model
-from tensorflow.keras.layers import Layer
+from ultralytics import YOLO
+import tensorflow as tf
 from PIL import Image
 import numpy as np
-from ultralytics import YOLO
-import gdown
-import os
-import h5py
+import cv2
 
-# ===================== KONFIGURASI DASHBOARD =====================
 st.set_page_config(
     page_title="Dashboard Model - Balqis Isaura",
-    page_icon="✨",
+    page_icon="🎯",
     layout="wide"
 )
 
-# ===================== STYLE PINK THEME =====================
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-[data-testid="stAppViewContainer"] { background-color: #fff5f8 !important; font-family: 'Poppins', sans-serif; }
-[data-testid="stHeader"] { background-color: transparent !important; }
-/* ...sisa CSS seperti sebelumnya tetap sama... */
-</style>
-""", unsafe_allow_html=True)
+st.title("🎯 Dashboard Model - Balqis Isaura")
+st.markdown("---")
 
-# ===================== HEADER =====================
-st.markdown("# ✨ DASHBOARD MODEL ✨")
-st.markdown('<p class="subtitle">GROUP PROJECT PRESENTATION - BALQIS ISAURA</p>', unsafe_allow_html=True)
+# Sidebar untuk pilih model
+model_choice = st.sidebar.radio(
+    "Pilih Model:",
+    ["PyTorch - YOLO", "TensorFlow - ResNet50"]
+)
 
-col1, col2 = st.columns(2, gap="medium")
-
-# ===================== PROCESS 1 - YOLO =====================
-with col1:
-    st.markdown("""<div class="process-card"><h2>📸 PROCESS 1</h2><h3>YOLO Object Detection</h3><div class="process-card-content">""", unsafe_allow_html=True)
+# ==================== MODEL PYTORCH YOLO ====================
+if model_choice == "PyTorch - YOLO":
+    st.header("🎯 Model PyTorch - YOLO")
+    
     try:
+        # Load YOLO model
         @st.cache_resource
-        def load_yolo_model():
-            return YOLO("model/DINI ARIFATUL NASYWA_Laporan 4.pt")
-        with st.spinner("🔄 Memuat model YOLO..."):
-            yolo_model = load_yolo_model()
+        def load_yolo():
+            return YOLO('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
+        
+        with st.spinner("Loading YOLO model..."):
+            model = load_yolo()
+        
         st.success("✅ Model YOLO berhasil dimuat!")
-
-        uploaded_file_yolo = st.file_uploader("Upload gambar untuk deteksi objek:", type=["jpg","jpeg","png"], key="yolo")
-        if uploaded_file_yolo:
-            img = Image.open(uploaded_file_yolo)
-            st.image(img, caption="📷 Gambar Input", use_container_width=True)
-            if st.button("🚀 Jalankan Deteksi", key="detect_btn"):
-                with st.spinner("✨ Mendeteksi objek..."):
-                    results = yolo_model(img)
-                    result_img = results[0].plot()
-                    st.image(result_img, caption="🎯 Hasil Deteksi", use_container_width=True)
+        
+        # Info model di sidebar
+        with st.sidebar.expander("📊 Info Model"):
+            st.text(str(model.info()))
+        
+        # Upload gambar
+        st.markdown("### Upload Gambar untuk Deteksi Objek")
+        uploaded_file = st.file_uploader(
+            "Pilih gambar...", 
+            type=['jpg', 'jpeg', 'png'],
+            key='yolo'
+        )
+        
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("📷 Gambar Input")
+                st.image(image, use_column_width=True)
+            
+            if st.button("🔍 Deteksi Objek", type="primary"):
+                with st.spinner("Mendeteksi objek..."):
+                    # Prediksi
+                    results = model(image)
+                    
+                    with col2:
+                        st.subheader("🎯 Hasil Deteksi")
+                        result_img = results[0].plot()
+                        st.image(result_img, use_column_width=True)
+                    
+                    # Detail deteksi
+                    st.markdown("---")
+                    st.subheader("📋 Detail Deteksi")
+                    
                     boxes = results[0].boxes
                     if len(boxes) > 0:
-                        for i, box in enumerate(boxes, 1):
-                            label = yolo_model.names[int(box.cls)]
-                            conf = box.conf[0]
-                            st.write(f"{i}. **{label}** — Confidence: *{conf:.2%}*")
+                        cols = st.columns(3)
+                        for i, box in enumerate(boxes):
+                            col_idx = i % 3
+                            with cols[col_idx]:
+                                st.metric(
+                                    f"Objek {i+1}",
+                                    model.names[int(box.cls)],
+                                    f"{box.conf[0]:.1%}"
+                                )
                     else:
-                        st.info("Tidak ada objek terdeteksi.")
+                        st.info("ℹ Tidak ada objek terdeteksi")
+                        
     except Exception as e:
-        st.error(f"❌ Error YOLO: {e}")
+        st.error(f"❌ Error: {e}")
+        st.info("Pastikan file model ada di folder 'model/'")
 
-# ===================== PROCESS 2 - TF MODEL =====================
-with col2:
-    st.markdown("""<div class="process-card"><h2>🧠 PROCESS 2</h2><h3>TensorFlow Classification (Pizza / Not Pizza)</h3><div class="process-card-content">""", unsafe_allow_html=True)
+# ==================== MODEL TENSORFLOW ====================
+elif model_choice == "TensorFlow - ResNet50":
+    st.header("🧠 Model TensorFlow - ResNet50")
+    
+    model = None
+    
     try:
-        # ===================== PASTIKAN FOLDER MODEL =====================
-        os.makedirs("model", exist_ok=True)
-
-        # ===================== LINK GOOGLE DRIVE =====================
-        FILE_ID = "1HbYHvdvdcm0-9bBeJIlrkRrQsY5B0rrZ"
-        MODEL_PATH = "model/model_pizza_notpizza.h5"
-        DRIVE_URL = f"https://drive.google.com/uc?id={FILE_ID}"
-
-        # ===================== DOWNLOAD MODEL =====================
-        if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1024:
-            with st.spinner("⬇ Mengunduh model dari Google Drive..."):
-                gdown.download(DRIVE_URL, MODEL_PATH, quiet=False, fuzzy=True)
-            st.success("✅ Model berhasil diunduh!")
-
-        # ===================== CEK VALIDITAS H5 =====================
-        try:
-            with h5py.File(MODEL_PATH, 'r') as f:
-                st.write("✅ File .h5 valid. Konten:", list(f.keys()))
-        except Exception as e:
-            st.error(f"❌ File .h5 tidak valid atau korup: {e}")
-
-        # ===================== NAMA KELAS =====================
-        class_names = ["Not Pizza", "Pizza"]
-
-        # ===================== CUSTOM LAYER =====================
-        class GetItem(Layer):
-            def call(self, inputs): 
-                return inputs
-
+        # Load TensorFlow model
         @st.cache_resource
-        def load_tf_model():
-            try:
-                return load_model(MODEL_PATH, compile=False, custom_objects={'GetItem': GetItem})
-            except Exception:
-                return load_model(MODEL_PATH, compile=False)
-
-        with st.spinner("🔄 Memuat model TensorFlow..."):
-            model = load_tf_model()
-        st.success("✅ Model TensorFlow berhasil dimuat!")
-
-        # ===================== UPLOAD & PREDIKSI =====================
-        uploaded_file_tf = st.file_uploader("Upload gambar untuk klasifikasi:", type=["jpg","jpeg","png"], key="tf_pizza")
-        if uploaded_file_tf:
-            img = Image.open(uploaded_file_tf)
-            st.image(img, caption="📷 Gambar Input", use_container_width=True)
-            if st.button("🔮 Prediksi Gambar", key="predict_pizza"):
-                with st.spinner("✨ Melakukan prediksi..."):
-                    img_array = np.array(img.resize((224,224))) / 255.0
-                    if len(img_array.shape) == 2: 
-                        img_array = np.stack([img_array]*3, axis=-1)
-                    elif img_array.shape[-1] == 4: 
-                        img_array = img_array[...,:3]
-                    img_array = np.expand_dims(img_array, axis=0)
-
-                    predictions = model.predict(img_array, verbose=0)
-                    if predictions.shape[-1] == 1:
-                        confidence = float(predictions[0][0])
-                        predicted_class = "Pizza" if confidence >= 0.5 else "Not Pizza"
-                        confidence = confidence if predicted_class=="Pizza" else (1-confidence)
-                    else:
-                        idx = np.argmax(predictions[0])
-                        predicted_class = class_names[idx]
-                        confidence = predictions[0][idx]
-
-                    col_a, col_b = st.columns(2)
-                    with col_a: st.metric("🎯 Kelas Prediksi", predicted_class)
-                    with col_b: st.metric("📊 Confidence", f"{confidence:.2%}")
-
+        def load_tensorflow():
+            return tf.keras.models.load_model(
+                'model/Dini_Arifatul_Nasywa_laporan2.h5',
+                compile=False
+            )
+        
+        with st.spinner("Loading TensorFlow model..."):
+            model = load_tensorflow()
+        
+        st.success("✅ Model berhasil dimuat!")
+        
     except Exception as e:
-        st.error(f"❌ Error TensorFlow: {e}")
+        st.warning(f"⚠ Gagal load model: {str(e)[:150]}...")
+        
+        # Coba dengan safe_mode=False
+        try:
+            st.info("Mencoba metode alternatif...")
+            
+            @st.cache_resource
+            def load_tensorflow_safe():
+                import keras
+                keras.config.disable_traceback_filtering()
+                return tf.keras.models.load_model(
+                    'model/Dini_Arifatul_Nasywa_laporan2.h5',
+                    compile=False,
+                    safe_mode=False
+                )
+            
+            model = load_tensorflow_safe()
+            st.success("✅ Model berhasil dimuat!")
+            
+        except Exception as e2:
+            st.error(f"❌ Model tidak bisa dimuat")
+            st.code(str(e2), language="text")
+            st.info("""
+            *Kemungkinan masalah:*
+            - Versi TensorFlow/Keras tidak kompatibel
+            - Model perlu disave ulang dengan format terbaru
+            
+            *Solusi sementara:* Gunakan model YOLO yang sudah berfungsi
+            """)
+    
+    # Jika model berhasil di-load
+    if model is not None:
+        # Info model
+        with st.sidebar.expander("📊 Architecture Model"):
+            from io import StringIO
+            stream = StringIO()
+            model.summary(print_fn=lambda x: stream.write(x + '\n'))
+            st.text(stream.getvalue())
+        
+        # Upload gambar
+        st.markdown("### Upload Gambar untuk Prediksi")
+        uploaded_file = st.file_uploader(
+            "Pilih gambar...", 
+            type=['jpg', 'jpeg', 'png'],
+            key='tf'
+        )
+        
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("📷 Gambar Input")
+                st.image(image, use_column_width=True)
+            
+            if st.button("🔮 Prediksi", type="primary"):
+                with st.spinner("Melakukan prediksi..."):
+                    # Preprocess
+                    img_array = np.array(image.resize((224, 224)))
+                    
+                    # Convert RGBA to RGB jika perlu
+                    if img_array.shape[-1] == 4:
+                        img_array = img_array[:, :, :3]
+                    
+                    img_array = np.expand_dims(img_array, axis=0)
+                    img_array = tf.keras.applications.resnet50.preprocess_input(img_array)
+                    
+                    # Prediksi
+                    predictions = model.predict(img_array, verbose=0)
+                    
+                    with col2:
+                        st.subheader("🎯 Hasil Prediksi")
+                        
+                        predicted_class = np.argmax(predictions[0])
+                        confidence = predictions[0][predicted_class]
+                        
+                        st.metric("Kelas Prediksi", f"Class {predicted_class}")
+                        st.metric("Confidence", f"{confidence:.2%}")
+                        
+                        # Tampilkan semua probabilitas
+                        with st.expander("📊 Lihat Semua Probabilitas"):
+                            for i, prob in enumerate(predictions[0]):
+                                st.progress(float(prob), text=f"Class {i}: {prob:.4f}")
 
-# ===================== FOOTER =====================
-st.markdown("""
-<div class="footer">
-<p style="margin: 0; font-size: 1.1rem;">
-💖 <strong>Dibuat oleh Balqis Isaura</strong> | Powered by Streamlit ✨
-</p>
-</div>
-""", unsafe_allow_html=True)
+# Footer
+st.markdown("---")
+st.markdown("📌 Dibuat oleh Balqis Isaura** | Powered by Streamlit 🚀")

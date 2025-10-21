@@ -29,7 +29,7 @@ if model_choice == "PyTorch - YOLO":
         @st.cache_resource
         def load_yolo():
             # Pastikan path model sesuai struktur repo kamu
-            return YOLO('model/DINI ARIFATUL NASYWA_Laporan4.pt')
+            return YOLO('DINI ARIFATUL NASYWA_Laporan4.pt')
         
         with st.spinner("Loading YOLO model..."):
             model = load_yolo()

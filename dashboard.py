@@ -233,8 +233,8 @@ with col2:
         # ===================== PASTIKAN FOLDER MODEL ADA =====================
         os.makedirs("model", exist_ok=True)
 
-        # ===================== LINK MODEL GOOGLE DRIVE =====================
-        FILE_ID = "1qXBcdzV9iThApnTDj1GP0DWFxfnzMQCH"  # dari link Drive yang kamu kasih
+        # ===================== LINK MODEL GOOGLE DRIVE BARU =====================
+        FILE_ID = "1HbYHvdvdcm0-9bBeJIlrkRrQsY5B0rrZ"  # ID dari link Drive baru
         MODEL_PATH = "model/model_pizza_notpizza.h5"
         DRIVE_URL = f"https://drive.google.com/uc?id={FILE_ID}"
 
@@ -294,6 +294,7 @@ with col2:
 
     except Exception as e:
         st.error(f"❌ Error TensorFlow: {e}")
+
 
 
 # ===================== FOOTER =====================

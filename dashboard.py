@@ -3,8 +3,12 @@ from ultralytics import YOLO
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-import cv2
+import gdown
+import os
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.models import load_model
 
+# ===================== KONFIGURASI DASHBOARD =====================
 st.set_page_config(
     page_title="Dashboard Model - Balqis Isaura",
     page_icon="🎯",
@@ -17,7 +21,7 @@ st.markdown("---")
 # Sidebar untuk pilih model
 model_choice = st.sidebar.radio(
     "Pilih Model:",
-    ["PyTorch - YOLO", "TensorFlow - ResNet50"]
+    ["PyTorch - YOLO", "TensorFlow - ResNet50 (Pizza / Not Pizza)"]
 )
 
 # ==================== MODEL PYTORCH YOLO ====================
@@ -34,10 +38,6 @@ if model_choice == "PyTorch - YOLO":
             model = load_yolo()
         
         st.success("✅ Model YOLO berhasil dimuat!")
-        
-        # Info model di sidebar
-        with st.sidebar.expander("📊 Info Model"):
-            st.text(str(model.info()))
         
         # Upload gambar
         st.markdown("### Upload Gambar untuk Deteksi Objek")
@@ -89,111 +89,85 @@ if model_choice == "PyTorch - YOLO":
         st.info("Pastikan file model ada di folder 'model/'")
 
 # ==================== MODEL TENSORFLOW ====================
-elif model_choice == "TensorFlow - ResNet50":
-    st.header("🧠 Model TensorFlow - ResNet50")
+elif model_choice == "TensorFlow - ResNet50 (Pizza / Not Pizza)":
+    st.header("🧠 Model TensorFlow - ResNet50 (Pizza / Not Pizza)")
     
     model = None
     
     try:
-        # Load TensorFlow model
+        # ===================== PASTIKAN FOLDER MODEL ADA =====================
+        os.makedirs("model", exist_ok=True)
+
+        # ===================== LINK MODEL GOOGLE DRIVE =====================
+        FILE_ID = "1scvZQDCuDce9rZ-WIpDW0Yl7tbYekVa7"
+        MODEL_PATH = "model/model_pizza_notpizza.h5"
+        DRIVE_URL = f"https://drive.google.com/uc?id={FILE_ID}"
+
+        # ===================== DOWNLOAD MODEL JIKA BELUM ADA =====================
+        if not os.path.exists(MODEL_PATH) or os.path.getsize(MODEL_PATH) < 1024:
+            with st.spinner("⬇ Mengunduh model dari Google Drive..."):
+                gdown.download(DRIVE_URL, MODEL_PATH, quiet=False)
+            st.success("✅ Model berhasil diunduh!")
+
+        # ===================== NAMA KELAS =====================
+        class_names = ["Not Pizza", "Pizza"]
+
+        # ===================== CUSTOM LAYER (jika diperlukan) =====================
+        class GetItem(Layer):
+            def call(self, inputs): 
+                return inputs
+
+        # ===================== LOAD MODEL DENGAN CACHE =====================
         @st.cache_resource
-        def load_tensorflow():
-            return tf.keras.models.load_model(
-                'model/Dini_Arifatul_Nasywa_laporan2.h5',
-                compile=False
-            )
-        
-        with st.spinner("Loading TensorFlow model..."):
-            model = load_tensorflow()
-        
-        st.success("✅ Model berhasil dimuat!")
-        
+        def load_tf_model():
+            return load_model(MODEL_PATH, compile=False, custom_objects={'GetItem': GetItem})
+
+        with st.spinner("🔄 Memuat model TensorFlow..."):
+            model = load_tf_model()
+        st.success("✅ Model TensorFlow berhasil dimuat!")
+
     except Exception as e:
-        st.warning(f"⚠ Gagal load model: {str(e)[:150]}...")
-        
-        # Coba dengan safe_mode=False
-        try:
-            st.info("Mencoba metode alternatif...")
-            
-            @st.cache_resource
-            def load_tensorflow_safe():
-                import keras
-                keras.config.disable_traceback_filtering()
-                return tf.keras.models.load_model(
-                    'model/Dini_Arifatul_Nasywa_laporan2.h5',
-                    compile=False,
-                    safe_mode=False
-                )
-            
-            model = load_tensorflow_safe()
-            st.success("✅ Model berhasil dimuat!")
-            
-        except Exception as e2:
-            st.error(f"❌ Model tidak bisa dimuat")
-            st.code(str(e2), language="text")
-            st.info("""
-            *Kemungkinan masalah:*
-            - Versi TensorFlow/Keras tidak kompatibel
-            - Model perlu disave ulang dengan format terbaru
-            
-            *Solusi sementara:* Gunakan model YOLO yang sudah berfungsi
-            """)
-    
-    # Jika model berhasil di-load
+        st.error(f"❌ Error TensorFlow: {e}")
+        st.info("Pastikan file model bisa diakses dari Google Drive dan kompatibel dengan versi TensorFlow saat ini.")
+
+    # ===================== UPLOAD & PREDIKSI GAMBAR =====================
     if model is not None:
-        # Info model
-        with st.sidebar.expander("📊 Architecture Model"):
-            from io import StringIO
-            stream = StringIO()
-            model.summary(print_fn=lambda x: stream.write(x + '\n'))
-            st.text(stream.getvalue())
-        
-        # Upload gambar
         st.markdown("### Upload Gambar untuk Prediksi")
         uploaded_file = st.file_uploader(
             "Pilih gambar...", 
             type=['jpg', 'jpeg', 'png'],
             key='tf'
         )
-        
+
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
             
             col1, col2 = st.columns(2)
-            
             with col1:
                 st.subheader("📷 Gambar Input")
                 st.image(image, use_column_width=True)
             
             if st.button("🔮 Prediksi", type="primary"):
-                with st.spinner("Melakukan prediksi..."):
-                    # Preprocess
-                    img_array = np.array(image.resize((224, 224)))
-                    
-                    # Convert RGBA to RGB jika perlu
-                    if img_array.shape[-1] == 4:
-                        img_array = img_array[:, :, :3]
-                    
+                with st.spinner("✨ Melakukan prediksi..."):
+                    # Preprocess gambar
+                    img_array = np.array(image.resize((224,224))) / 255.0
+                    if len(img_array.shape) == 2:
+                        img_array = np.stack([img_array]*3, axis=-1)
+                    elif img_array.shape[-1] == 4:
+                        img_array = img_array[...,:3]
                     img_array = np.expand_dims(img_array, axis=0)
-                    img_array = tf.keras.applications.resnet50.preprocess_input(img_array)
-                    
+
                     # Prediksi
                     predictions = model.predict(img_array, verbose=0)
-                    
+                    idx = np.argmax(predictions[0])
+                    predicted_class = class_names[idx]
+                    confidence = predictions[0][idx]
+
                     with col2:
                         st.subheader("🎯 Hasil Prediksi")
-                        
-                        predicted_class = np.argmax(predictions[0])
-                        confidence = predictions[0][predicted_class]
-                        
-                        st.metric("Kelas Prediksi", f"Class {predicted_class}")
+                        st.metric("Kelas Prediksi", predicted_class)
                         st.metric("Confidence", f"{confidence:.2%}")
-                        
-                        # Tampilkan semua probabilitas
-                        with st.expander("📊 Lihat Semua Probabilitas"):
-                            for i, prob in enumerate(predictions[0]):
-                                st.progress(float(prob), text=f"Class {i}: {prob:.4f}")
 
 # Footer
 st.markdown("---")
-st.markdown("📌 Dibuat oleh Balqis Isaura** | Powered by Streamlit 🚀")
+st.markdown("📌 Dibuat oleh Balqis Isaura | Powered by Streamlit 🚀")

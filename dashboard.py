@@ -6,12 +6,12 @@ import numpy as np
 import cv2
 
 st.set_page_config(
-    page_title="Dashboard Model - Balqis Isaura",
+    page_title="Dashboard Model - Dini Arifatul Nasywa",
     page_icon="🎯",
     layout="wide"
 )
 
-st.title("🎯 Dashboard Model - Balqis Isaura")
+st.title("🎯 Dashboard Model - Dini Arifatul Nasywa")
 st.markdown("---")
 
 # Sidebar untuk pilih model
@@ -196,4 +196,4 @@ elif model_choice == "TensorFlow - ResNet50":
 
 # Footer
 st.markdown("---")
-st.markdown("📌 Dibuat oleh Balqis Isaura** | Powered by Streamlit 🚀")
+st.markdown("📌 Dibuat oleh Dini Arifatul Nasywa** | Powered by Streamlit 🚀")

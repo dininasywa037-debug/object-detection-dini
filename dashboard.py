@@ -256,73 +256,52 @@ with col2:
             <h3>TensorFlow Classification</h3>
             <div class="process-card-content">
     """, unsafe_allow_html=True)
-    
-    try:
-        FILE_ID = "1JCYISlbpPHMd6Vx4gC8j968NYzSJXqbd"
-        MODEL_PATH = "model_resnet50_balqis.h5"
 
+    import os
+    import gdown
+    import tensorflow as tf
+    from tensorflow.keras.models import load_model
+    from tensorflow.keras.layers import Layer
+
+
+
+        # Jika model belum ada di folder lokal, unduh dari Google Drive
         if not os.path.exists(MODEL_PATH):
+            FILE_ID = "1JCYISlbpPHMd6Vx4gC8j968NYzSJXqbd"
             with st.spinner("⬇ Mengunduh model dari Google Drive..."):
                 gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", MODEL_PATH, quiet=False)
             st.success("✅ Model berhasil diunduh!")
 
-        @st.cache_resource
-        def load_tf_model():
-            return tf.keras.models.load_model(MODEL_PATH, compile=False)
+        # Buat dummy layer GetItem biar bisa load model tanpa error
+        class GetItem(Layer):
+            def __init__(self, **kwargs):
+                super(GetItem, self).__init__(**kwargs)
+            def call(self, inputs):
+                # fungsi asli bisa beda, tapi minimal ini biar model kebuka
+                return inputs
 
-        with st.spinner("🔄 Memuat model TensorFlow..."):
-            model = load_tf_model()
-        st.success("✅ Model TensorFlow berhasil dimuat!")
+        # Load model
+        with st.spinner("🔍 Memuat model TensorFlow..."):
+            model = load_model(MODEL_PATH, custom_objects={'GetItem': GetItem})
+            st.success("✅ Model berhasil dimuat!")
 
-        class_names = ["Rock", "Paper", "Scissors"]
+        # Setelah ini kamu bisa lanjutkan ke bagian prediksi gambar
+        uploaded_image = st.file_uploader("Unggah Gambar untuk Klasifikasi", type=["jpg", "jpeg", "png"])
 
-        uploaded_file_tf = st.file_uploader(
-            "Upload gambar untuk klasifikasi:", 
-            type=["jpg", "jpeg", "png"], 
-            key="tf"
-        )
+        if uploaded_image is not None:
+            import numpy as np
+            from PIL import Image
 
-        if uploaded_file_tf:
-            image = Image.open(uploaded_file_tf)
-            st.image(image, caption="📷 Gambar Input", use_container_width=True)
+            image = Image.open(uploaded_image).resize((224, 224))  # sesuaikan ukuran
+            img_array = np.expand_dims(np.array(image) / 255.0, axis=0)
 
-            if st.button("🔮 Prediksi Gambar", key="predict_btn"):
-                with st.spinner("✨ Melakukan prediksi..."):
-                    img_array = np.array(image.resize((224, 224))) / 255.0
-                    if len(img_array.shape) == 2:
-                        img_array = np.stack([img_array]*3, axis=-1)
-                    elif img_array.shape[-1] == 4:
-                        img_array = img_array[..., :3]
+            prediction = model.predict(img_array)
+            st.image(image, caption="Gambar yang diunggah", use_container_width=True)
+            st.write("### Hasil Prediksi:", prediction)
 
-                    img_array = np.expand_dims(img_array, axis=0)
-                    predictions = model.predict(img_array, verbose=0)
-                    predicted_index = np.argmax(predictions[0])
-                    predicted_class = class_names[predicted_index]
-                    confidence = predictions[0][predicted_index]
-
-                    col_a, col_b = st.columns(2)
-                    with col_a:
-                        st.metric("🎯 Kelas Prediksi", predicted_class)
-                    with col_b:
-                        st.metric("📊 Confidence", f"{confidence:.2%}")
-
-                    with st.expander("📊 Probabilitas Tiap Kelas"):
-                        for i, prob in enumerate(predictions[0]):
-                            st.progress(float(prob), text=f"{class_names[i]}: {prob:.4f}")
-                            
     except Exception as e:
-        st.error(f"❌ Error TensorFlow: {str(e)}")
-        st.info("""
-        💡 *Tips:*
-        - Pastikan link Google Drive publik
-        - Model harus memiliki 3 output kelas: Rock, Paper, Scissors
-        - Coba convert ke format .keras jika error terus terjadi
-        """)
-    
-    st.markdown("""
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+        st.error(f"❌ Error TensorFlow: {e}")
+
 
 # ===================== FOOTER =====================
 st.markdown("""

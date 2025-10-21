@@ -120,7 +120,7 @@ elif model_choice == "TensorFlow - ResNet50":
                 import keras
                 keras.config.disable_traceback_filtering()
                 return tf.keras.models.load_model(
-                    'model/Balqis Isaura_Laporan2.h5',
+                    'model/Dini_Arifatul_Nasywa_laporan2.h5',
                     compile=False,
                     safe_mode=False
                 )

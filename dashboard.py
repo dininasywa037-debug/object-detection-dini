@@ -14,13 +14,13 @@ st.set_page_config(
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap'); /* Font tambahan untuk lebih elegan */
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap'); /* Font menarik tambahan */
 
         body, .stApp {
             background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%); /* gradien krem seperti tepung pizza */
             color: #3e2723; /* teks coklat tua untuk kontras */
             font-family: 'Arial', sans-serif;
-            overflow-x: hidden; /* cegah scroll horizontal */
+            overflow-x: hidden; /* mencegah scroll horizontal */
         }
 
         * {
@@ -30,11 +30,11 @@ st.markdown("""
 
         .main-title {
             text-align: center;
-            font-size: 8rem; /* diperbesar lagi untuk lebih dramatis */
+            font-size: 8rem; /* diperbesar lagi */
             font-weight: 900;
-            font-family: 'Great Vibes', cursive; /* font lebih elegan dan mewah */
+            font-family: 'Great Vibes', cursive; /* font lebih elegan dan menarik */
             color: #cc0000 !important; /* merah untuk judul agar menonjol */
-            text-shadow: 6px 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(204,0,0,0.8), 0 0 60px rgba(204,0,0,0.4); /* efek timbul, glow, dan halo lebih kuat */
+            text-shadow: 6px 6px 20px rgba(0,0,0,0.5), 0 0 40px rgba(204,0,0,0.8), 0 0 60px rgba(204,0,0,0.4); /* efek timbul dan glow super kuat */
             margin-top: 1rem;
             margin-bottom: 0.5rem;
             animation: bounceIn 3s ease-in-out, pulse 4s infinite, shake 5s infinite;
@@ -45,9 +45,8 @@ st.markdown("""
             content: '🍕';
             position: absolute;
             left: -50px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 4rem;
+            top: 0;
+            font-size: 6rem;
             animation: spin 3s linear infinite;
         }
 
@@ -55,9 +54,8 @@ st.markdown("""
             content: '🍕';
             position: absolute;
             right: -50px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 4rem;
+            top: 0;
+            font-size: 6rem;
             animation: spin 3s linear infinite reverse;
         }
 
@@ -108,7 +106,7 @@ st.markdown("""
             margin-top: 2rem;
             text-align: center;
             font-family: 'Pacifico', cursive;
-            animation: slideInLeft 2s ease-in-out;
+            animation: slideInLeft 2s ease-in-out, glow 3s infinite;
         }
 
         @keyframes slideInLeft {
@@ -116,9 +114,14 @@ st.markdown("""
             to { opacity: 1; transform: translateX(0); }
         }
 
+        @keyframes glow {
+            0%, 100% { text-shadow: 3px 3px 8px rgba(0,0,0,0.4); }
+            50% { text-shadow: 3px 3px 8px rgba(0,0,0,0.4), 0 0 20px rgba(255,87,34,0.8); }
+        }
+
         /* Button style */
         .stButton > button {
-            background: linear-gradient(45deg, #ff5722, #e64a19, #d84315) !important; /* gradien 3 warna untuk lebih keren */
+            background: linear-gradient(45deg, #ff5722, #e64a19, #d84315) !important; /* gradien oranye-merah lebih kaya */
             color: #fff !important;
             border-radius: 30px !important;
             font-weight: 700 !important;
@@ -139,7 +142,7 @@ st.markdown("""
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.6s;
+            transition: left 0.5s;
         }
 
         .stButton > button:hover::before {
@@ -207,29 +210,29 @@ st.markdown("""
             background: rgba(255, 255, 255, 0.95);
             border-radius: 30px;
             padding: 3rem;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
             margin-bottom: 2rem;
             border: 4px solid #d7ccc8;
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             position: relative;
+            overflow: hidden;
         }
 
         .card::before {
             content: '';
             position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: linear-gradient(45deg, #ff5722, #e64a19);
-            border-radius: 35px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
         }
 
         .card:hover::before {
-            opacity: 0.3;
+            top: -100%;
+            left: -100%;
         }
 
         .card:hover {
@@ -251,6 +254,11 @@ st.markdown("""
             position: relative;
         }
 
+        .menu-item:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
         .menu-item::after {
             content: '🍕';
             position: absolute;
@@ -258,11 +266,6 @@ st.markdown("""
             right: 10px;
             font-size: 2rem;
             opacity: 0.7;
-        }
-
-        .menu-item:hover {
-            transform: translateY(-10px) scale(1.05) rotate(1deg);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
         }
 
         /* Tabs style */
@@ -278,7 +281,7 @@ st.markdown("""
             font-weight: 600;
             font-size: 1.3rem;
             transition: all 0.4s ease;
-            border-radius: 20px;
+            border-radius: 15px;
         }
 
         .stTabs [data-baseweb="tab"]:hover {
@@ -291,19 +294,19 @@ st.markdown("""
             color: #fff !important;
             border-radius: 20px;
             transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(255,87,34,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
         /* Image styling */
         img {
             border-radius: 25px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            transition: transform 0.4s ease, filter 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         img:hover {
-            transform: scale(1.08) rotate(2deg);
-            filter: brightness(1.1);
+            transform: scale(1.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         /* Testimonial style */
@@ -328,69 +331,38 @@ st.markdown("""
             border-radius: 20px;
             padding: 1.5rem;
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            border: 2px solid #d7ccc8;
+            animation: slideInRight 2s ease-in-out;
         }
 
-        /* Carousel effect for images (simple) */
-        .carousel {
-            display: flex;
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .carousel img {
-            width: 100%;
-            transition: transform 0.5s ease;
-        }
-
-        /* Particle effect simulation with CSS */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
+        /* Particle effect (simulasi) */
         .particle {
             position: absolute;
-            background: rgba(255, 87, 34, 0.1);
+            width: 10px;
+            height: 10px;
+            background: #ff5722;
             border-radius: 50%;
-            animation: float 10s infinite linear;
+            animation: float 6s infinite ease-in-out;
         }
 
         @keyframes float {
-            from { transform: translateY(100vh) rotate(0deg); }
-            to { transform: translateY(-100px) rotate(360deg); }
+            0%, 100% { transform: translateY(0px); opacity: 0; }
+            50% { transform: translateY(-20px); opacity: 1; }
         }
     </style>
 """, unsafe_allow_html=True)
 
-# ========================== PARTICLE EFFECT (Simulasi) ==========================
-st.markdown("""
-    <div class="particles">
-        <div class="particle" style="left: 10%; animation-delay: 0s; width: 20px; height: 20px;"></div>
-        <div class="particle" style="left: 20%; animation-delay: 1s; width: 15px; height: 15px;"></div>
-        <div class="particle" style="left: 30%; animation-delay: 2s; width: 25px; height: 25px;"></div>
-        <div class="particle" style="left: 40%; animation-delay: 3s; width: 18px; height: 18px;"></div>
-        <div class="particle" style="left: 50%; animation-delay: 4s; width: 22px; height: 22px;"></div>
-        <div class="particle" style="left: 60%; animation-delay: 5s; width: 16px; height: 16px;"></div>
-        <div class="particle" style="left: 70%; animation-delay: 6s; width: 24px; height: 24px;"></div>
-        <div class="particle" style="left: 80%; animation-delay: 7s; width: 19px; height: 19px;"></div>
-        <div class="particle" style="left: 90%; animation-delay: 8s; width: 21px; height: 21px;"></div>
-    </div>
-""", unsafe_allow_html=True)
-
 # ========================== HEADER ==========================
-st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-title'>🍕 Pijjahut 🍕</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Selamat Datang di Restoran Pizza Terbaik! Deteksi Piring & Gelasmu, Klasifikasikan Pizza atau Not Pizza, dan Dapatkan Rekomendasi Menu Spesial! 🔥</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ========================== HORIZONTAL NAVIGATION (Tabs at Top) ==========================
-tabs = st.tabs(["🏠 Beranda", "🔍 Deteksi Objek", "🔮 Klasifikasi Gambar", "🍽️ Menu Rekomendasi", "📞 Kontak Kami"])
+tabs = st.tabs(["🏠 Beranda", "🔍 Deteksi Objek", "🔮 Klasifikasi Gambar", "🍽️ Menu Rekomendasi", "📞 Kontak Kami", "ℹ️ Tentang Kami"])
 
 # ========================== MAIN CONTENT BASED ON TABS ==========================
 with tabs[0]:  # 🏠 Beranda
@@ -409,4 +381,22 @@ with tabs[0]:  # 🏠 Beranda
     st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut! 🎉</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.5rem;'>Di sini, kami menggabungkan kecanggihan AI dengan cita rasa pizza yang luar biasa! Upload
+        <p style='font-size: 1.5rem;'>Di sini, kami menggabungkan kecanggihan AI dengan cita rasa pizza yang luar biasa! Upload gambar piring atau gelas Anda untuk deteksi objek, atau klasifikasikan apakah itu pizza atau bukan. Berdasarkan hasilnya, kami rekomendasikan menu spesial untuk Anda!</p>
+        <p>🍕 <strong>Fitur Utama:</strong></p>
+        <ul>
+            <li>🔍 Deteksi Piring & Gelas dengan YOLO</li>
+            <li>🔮 Klasifikasi Pizza/Not Pizza dengan ResNet50</li>
+            <li>🍽️ Rekomendasi Menu Personal</li>
+        </ul>
+        <p>Jangan ragu untuk eksplorasi! 🚀</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Testimonial Section
+    st.markdown("<h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2.5rem;'>Apa Kata Pengguna Kami? 🌟</h3>", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("<div class='testimonial'>'Pizza di sini luar biasa! AI-nya keren banget!' - User A 🍕</div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi sangat akurat!' - User B 🔥</div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown("<div class='testimonial'>'Deteksi objeknya cepat dan tepat!' - User C 🔍</div>", unsafe_allow

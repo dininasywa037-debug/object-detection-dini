@@ -399,4 +399,4 @@ with tabs[0]:  # 🏠 Beranda
         st.markdown("<div class='testimonial'>'Pizza di sini luar biasa! AI-nya keren banget!' - User A 🍕</div>", unsafe_allow_html=True)
         st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi sangat akurat!' - User B 🔥</div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='testimonial'>'Deteksi objeknya cepat dan tepat!' - User C 🔍</div>", unsafe_allow
+        st.markdown("<div class='testimonial'>'Deteksi objeknya cepat dan tepat!' - User C 🔍</div>", unsafe_allow)

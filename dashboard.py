@@ -125,6 +125,23 @@ st.markdown("""
             text-align: center;
             font-weight: 600;
         }
+
+        /* Tabs style */
+        .stTabs [data-baseweb="tab-list"] {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.5rem;
+        }
+
+        .stTabs [data-baseweb="tab"] {
+            color: #fff8e1 !important;
+            font-weight: 600;
+        }
+
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {
+            background-color: #cc0000 !important;
+            color: #fffde7 !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -133,17 +150,11 @@ st.markdown("<h1 class='main-title'>🍕 Pijjahut 🍕</h1>", unsafe_allow_html=
 st.markdown("<p class='subtitle'>Selamat Datang di Restoran Pizza Terbaik! Deteksi Piring & Gelasmu, Klasifikasikan Pizza atau Not Pizza, dan Dapatkan Rekomendasi Menu Spesial! 🔥</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# ========================== NAVIGATION (Sidebar for Restaurant Feel) ==========================
-with st.sidebar:
-    st.markdown("## 🍴 Navigasi Restoran")
-    st.markdown("### Pilih Layanan:")
-    nav_option = st.radio("", ["🏠 Beranda", "🔍 Deteksi Objek", "🔮 Klasifikasi Gambar", "🍽️ Menu Rekomendasi", "📞 Kontak Kami"], label_visibility="collapsed")
-    st.markdown("---")
-    st.markdown("### Tentang Kami")
-    st.info("Pijjahut adalah restoran pizza inovatif yang menggunakan AI untuk mendeteksi objek dan mengklasifikasikan makanan. Nikmati pengalaman kuliner yang unik! 🍕❤️")
+# ========================== HORIZONTAL NAVIGATION (Tabs at Top) ==========================
+tabs = st.tabs(["🏠 Beranda", "🔍 Deteksi Objek", "🔮 Klasifikasi Gambar", "🍽️ Menu Rekomendasi", "📞 Kontak Kami", "ℹ️ Tentang Kami"])
 
-# ========================== MAIN CONTENT BASED ON NAVIGATION ==========================
-if nav_option == "🏠 Beranda":
+# ========================== MAIN CONTENT BASED ON TABS ==========================
+with tabs[0]:  # 🏠 Beranda
     st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut! 🎉</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -159,7 +170,7 @@ if nav_option == "🏠 Beranda":
     """, unsafe_allow_html=True)
     st.image("https://pin.it/6FRyOIyem", caption="Deteksi Piring & Gelas di Restoran Kami", use_container_width=True)
 
-elif nav_option == "🔍 Deteksi Objek":
+with tabs[1]:  # 🔍 Deteksi Objek
     st.markdown("<h2 class='section-title'>Deteksi Objek di Dapur Kami 🔍</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -194,7 +205,7 @@ elif nav_option == "🔍 Deteksi Objek":
             except Exception as e:
                 st.error(f"❌ Oops! Error memuat model YOLO: {e}")
 
-elif nav_option == "🔮 Klasifikasi Gambar":
+with tabs[2]:  # 🔮 Klasifikasi Gambar
     st.markdown("<h2 class='section-title'>Klasifikasi: Pizza atau Bukan? 🔮</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -220,6 +231,9 @@ elif nav_option == "🔮 Klasifikasi Gambar":
                 predicted_class = np.argmax(predictions[0])
                 confidence = predictions[0][predicted_class]
 
+                # Simpan hasil klasifikasi ke session state untuk rekomendasi
+                st.session_state.predicted_class = predicted_class
+
                 label_map = {0: "Not Pizza 🚫", 1: "Pizza 🍕"}
                 result_label = label_map.get(predicted_class, "Unknown")
 
@@ -232,7 +246,7 @@ elif nav_option == "🔮 Klasifikasi Gambar":
             except Exception as e:
                 st.error(f"❌ Oops! Error memuat model ResNet50: {e}")
 
-elif nav_option == "🍽️ Menu Rekomendasi":
+with tabs[3]:  # 🍽️ Menu Rekomendasi
     st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🍽️</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -255,7 +269,7 @@ elif nav_option == "🍽️ Menu Rekomendasi":
     else:
         st.info("🔮 Lakukan klasifikasi gambar terlebih dahulu untuk mendapatkan rekomendasi menu!")
 
-elif nav_option == "📞 Kontak Kami":
+with tabs[4]:  # 📞 Kontak Kami
     st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -264,6 +278,17 @@ elif nav_option == "📞 Kontak Kami":
         <p><strong>Email:</strong> info@pijjahut.com</p>
         <p><strong>Jam Operasional:</strong> 10:00 - 22:00 WIB</p>
         <p>Ikuti kami di sosial media: 🍕 @PijjahutID</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with tabs[5]:  # ℹ️ Tentang Kami
+    st.markdown("<h2 class='section-title'>Tentang Kami ℹ️</h2>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class='card'>
+        <p style='font-size: 1.2rem;'>Pijjahut adalah restoran pizza inovatif yang menggunakan AI untuk mendeteksi objek dan mengklasifikasikan makanan. Kami percaya bahwa teknologi dapat meningkatkan pengalaman kuliner Anda!</p>
+        <p>🍕 <strong>Misi Kami:</strong> Menyediakan pizza berkualitas tinggi dengan sentuhan kecanggihan AI.</p>
+        <p>❤️ <strong>Tim Kami:</strong> Dibuat oleh Dini Arifatul Nasywa dengan cinta dan dedikasi.</p>
+        <p>🚀 Bergabunglah dengan kami untuk pengalaman kuliner yang unik dan tak terlupakan!</p>
     </div>
     """, unsafe_allow_html=True)
 

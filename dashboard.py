@@ -332,6 +332,7 @@ if 'classification' not in st.session_state:
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
 def load_yolo_model(path):
+    # Pastikan path model benar
     if not os.path.exists(path):
         st.error(f"File model YOLO tidak ditemukan di: {path}")
         return None
@@ -384,6 +385,7 @@ with tabs[0]:
         st.markdown("<div class='testimonial'>'Desain web yang cantik dan fungsional. Saya suka <span style='font-weight: bold;'>estetika Pijjahut</span>!' - Pengguna D, <span style='color:#ff5722;'>Desainer Grafis</span></div>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
+    # Ganti URL ini dengan path gambar lokal jika diperlukan
     st.image("https://images.unsplash.com/photo-1574071318508-1cdbab80d002?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTgyNTZ8MHwxfHNlYXJjaHwyMHx8cGl6emElMjByZXN0YXVyYW50fGVufDB8fHx8MTcwNjgzMTc1OHww&ixlib=rb-4.0.3&q=80&w=1080", caption="Suasana Pijjahut: Penggabungan AI dan Cita Rasa", use_container_width=True)
 
 
@@ -396,6 +398,7 @@ with tabs[1]:
     </div>
     """, unsafe_allow_html=True)
     
+    # Ganti path model ini sesuai dengan lokasi model Anda
     yolo_model = load_yolo_model('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
     
     if yolo_model:
@@ -410,6 +413,7 @@ with tabs[1]:
                     try:
                         results = yolo_model(image)
                         result_img = results[0].plot() 
+                        # Konversi dari BGR (output YOLO) ke RGB (display Streamlit)
                         result_img_rgb = Image.fromarray(result_img[..., ::-1])
                         
                         st.image(result_img_rgb, caption="Hasil Deteksi YOLO", use_container_width=True)
@@ -446,29 +450,31 @@ with tabs[2]:
                         preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
                         
                         predictions = classification_model.predict(preprocessed_img)
-                        decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=3)[0] 
+                        # Mengambil Top 5 prediksi
+                        decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
                         
-                        st.markdown("### Hasil Analisis Top 3:")
-                        
+                        # LOGIKA PENENTUAN KLASIFIKASI
                         is_pizza = False
+                        # Daftar keyword yang dianggap sebagai "Pizza"
                         pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
                         
-                        # Tampilkan 3 prediksi teratas
+                        # Cek apakah ada keyword "pizza" di Top 5 prediksi
                         for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
                             if any(keyword in label.lower() for keyword in pizza_keywords):
                                 is_pizza = True
-                                st.success(f"**#{i+1}: {label.replace('_', ' ').title()}** (Kepercayaan: **{confidence*100:.2f}%**)")
-                            else:
-                                st.info(f"#{i+1}: {label.replace('_', ' ').title()} (Kepercayaan: {confidence*100:.2f}%)")
-
+                                # Kami tidak mencetak detail prediksi di sini
+                        
+                        # HANYA MENAMPILKAN KESIMPULAN AKHIR
                         if is_pizza:
                             final_result = "Pizza"
                             st.session_state['classification'] = 'pizza'
                             st.balloons()
+                            st.success(f"🎉 Selamat! Objek ini terklasifikasi sebagai {final_result}.")
                         else:
-                            final_result = "Bukan Pizza (atau objek makanan/masakan lain)"
+                            final_result = "Bukan Pizza"
                             st.session_state['classification'] = 'not_pizza'
                             st.snow()
+                            st.info(f"😕 Objek ini terklasifikasi sebagai {final_result} (mungkin makanan atau masakan lain).")
                         
                         st.markdown(f"---")
                         st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
@@ -571,6 +577,7 @@ with tabs[4]:
     """, unsafe_allow_html=True)
     
     st.markdown("### Lokasi Kami")
+    # Ganti URL ini dengan path gambar lokal jika diperlukan
     st.image("https://images.unsplash.com/photo-1549448130-cf220197d0fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTgyNTZ8MHwxfHNlYXJjaHw3fHxpbnN0YWdyYW0lMjBwYWdlfGVufDB8fHx8MTcwNjgzMTU0OXww&ixlib=rb-4.0.3&q=80&w=1080", caption="Ikuti Kami di Media Sosial: @PijjahutAI", use_container_width=True)
 
 

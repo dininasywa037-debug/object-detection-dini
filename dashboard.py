@@ -3,44 +3,43 @@ from ultralytics import YOLO
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-from io import StringIO
 
 # ========================== CONFIG PAGE ==========================
 st.set_page_config(
-    page_title="Pijjahut - Dini Arifatul Nasywa",
-    page_icon="☕",
+    page_title="CoffeeVision - Dini Arifatul Nasywa",
+    page_icon="🍕",
     layout="wide"
 )
 
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
-        body { background-color: #f9f5f1; }
+        body { background-color: #ff4d4d; }
         .main-title {
             text-align: center;
             font-size: 2.3rem;
             font-weight: 700;
-            color: #4b2e05;
+            color: #ffffff;
             margin-top: 1rem;
         }
         .subtitle {
             text-align: center;
-            color: #7a5c2e;
+            color: #ffe6e6;
             font-size: 1.1rem;
         }
         .stButton > button {
-            background-color: #7b4b22 !important;
+            background-color: #cc0000 !important;
             color: white !important;
             border-radius: 10px !important;
             font-weight: 600 !important;
             padding: 0.6rem 1.2rem !important;
         }
         .stButton > button:hover {
-            background-color: #5c3517 !important;
+            background-color: #990000 !important;
         }
         .footer {
             text-align: center;
-            color: #9b6c3d;
+            color: #ffe6e6;
             font-size: 0.9rem;
             margin-top: 3rem;
         }
@@ -48,7 +47,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========================== HEADER ==========================
-st.markdown("<h1 class='main-title'>☕ Pijjahut Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-title'>🍕 CoffeeVision Dashboard</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Deteksi Objek (Piring & Gelas) dan Klasifikasi Gambar (Pizza vs Not Pizza)</p>", unsafe_allow_html=True)
 st.markdown("---")
 
@@ -135,7 +134,6 @@ elif model_choice == "🍕 ResNet50 Classification":
             with st.spinner("Melakukan prediksi..."):
                 img_array = np.array(image.resize((128, 128)))
 
-                # Handle RGBA -> RGB
                 if img_array.shape[-1] == 4:
                     img_array = img_array[:, :, :3]
 
@@ -146,7 +144,6 @@ elif model_choice == "🍕 ResNet50 Classification":
                 predicted_class = np.argmax(predictions[0])
                 confidence = predictions[0][predicted_class]
 
-                # Label mapping
                 label_map = {0: "Not Pizza 🚫", 1: "Pizza 🍕"}
                 result_label = label_map.get(predicted_class, "Unknown")
 

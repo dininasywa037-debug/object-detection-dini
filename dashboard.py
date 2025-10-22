@@ -13,8 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (DIRETAIN) ==========================
-# (Mempertahankan semua custom CSS Anda)
+# ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -378,7 +377,6 @@ with tabs[0]:
     st.markdown("<h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2rem;'>Apa Kata Pengguna Kami</h3>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        # Menghilangkan bintang pada testimonial
         st.markdown("<div class='testimonial'>'Pizza di sini luar biasa. <span style='font-weight: bold;'>AI-nya sangat keren</span>; deteksi piringnya cepat dan tepat!' - Pengguna A, <span style='color:#ff5722;'>Food Blogger</span></div>", unsafe_allow_html=True)
         st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran.' - Pengguna B, <span style='color:#ff5722;'>Pelanggan Setia</span></div>", unsafe_allow_html=True)
     with col2:
@@ -459,7 +457,6 @@ with tabs[2]:
                         for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
                             if any(keyword in label.lower() for keyword in pizza_keywords):
                                 is_pizza = True
-                                # Menghilangkan bintang pada label hasil
                                 st.success(f"**#{i+1}: {label.replace('_', ' ').title()}** (Kepercayaan: **{confidence*100:.2f}%**)")
                             else:
                                 st.info(f"#{i+1}: {label.replace('_', ' ').title()} (Kepercayaan: {confidence*100:.2f}%)")
@@ -515,13 +512,11 @@ with tabs[3]:
         with col_rec1:
             st.markdown("### 🍕 Varian Pizza Wajib Coba")
             for item in menu['pizza_spesial']:
-                # Menghilangkan bintang pada item menu
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
         with col_rec2:
             st.markdown("### 🍹 Minuman & Dessert")
             for item in menu['dessert_minuman']:
-                # Menghilangkan bintang pada item menu
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
                 
     elif st.session_state['classification'] == 'not_pizza':
@@ -535,17 +530,29 @@ with tabs[3]:
         with col_rec1:
             st.markdown("### 🍝 Pilihan Non-Pizza Terbaik")
             for item in menu['non_pizza_spesial']:
-                # Menghilangkan bintang pada item menu
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
                 
         with col_rec2:
             st.markdown("### 🍰 Dessert untuk Melengkapi")
             for item in menu['dessert_minuman']:
-                # Menghilangkan bintang pada item menu
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
     else:
-        st.info("💡 <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.", unsafe_allow_html=True)
+        # Perbaikan TypeError: Mengganti st.info() dengan st.markdown() dan custom styling
+        st.markdown("""
+        <div style='
+            padding: 1rem;
+            border: 1px solid #00bcd4;
+            border-radius: 0.5rem;
+            background-color: #e0f7fa; 
+            text-align: center;
+            margin-top: 1rem;
+        '>
+            <p style='margin: 0; color: #00838f;'>
+                💡 <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # ----------------- KONTAK KAMI -----------------

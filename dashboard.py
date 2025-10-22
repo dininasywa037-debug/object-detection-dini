@@ -591,9 +591,7 @@ with tabs[4]:
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("### Lokasi Kami")
-    # Ganti URL ini dengan path gambar lokal jika diperlukan
-    st.image("https://images.unsplash.com/photo-1549448130-cf220197d0fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTgyNTZ8MHwxfHNlYXJjaHw3fHxpbnN0YWdyYW0lMjBwYWdlfGVufDB8fHx8MTcwNjgzMTU0OXww&ixlib=rb-4.0.3&q=80&w=1080", caption="Ikuti Kami di Media Sosial: @PijjahutAI", use_container_width=True)
+  
 
 
 # ----------------- TENTANG KAMI -----------------

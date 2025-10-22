@@ -406,7 +406,7 @@ with tabs[3]:  # Menu Rekomendasi
     st.markdown("<h2 class='section-title'>Rekomendasi Menu</h2>", unsafe_allow_html=True)
     if 'classification' in st.session_state:
         if st.session_state['classification'] == 'pizza':
-            st.markdown("""
+            st.markdown(""")
             <div class='card'>
                 <p style='font-size: 1.4rem;'>Karena gambar Anda terdeteksi sebagai pizza, kami rekomendasikan menu berikut:</p>
             </div>

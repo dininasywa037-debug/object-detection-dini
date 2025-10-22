@@ -325,20 +325,6 @@ st.markdown("""
             transform: translateY(-5px);
         }
 
-        /* Sidebar style */
-        .sidebar .sidebar-content {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            animation: slideInRight 2s ease-in-out;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
         /* Particle effect (simulasi) */
         .particle {
             position: absolute;
@@ -366,18 +352,6 @@ tabs = st.tabs(["🏠 Beranda", "🔍 Deteksi Objek", "🔮 Klasifikasi Gambar",
 
 # ========================== MAIN CONTENT BASED ON TABS ==========================
 with tabs[0]:  # 🏠 Beranda
-    # Sidebar di Beranda untuk Tentang Kami
-    with st.sidebar:
-        st.markdown("## ℹ️ Tentang Kami")
-        st.markdown("""
-        <div class='sidebar-content'>
-            <p>Pijjahut adalah restoran pizza inovatif yang menggunakan AI untuk mendeteksi objek dan mengklasifikasikan makanan. Kami percaya bahwa teknologi dapat meningkatkan pengalaman kuliner Anda!</p>
-            <p>🍕 <strong>Misi Kami:</strong> Menyediakan pizza berkualitas tinggi dengan sentuhan kecanggihan AI.</p>
-            <p>❤️ <strong>Tim Kami:</strong> Dibuat oleh Dini Arifatul Nasywa dengan cinta dan dedikasi.</p>
-            <p>🚀 Bergabunglah dengan kami untuk pengalaman kuliner yang unik dan tak terlupakan!</p>
-        </div>
-        """, unsafe_allow_html=True)
-
     st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut! 🎉</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -399,4 +373,27 @@ with tabs[0]:  # 🏠 Beranda
         st.markdown("<div class='testimonial'>'Pizza di sini luar biasa! AI-nya keren banget!' - User A 🍕</div>", unsafe_allow_html=True)
         st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi sangat akurat!' - User B 🔥</div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='testimonial'>'Deteksi objeknya cepat dan tepat!' - User C 🔍</div>", unsafe_allow)
+        st.markdown("<div class='testimonial'>'Deteksi objeknya cepat dan tepat!' - User C 🔍</div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>'Pengalaman kuliner yang inovatif!' - User D ❤️</div>", unsafe_allow_html=True)
+    
+    st.image("https://pin.it/6FRyOIyem", caption="Deteksi Piring & Gelas di Restoran Kami", use_container_width=True)
+
+with tabs[1]:  # 🔍 Deteksi Objek
+    st.markdown("<h2 class='section-title'>Deteksi Objek di Dapur Kami 🔍</h2>", unsafe_allow_html=True)
+    st.markdown("""
+    <div class='card'>
+        <p>Upload gambar piring atau gelas favorit Anda, dan biarkan AI kami mendeteksinya! Ini seperti memiliki koki pribadi yang memeriksa peralatan makan Anda. 🍽️</p>
+    </div>
+    """, unsafe_allow_html=True)
+    uploaded_file = st.file_uploader("📤 Upload Gambar Piring/Gelas", type=["jpg", "jpeg", "png"], key="yolo")
+
+    if uploaded_file:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="📷 Gambar Input Anda", use_container_width=True)
+
+        if st.button("🔍 Deteksi Sekarang!", type="primary", key="detect_obj"):
+            try:
+                yolo_model = YOLO('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
+                results = yolo_model(image)
+                result_img = results[0].plot()
+                st.image

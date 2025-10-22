@@ -32,7 +32,7 @@ st.markdown("""
 
         .main-title {
             text-align: center;
-            font-size: 12rem;
+            font-size: 18rem;
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;

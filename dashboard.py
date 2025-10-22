@@ -14,133 +14,157 @@ st.set_page_config(
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap'); /* Font menarik untuk judul */
+
         body, .stApp {
-            background: linear-gradient(135deg, #4e342e 0%, #3e2723 50%, #2c1810 100%); /* gradien coklat tua untuk suasana restaurant */
-            color: #fff8e1; /* teks krem terang */
+            background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%); /* gradien krem seperti tepung pizza */
+            color: #3e2723; /* teks coklat tua untuk kontras */
             font-family: 'Arial', sans-serif;
         }
 
         * {
-            color: #fff8e1 !important; /* semua teks jadi krem */
-            text-shadow: 1px 1px 2px #3e2723; /* efek timbul */
+            color: #3e2723 !important; /* semua teks jadi coklat tua */
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); /* efek timbul dengan bayangan putih */
         }
 
         .main-title {
             text-align: center;
-            font-size: 4rem;
+            font-size: 5rem; /* lebih besar */
             font-weight: 900;
-            color: #fffde7 !important;
-            text-shadow: 3px 3px 8px #3e2723;
+            font-family: 'Pacifico', cursive; /* font menarik */
+            color: #cc0000 !important; /* merah untuk judul agar menonjol */
+            text-shadow: 4px 4px 10px rgba(0,0,0,0.3), 0 0 20px rgba(204,0,0,0.5); /* efek timbul dan glow */
             margin-top: 1rem;
             margin-bottom: 0.5rem;
-            animation: fadeIn 2s ease-in-out;
+            animation: bounceIn 2s ease-in-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .subtitle {
             text-align: center;
-            color: #fff8e1 !important;
-            font-size: 1.4rem;
+            color: #5d4037 !important; /* coklat lebih gelap */
+            font-size: 1.6rem;
             margin-bottom: 2rem;
             font-style: italic;
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
         }
 
         .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #fffde7 !important;
-            text-shadow: 2px 2px 4px #3e2723;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #cc0000 !important; /* merah untuk judul section */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
             margin-top: 2rem;
             text-align: center;
+            font-family: 'Pacifico', cursive;
         }
 
         /* Button style */
         .stButton > button {
-            background: linear-gradient(45deg, #cc0000, #b71c1c) !important;
-            color: #fff8e1 !important;
-            border-radius: 15px !important;
+            background: linear-gradient(45deg, #ff5722, #e64a19) !important; /* oranye-merah untuk tombol */
+            color: #fff !important;
+            border-radius: 20px !important;
             font-weight: 700 !important;
-            padding: 0.8rem 1.5rem !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
+            padding: 1rem 2rem !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.4s ease;
+            font-size: 1.1rem;
         }
 
         .stButton > button:hover {
-            background: linear-gradient(45deg, #b71c1c, #8b0000) !important;
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.7);
+            background: linear-gradient(45deg, #e64a19, #bf360c) !important;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
 
         /* Metric cards */
         [data-testid="stMetricValue"], [data-testid="stMetricDelta"], [data-testid="stMetricLabel"] {
-            color: #fffde7 !important;
-            text-shadow: 1px 1px 3px #3e2723;
+            color: #3e2723 !important;
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.5);
         }
 
         /* Expander text */
         .streamlit-expanderHeader, .streamlit-expanderContent {
-            color: #fff8e1 !important;
+            color: #3e2723 !important;
         }
 
         /* Upload box */
         [data-testid="stFileUploader"] label {
-            color: #fff8e1 !important;
+            color: #3e2723 !important;
             font-weight: 600;
         }
 
         /* Footer */
         .footer {
             text-align: center;
-            color: #fff8e1;
-            font-size: 1rem;
+            color: #5d4037;
+            font-size: 1.1rem;
             margin-top: 3rem;
-            text-shadow: 1px 1px 3px #3e2723;
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
         }
 
         /* Divider line */
         hr {
-            border: 2px solid #fff8e155;
-            border-radius: 5px;
+            border: 3px solid #d7ccc8;
+            border-radius: 10px;
         }
 
         /* Card style for sections */
         .card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             margin-bottom: 2rem;
+            border: 2px solid #d7ccc8;
         }
 
         /* Menu recommendation */
         .menu-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 1rem;
+            background: rgba(255, 248, 220, 0.9);
+            border-radius: 15px;
+            padding: 1.5rem;
             margin: 0.5rem 0;
             text-align: center;
             font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
         }
 
         /* Tabs style */
         .stTabs [data-baseweb="tab-list"] {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
             padding: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .stTabs [data-baseweb="tab"] {
-            color: #fff8e1 !important;
+            color: #3e2723 !important;
             font-weight: 600;
+            font-size: 1.1rem;
         }
 
         .stTabs [data-baseweb="tab"][aria-selected="true"] {
-            background-color: #cc0000 !important;
-            color: #fffde7 !important;
+            background-color: #ff5722 !important;
+            color: #fff !important;
+            border-radius: 10px;
+        }
+
+        /* Image styling */
+        img {
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -158,7 +182,7 @@ with tabs[0]:  # 🏠 Beranda
     st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut! 🎉</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem;'>Di sini, kami menggabungkan kecanggihan AI dengan cita rasa pizza yang luar biasa! Upload gambar piring atau gelas Anda untuk deteksi objek, atau klasifikasikan apakah itu pizza atau bukan. Berdasarkan hasilnya, kami rekomendasikan menu spesial untuk Anda!</p>
+        <p style='font-size: 1.3rem;'>Di sini, kami menggabungkan kecanggihan AI dengan cita rasa pizza yang luar biasa! Upload gambar piring atau gelas Anda untuk deteksi objek, atau klasifikasikan apakah itu pizza atau bukan. Berdasarkan hasilnya, kami rekomendasikan menu spesial untuk Anda!</p>
         <p>🍕 <strong>Fitur Utama:</strong></p>
         <ul>
             <li>🔍 Deteksi Piring & Gelas dengan YOLO</li>
@@ -285,7 +309,7 @@ with tabs[5]:  # ℹ️ Tentang Kami
     st.markdown("<h2 class='section-title'>Tentang Kami ℹ️</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem;'>Pijjahut adalah restoran pizza inovatif yang menggunakan AI untuk mendeteksi objek dan mengklasifikasikan makanan. Kami percaya bahwa teknologi dapat meningkatkan pengalaman kuliner Anda!</p>
+        <p style='font-size: 1.3rem;'>Pijjahut adalah restoran pizza inovatif yang menggunakan AI untuk mendeteksi objek dan mengklasifikasikan makanan. Kami percaya bahwa teknologi dapat meningkatkan pengalaman kuliner Anda!</p>
         <p>🍕 <strong>Misi Kami:</strong> Menyediakan pizza berkualitas tinggi dengan sentuhan kecanggihan AI.</p>
         <p>❤️ <strong>Tim Kami:</strong> Dibuat oleh Dini Arifatul Nasywa dengan cinta dan dedikasi.</p>
         <p>🚀 Bergabunglah dengan kami untuk pengalaman kuliner yang unik dan tak terlupakan!</p>

@@ -99,7 +99,7 @@ elif model_choice == "TensorFlow - ResNet50":
         @st.cache_resource
         def load_tensorflow():
             return tf.keras.models.load_model(
-                'model/BISMILLAHDINI_Laporan2.h5',
+                'model/BISMILLAHDINI2_Laporan2.h5',
                 compile=False
             )
         
@@ -120,7 +120,7 @@ elif model_choice == "TensorFlow - ResNet50":
                 import keras
                 keras.config.disable_traceback_filtering()
                 return tf.keras.models.load_model(
-                    'model/BISMILLAHDINI_Laporan2.h5',
+                    'model/BISMILLAHDINI2_Laporan2.h5',
                     compile=False,
                     safe_mode=False
                 )

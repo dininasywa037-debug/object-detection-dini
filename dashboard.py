@@ -19,7 +19,7 @@ st.markdown("""
             text-align: left;
             font-size: 3rem;
             font-weight: 800;
-            color: #fff176;  /* kuning cerah */
+            color: #fff176;
             margin-top: 1rem;
             margin-bottom: 0.2rem;
         }
@@ -71,19 +71,19 @@ col1, col2 = st.columns(2, gap="large")
 
 with col1:
     st.markdown("<h2 class='section-title'>Deteksi Objek</h2>", unsafe_allow_html=True)
-    st.image("https://pin.it/6FRyOIyem", caption="Deteksi Piring & Gelas", use_column_width=True)
+    st.image("https://pin.it/6FRyOIyem", caption="Deteksi Piring & Gelas", use_container_width=True)
     uploaded_file = st.file_uploader("Upload gambar untuk deteksi objek", type=["jpg", "jpeg", "png"], key="yolo")
 
     if uploaded_file:
         image = Image.open(uploaded_file)
-        st.image(image, caption="📷 Gambar Input", use_column_width=True)
+        st.image(image, caption="📷 Gambar Input", use_container_width=True)
 
         if st.button("🔍 Deteksi Objek", type="primary", key="detect_obj"):
             try:
                 yolo_model = YOLO('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
                 results = yolo_model(image)
                 result_img = results[0].plot()
-                st.image(result_img, caption="🎯 Hasil Deteksi", use_column_width=True)
+                st.image(result_img, caption="🎯 Hasil Deteksi", use_container_width=True)
                 st.subheader("📋 Detail Deteksi")
                 boxes = results[0].boxes
                 if len(boxes) > 0:
@@ -102,12 +102,12 @@ with col1:
 
 with col2:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar</h2>", unsafe_allow_html=True)
-    st.image("https://pin.it/5tBvmbECo", caption="Klasifikasi Pizza / Not Pizza", use_column_width=True)
+    st.image("https://pin.it/5tBvmbECo", caption="Klasifikasi Pizza / Not Pizza", use_container_width=True)
     uploaded_file_tf = st.file_uploader("Upload gambar untuk klasifikasi", type=["jpg", "jpeg", "png"], key="tf")
 
     if uploaded_file_tf:
         image_tf = Image.open(uploaded_file_tf)
-        st.image(image_tf, caption="📷 Gambar Input", use_column_width=True)
+        st.image(image_tf, caption="📷 Gambar Input", use_container_width=True)
 
         if st.button("🔮 Prediksi Kelas", type="primary", key="predict_tf"):
             try:

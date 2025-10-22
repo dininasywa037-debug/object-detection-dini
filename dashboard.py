@@ -14,12 +14,17 @@ st.set_page_config(
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
-        body { background-color: #ff4d4d; }
+        body {
+            background-color: #4e342e; /* coklat tua */
+        }
+        .stApp {
+            background-color: #4e342e; /* pastikan konten utama juga coklat */
+        }
         .main-title {
             text-align: left;
             font-size: 3rem;
             font-weight: 800;
-            color: #fff176;
+            color: #fff176;  /* kuning cerah */
             margin-top: 1rem;
             margin-bottom: 0.2rem;
         }

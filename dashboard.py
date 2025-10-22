@@ -378,11 +378,11 @@ with tabs[0]:
     st.markdown("<h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2rem;'>Apa Kata Pengguna Kami</h3>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("<div class='testimonial'>'Pizza di sini luar biasa. <span style='font-weight: bold;'>AI-nya sangat keren</span>; deteksi piringnya cepat dan tepat!' - Balqis, <span style='color:#ff5722;'>Food Blogger</span></div>", unsafe_allow_html=True)
-        st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran.' - Syira, <span style='color:#ff5722;'>Pelanggan Setia</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>"Pizza di sini luar biasa. <span style='font-weight: bold;'>AI-nya sangat keren</span>, deteksi piringnya cepat dan tepat!" - Balqis, <span style='color:#ff5722;'>Food Blogger</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>"Rekomendasi menu berdasarkan klasifikasi <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran." - Syira, <span style='color:#ff5722;'>Pelanggan Setia</span></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='testimonial'>'Mengunggah foto dan langsung tahu itu pizza atau bukan. <span style='font-weight: bold;'>Pengalaman kuliner yang inovatif</span>.' - Oja, <span style='color:#ff5722;'>Tech Enthusiast</span></div>", unsafe_allow_html=True)
-        st.markdown("<div class='testimonial'>'Desain web yang cantik dan fungsional. Saya suka <span style='font-weight: bold;'>estetika Pijjahut</span>!' - Marlin, <span style='color:#ff5722;'>Desainer Grafis</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>"Mengunggah foto dan langsung tahu itu pizza atau bukan. <span style='font-weight: bold;'>Pengalaman kuliner yang inovatif</span>." - Oja, <span style='color:#ff5722;'>Tech Enthusiast</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>"Desain web yang cantik dan fungsional. Saya suka <span style='font-weight: bold;'>estetika Pijjahut</span>!" - Marlin, <span style='color:#ff5722;'>Desainer Grafis</span></div>", unsafe_allow_html=True)
     
 
 # ----------------- DETEKSI OBJEK -----------------

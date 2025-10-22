@@ -464,6 +464,7 @@ with tabs[2]:
                         # LOGIKA PENENTUAN KLASIFIKASI
                         is_pizza = False
                         # Daftar keyword yang dianggap sebagai "Pizza"
+                        # Termasuk 'hot_dog' dan 'bagel' karena terkadang model pre-trained salah mengartikan makanan serupa sebagai 'pizza'
                         pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
                         
                         # Cek apakah ada keyword "pizza" di Top 5 prediksi
@@ -488,9 +489,10 @@ with tabs[2]:
                             st.markdown(f"---")
                             st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
                         
-                        with st.expander("Lihat Detail Prediksi (Top 5)"):
-                            for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
-                                st.write(f"{i+1}. {label.capitalize()} (Confidence: {confidence*100:.2f}%)")
+                        # BAGIAN INI DIHAPUS SESUAI PERMINTAAN PENGGUNA
+                        # with st.expander("Lihat Detail Prediksi (Top 5)"):
+                        #     for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
+                        #         st.write(f"{i+1}. {label.capitalize()} (Confidence: {confidence*100:.2f}%)")
 
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat klasifikasi: {e}")

@@ -14,54 +14,85 @@ st.set_page_config(
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
-        body {
+        body, .stApp {
             background-color: #4e342e; /* coklat tua */
+            color: #fff8e1; /* teks krem terang */
         }
-        .stApp {
-            background-color: #4e342e; /* pastikan konten utama juga coklat */
+
+        * {
+            color: #fff8e1 !important; /* semua teks jadi krem */
+            text-shadow: 1px 1px 2px #3e2723; /* efek timbul */
         }
+
         .main-title {
             text-align: left;
             font-size: 3rem;
             font-weight: 800;
-            color: #fff176;  /* kuning cerah */
+            color: #fffde7 !important;
+            text-shadow: 2px 2px 6px #3e2723;
             margin-top: 1rem;
             margin-bottom: 0.2rem;
         }
+
         .subtitle {
             text-align: left;
-            color: #ffe6a1;
+            color: #fff8e1 !important;
             font-size: 1.2rem;
             margin-bottom: 2rem;
         }
+
         .section-title {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #fff176;
+            color: #fffde7 !important;
+            text-shadow: 1px 1px 3px #3e2723;
             margin-top: 1rem;
         }
+
+        /* Button style */
         .stButton > button {
             background-color: #cc0000 !important;
-            color: white !important;
+            color: #fff8e1 !important;
             border-radius: 10px !important;
-            font-weight: 600 !important;
+            font-weight: 700 !important;
             padding: 0.6rem 1.2rem !important;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.4);
         }
+
         .stButton > button:hover {
-            background-color: #990000 !important;
+            background-color: #b71c1c !important;
+            transform: scale(1.03);
+            transition: 0.2s ease-in-out;
         }
+
+        /* Metric cards */
+        [data-testid="stMetricValue"], [data-testid="stMetricDelta"], [data-testid="stMetricLabel"] {
+            color: #fffde7 !important;
+            text-shadow: 1px 1px 3px #3e2723;
+        }
+
+        /* Expander text */
+        .streamlit-expanderHeader, .streamlit-expanderContent {
+            color: #fff8e1 !important;
+        }
+
+        /* Upload box */
+        [data-testid="stFileUploader"] label {
+            color: #fff8e1 !important;
+        }
+
+        /* Footer */
         .footer {
             text-align: center;
-            color: #ffe6a1;
+            color: #fff8e1;
             font-size: 0.9rem;
             margin-top: 3rem;
+            text-shadow: 1px 1px 3px #3e2723;
         }
-        .section-img {
-            border-radius: 15px;
-            width: 100%;
-        }
-        .columns-container {
-            margin-bottom: 2rem;
+
+        /* Divider line */
+        hr {
+            border: 1px solid #fff8e155;
         }
     </style>
 """, unsafe_allow_html=True)

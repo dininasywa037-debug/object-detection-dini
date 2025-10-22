@@ -71,7 +71,7 @@ col1, col2 = st.columns(2, gap="large")
 
 with col1:
     st.markdown("<h2 class='section-title'>Deteksi Objek</h2>", unsafe_allow_html=True)
-    st.image("/mnt/data/55ddf464-7c74-4947-ae20-788ac602c236.png", caption="Deteksi Piring & Gelas", use_column_width=True)
+    st.image("https://pin.it/6FRyOIyem", caption="Deteksi Piring & Gelas", use_column_width=True)
     uploaded_file = st.file_uploader("Upload gambar untuk deteksi objek", type=["jpg", "jpeg", "png"], key="yolo")
 
     if uploaded_file:
@@ -102,7 +102,7 @@ with col1:
 
 with col2:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar</h2>", unsafe_allow_html=True)
-    st.image("/mnt/data/55ddf464-7c74-4947-ae20-788ac602c236.png", caption="Klasifikasi Pizza / Not Pizza", use_column_width=True)
+    st.image("https://pin.it/5tBvmbECo", caption="Klasifikasi Pizza / Not Pizza", use_column_width=True)
     uploaded_file_tf = st.file_uploader("Upload gambar untuk klasifikasi", type=["jpg", "jpeg", "png"], key="tf")
 
     if uploaded_file_tf:

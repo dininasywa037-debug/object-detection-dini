@@ -218,12 +218,12 @@ def load_yolo_model(path):
 @st.cache_resource
 def load_classification_model():
     # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA (Sudah diubah)
-    MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' 
+    MODEL_PATH = 'model/BISMILLAHDINI_Laporan2.h5' 
     
     # Cek keberadaan file sebelum memuat
     if not os.path.exists(MODEL_PATH):
         st.error(f"❌ File model klasifikasi TIDAK DITEMUKAN di: '{MODEL_PATH}'.")
-        st.error("Pastikan file BISMILLAHDINI2_Laporan2.h5 ada di dalam folder 'model'.")
+        st.error("Pastikan file BISMILLAHDINI_Laporan2.h5 ada di dalam folder 'model'.")
         return None
 
     try:

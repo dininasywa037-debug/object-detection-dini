@@ -284,7 +284,7 @@ with tabs[0]:
 
 
     st.markdown("---")
-    st.markdown("<h3 style='text-align: center; color: #5d4037; font-family: Pacifico, cursive; font-size: 2.2rem; margin-bottom: 1.5rem;'>Fitur Canggih Kami</h3>", unsafe_allow_html=True)
+    st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Fitur Canggih Kami</h2>", unsafe_allow_html=True)
     # Bagian Fitur Canggih (3 Kolom)
     col_feat1, col_feat2, col_feat3 = st.columns(3)
     

@@ -181,6 +181,10 @@ if 'classification_final_result' not in st.session_state:
     st.session_state['classification_final_result'] = None
 if 'classification_image_input' not in st.session_state:
     st.session_state['classification_image_input'] = None
+if 'uploaded_file_deteksi' not in st.session_state:
+    st.session_state['uploaded_file_deteksi'] = None
+if 'uploaded_file_klasifikasi' not in st.session_state:
+    st.session_state['uploaded_file_klasifikasi'] = None
 
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
@@ -273,38 +277,45 @@ with tabs[1]:
     yolo_model = load_yolo_model(YOLO_MODEL_PATH)
     
     if yolo_model:
-        uploaded_file = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo")
+        
+        # Kolom untuk Input (Uploader & Tombol) dan Output (Gambar)
+        col_input_deteksi, col_output_deteksi = st.columns(2) 
 
-        col_input, col_output = st.columns(2) 
-        
-        # Logika reset state deteksi
-        if uploaded_file is None:
-            st.session_state['detection_result_img'] = None
-        
-        if uploaded_file:
-            image = Image.open(uploaded_file)
+        # --- Bagian Input ---
+        with col_input_deteksi:
+            # Menggunakan key untuk memastikan uploader berbeda
+            uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
             
-            with col_input:
+            # Reset hasil jika file baru diupload atau dihapus
+            if uploaded_file_deteksi != st.session_state.uploaded_file_deteksi:
+                st.session_state['detection_result_img'] = None
+                st.session_state.uploaded_file_deteksi = uploaded_file_deteksi
+
+            if uploaded_file_deteksi:
+                image = Image.open(uploaded_file_deteksi)
                 st.image(image, caption="Gambar Input Anda", use_container_width=True)
 
-            if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
-                with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
-                    try:
-                        results = yolo_model(image)
-                        result_img = results[0].plot()  
-                        result_img_rgb = Image.fromarray(result_img[..., ::-1])
-                        
-                        # Simpan hasil ke session state
-                        st.session_state['detection_result_img'] = result_img_rgb
+                if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
+                    with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
+                        try:
+                            results = yolo_model(image)
+                            result_img = results[0].plot()  
+                            result_img_rgb = Image.fromarray(result_img[..., ::-1])
+                            
+                            # Simpan hasil ke session state
+                            st.session_state['detection_result_img'] = result_img_rgb
+                            st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
+                        except Exception as e:
+                            st.error(f"Terjadi kesalahan saat deteksi: {e}. Pastikan format gambar dan model benar.")
 
-                        st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
-                    except Exception as e:
-                        st.error(f"Terjadi kesalahan saat deteksi: {e}. Pastikan format gambar dan model benar.")
-        
-        # Tampilkan output hanya jika ada di session state
-        if st.session_state['detection_result_img'] is not None:
-            with col_output:
+        # --- Bagian Output ---
+        with col_output_deteksi:
+            # Tampilkan output hanya jika ada di session state
+            if st.session_state['detection_result_img'] is not None:
                 st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
+            else:
+                 # Placeholder saat belum ada hasil
+                st.markdown("<div style='height: 300px; border: 2px dashed #ff5722; border-radius: 15px; text-align: center; padding-top: 100px; color: #ff5722; font-weight: bold;'>HASIL DETEKSI AKAN MUNCUL DI SINI</div>", unsafe_allow_html=True)
     else:
         st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
 
@@ -321,67 +332,71 @@ with tabs[2]:
     classification_model = load_classification_model()
     
     if classification_model:
-        uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify")
-
-        col_class_input, col_class_output = st.columns(2)
         
-        # Logika reset state klasifikasi
-        if uploaded_file_class is None:
-            st.session_state['classification_final_result'] = None
-            st.session_state['classification_image_input'] = None
+        col_class_input, col_class_output = st.columns(2)
 
-        if uploaded_file_class:
-            image_pil = Image.open(uploaded_file_class)
-            image_class_resized = image_pil.resize((224, 224))
-            
-            # Simpan input yang diredimension ke session state untuk ditampilkan
-            st.session_state['classification_image_input'] = image_class_resized
-            
-            with col_class_input:
+        # --- Bagian Input ---
+        with col_class_input:
+            uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
+
+            # Reset hasil jika file baru diupload atau dihapus
+            if uploaded_file_class != st.session_state.uploaded_file_klasifikasi:
+                st.session_state['classification_final_result'] = None
+                st.session_state['classification_image_input'] = None
+                st.session_state.uploaded_file_klasifikasi = uploaded_file_class
+
+            if uploaded_file_class:
+                image_pil = Image.open(uploaded_file_class)
+                image_class_resized = image_pil.resize((224, 224))
+                
+                # Simpan input yang diredimension ke session state untuk ditampilkan
+                st.session_state['classification_image_input'] = image_class_resized
+                
                 st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
 
-            if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
-                with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
-                    try:
-                        img_array = np.array(image_class_resized)
-                        if img_array.ndim == 2:
-                            img_array = np.stack((img_array,)*3, axis=-1)
-                        if img_array.shape[2] == 4:
-                            img_array = img_array[:,:,:3] 
+                if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
+                    with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
+                        try:
+                            img_array = np.array(image_class_resized)
+                            if img_array.ndim == 2:
+                                img_array = np.stack((img_array,)*3, axis=-1)
+                            if img_array.shape[2] == 4:
+                                img_array = img_array[:,:,:3] 
 
-                        preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
-                        
-                        predictions = classification_model.predict(preprocessed_img)
-                        decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
-                        
-                        is_pizza = False
-                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
-                        
-                        for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
-                            if any(keyword in label.lower() for keyword in pizza_keywords):
-                                is_pizza = True
-                                
-                        
-                        # Simpan hasil akhir ke session state
-                        if is_pizza:
-                            final_result = "Pizza"
-                            st.session_state['classification'] = 'pizza'
-                            st.balloons()
-                        else:
-                            final_result = "Bukan Pizza"
-                            st.session_state['classification'] = 'not_pizza'
-                            st.snow()
-                        
-                        st.session_state['classification_final_result'] = final_result
-                        
-                    except Exception as e:
-                        st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
-        
-        # Tampilkan output klasifikasi hanya jika ada di session state
-        if st.session_state['classification_final_result'] is not None:
-            final_result = st.session_state['classification_final_result']
-            
-            with col_class_output:
+                            preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
+                            
+                            predictions = classification_model.predict(preprocessed_img)
+                            decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
+                            
+                            is_pizza = False
+                            pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
+                            
+                            for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
+                                if any(keyword in label.lower() for keyword in pizza_keywords):
+                                    is_pizza = True
+                                    
+                            
+                            # Simpan hasil akhir ke session state
+                            if is_pizza:
+                                final_result = "Pizza"
+                                st.session_state['classification'] = 'pizza'
+                                st.balloons()
+                            else:
+                                final_result = "Bukan Pizza"
+                                st.session_state['classification'] = 'not_pizza'
+                                st.snow()
+                            
+                            st.session_state['classification_final_result'] = final_result
+                            
+                        except Exception as e:
+                            st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
+
+        # --- Bagian Output ---
+        with col_class_output:
+            # Tampilkan output klasifikasi hanya jika ada di session state
+            if st.session_state['classification_final_result'] is not None:
+                final_result = st.session_state['classification_final_result']
+                
                 st.markdown("### Hasil Klasifikasi AI")
                 
                 if final_result == "Pizza":
@@ -391,6 +406,9 @@ with tabs[2]:
 
                 st.markdown(f"---")
                 st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
+            else:
+                # Placeholder saat belum ada hasil
+                st.markdown("<div style='height: 300px; border: 2px dashed #ff5722; border-radius: 15px; text-align: center; padding-top: 100px; color: #ff5722; font-weight: bold;'>HASIL KLASIFIKASI AKAN MUNCUL DI SINI</div>", unsafe_allow_html=True)
 
     else:
         st.warning("Model Klasifikasi (ResNet50) tidak dapat dimuat. Pastikan TensorFlow terinstal dengan benar dan weights ImageNet dapat diakses.")
@@ -399,7 +417,6 @@ with tabs[2]:
 # ----------------- MENU REKOMENDASI -----------------
 with tabs[3]:
     st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🌟</h2>", unsafe_allow_html=True)
-    # FIX: Koreksi dari unsafe_allow_allow_html=True menjadi unsafe_allow_html=True
     st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_html=True)
     
     menu = {

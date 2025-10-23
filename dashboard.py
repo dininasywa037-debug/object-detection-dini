@@ -110,7 +110,7 @@ st.markdown("""
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 45px;
+            letter-spacing: 12px;
         }
         /* ============================================ */
 
@@ -146,17 +146,22 @@ st.markdown("""
             position: relative;
             overflow: hidden;
         }
+        /* === PERUBAHAN UTAMA: Menyeragamkan border pada elemen Card === */
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 2rem;
-            border: 3px solid #d7ccc8;
+            /* Border default untuk card di tab manapun */
+            border: 3px solid #ff5722; 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
         }
+        /* === AKHIR PERUBAHAN CARD === */
+        
+        /* Menu Item (Digunakan untuk Testimoni dan Fitur Canggih) */
         .menu-item {
             background: linear-gradient(45deg, rgba(255, 248, 220, 0.95), rgba(255, 235, 204, 0.95));
             border-radius: 20px;
@@ -168,9 +173,8 @@ st.markdown("""
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             font-size: 1.1rem;
             position: relative;
-            /* === Border yang diminta user === */
+            /* Border yang seragam untuk menu item */
             border: 2px solid #ff5722; 
-            /* ============================== */
         }
         
         /* CUSTOM CSS FILE UPLOADER */
@@ -245,7 +249,7 @@ st.markdown("""
 
 # ========================== HEADER ==========================
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_allow_html=True)
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================
@@ -327,7 +331,7 @@ with tabs[0]:
     clear_inactive_results(0)
     st.markdown("<h2 class='section-title'>Jelajahi Inovasi AI Kuliner</h2>", unsafe_allow_html=True)
     
-    # KARTU SAMBUTAN
+    # KARTU SAMBUTAN (Menggunakan .card yang sudah diseragamkan)
     st.markdown(f"""
     <div class='card' style='background: linear-gradient(180deg, #ffeedd 0%, #fffaf0 100%); border-color: #ff9800;'>
         <p style='font-size: 1.5rem; text-align: center; color: #3e2723;'>
@@ -340,7 +344,7 @@ with tabs[0]:
     </div>
     """, unsafe_allow_html=True)
     
-    # Bagian Apa Kata Pengguna Kami (Tanpa Testimoni Dinamis)
+    # Bagian Apa Kata Pengguna Kami (Menggunakan .menu-item yang sudah diseragamkan)
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Apa Kata Pengguna Kami</h2>", unsafe_allow_html=True)
     
     # Konten Testimoni yang di-hardcode
@@ -391,7 +395,7 @@ with tabs[0]:
     # Judul Fitur Canggih Kami
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Fitur Canggih Kami</h2>", unsafe_allow_html=True)
     
-    # Bagian Fitur Canggih (3 Kolom)
+    # Bagian Fitur Canggih (3 Kolom) - Menggunakan .menu-item yang sudah diseragamkan
     col_feat1, col_feat2, col_feat3 = st.columns(3)
     
     with col_feat1:
@@ -428,6 +432,7 @@ with tabs[0]:
 with tabs[1]:
     clear_inactive_results(1)
     st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)
+    # CARD DETEKSI (Menggunakan .card yang sudah diseragamkan)
     st.markdown("""
     <div class='card'>
         <p>Kami menggunakan model <span style='font-weight: bold;'>YOLO (You Only Look Once)</span> yang canggih untuk mengidentifikasi <span style='font-weight: bold;'>Piring</span> dan <span style='font-weight: bold;'>Gelas</span>. Coba upload gambar peralatan makan Anda, dan saksikan AI kami bekerja!</p>
@@ -482,6 +487,7 @@ with tabs[1]:
 with tabs[2]:
     clear_inactive_results(2)
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
+    # CARD KLASIFIKASI (Menggunakan .card yang sudah diseragamkan)
     st.markdown("""
     <div class='card'>
         <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom (BISMILLAHDINI_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
@@ -608,6 +614,7 @@ with tabs[3]:
     col_rec1, col_rec2 = st.columns(2)
     
     if st.session_state['classification'] == 'pizza':
+        # CARD REKOMENDASI (Menggunakan .card yang sudah diseragamkan)
         st.markdown("""
         <div class='card' style='background: linear-gradient(45deg, #ffe0b2, #ffcc80); border-color: #ff9800;'>
             <p style='font-size: 1.5rem; text-align: center; color: #d84315; font-weight: bold;'>🎉 Gambar Anda adalah <span style='font-weight: bold;'>PIZZA</span>! 🎉</p>
@@ -618,14 +625,17 @@ with tabs[3]:
         with col_rec1:
             st.markdown("### 🍕 Varian Pizza Wajib Coba")
             for item in menu['pizza_spesial']:
+                # Menggunakan .menu-item yang sudah diseragamkan
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
         with col_rec2:
             st.markdown("### 🍹 Minuman & Dessert")
             for item in menu['dessert_minuman']:
+                # Menggunakan .menu-item yang sudah diseragamkan
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
     elif st.session_state['classification'] == 'not_pizza':
+        # CARD REKOMENDASI (Menggunakan .card yang sudah diseragamkan)
         st.markdown("""
         <div class='card' style='background: linear-gradient(45deg, #e1f5fe, #b3e5fc); border-color: #0288d1;'>
             <p style='font-size: 1.5rem; text-align: center; color: #01579b; font-weight: bold;'>🥗 Gambar Anda <span style='font-weight: bold;'>BUKAN PIZZA</span>!</p>
@@ -636,14 +646,17 @@ with tabs[3]:
         with col_rec1:
             st.markdown("### 🍝 Pilihan Non-Pizza Terbaik")
             for item in menu['non_pizza_spesial']:
+                # Menggunakan .menu-item yang sudah diseragamkan
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
         with col_rec2:
             st.markdown("### 🍰 Dessert untuk Melengkapi")
             for item in menu['dessert_minuman']:
+                # Menggunakan .menu-item yang sudah diseragamkan
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
     else:
+        # Alert warning (menggunakan border kustom)
         st.markdown("""
         <div class='recommendation-alert'>
             <p>
@@ -658,9 +671,10 @@ with tabs[3]:
 with tabs[4]:
     clear_inactive_results(4)
     st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
+    # CARD KONTAK (Menggunakan .card yang sudah diseragamkan)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut!</p>
+        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut.</p>
         <div class='contact-info'>
             <p><span style='font-weight: bold;'>📍 Alamat:</span> Jl. Digitalisasi No. 101, Kota Streamlit, Kode Pos 404 </p>
             <p><span style='font-weight: bold;'>📞 Telepon:</span> (021) 123-PIZZA (74992)</p>
@@ -674,6 +688,7 @@ with tabs[4]:
 with tabs[5]:
     clear_inactive_results(5)
     st.markdown("<h2 class='section-title'>Tentang Pijjahut ℹ️</h2>", unsafe_allow_html=True)
+    # CARD TENTANG KAMI (Menggunakan .card yang sudah diseragamkan)
     st.markdown(f"""
     <div class='card'>
         <p style='font-size: 1.4rem;'>Pijjahut didirikan dengan visi untuk membawa teknologi <span style='font-weight: bold;'>Kecerdasan Buatan</span> ke ranah kuliner. Kami percaya bahwa data dan algoritma dapat meningkatkan pengalaman bersantap Anda.</p>

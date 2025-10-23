@@ -69,7 +69,7 @@ st.markdown("""
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 15px; 
+            letter-spacing: 25px; 
         }
         
         .subtitle {

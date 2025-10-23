@@ -397,7 +397,7 @@ with tabs[2]:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (BISMILLAHDINI2_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
+        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (BISMILLAHDINI_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
     </div>
     """, unsafe_allow_html=True)
     

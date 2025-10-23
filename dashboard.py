@@ -281,10 +281,10 @@ with tabs[0]:
     
     # Data Testimoni
     testimonials = [
-        ("Balfis, Food Blogger", "Pizza di luar biasa. **AI-nya sangat keren**, deteksi piringnya cepat dan tepat!"),
-        ("Oija, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. **Pengalaman kuliner yang inovatif**!"),
-        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi **sangat akurat** dan bikin penasaran."),
-        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka **estetika Pijjahut**!")
+        ("Balqis, Food Blogger", "Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"),
+        ("Oja, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!"),
+        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran."),
+        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!")
     ]
 
     for i, (col, (author, quote)) in enumerate(zip([col_k1, col_k2, col_k3, col_k4], testimonials)):

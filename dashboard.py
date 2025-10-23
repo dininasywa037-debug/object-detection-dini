@@ -295,7 +295,7 @@ with tabs[0]:
     st.markdown("<br><br>", unsafe_allow_html=True) 
     
 
-# ----------------- DETEKSI OBJEK -----------------
+# ----------------- DETEKSI OBJEK (Input dan Output HORIZONTAL) -----------------
 with tabs[1]:
     clear_inactive_results(1)
     st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)
@@ -310,6 +310,7 @@ with tabs[1]:
     
     if yolo_model:
         
+        # Kolom untuk Input dan Output (Sejajar Horizontal)
         col_input_deteksi, col_output_deteksi = st.columns(2) 
 
         # --- Bagian Input ---
@@ -342,16 +343,20 @@ with tabs[1]:
 
         # --- Bagian Output ---
         with col_output_deteksi:
+            st.markdown("### Hasil Deteksi")
             if st.session_state.get('detection_result_img') is not None:
                 st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
+            elif uploaded_file_deteksi:
+                 # SPASI KOSONG (setinggi 300px jika belum ada hasil deteksi)
+                 st.markdown("<div style='height: 300px; border: 2px dashed #d7ccc8; border-radius: 15px;'></div>", unsafe_allow_html=True)
             else:
-                 # SPASI KOSONG PENGGANTI PLACEHOLDER TEKS
+                # SPASI KOSONG (menjaga layout kolom tetap sama tingginya)
                 st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True) 
     else:
         st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
 
 
-# ----------------- KLASIFIKASI GAMBAR -----------------
+# ----------------- KLASIFIKASI GAMBAR (Input dan Output VERTIKAL) -----------------
 with tabs[2]:
     clear_inactive_results(2)
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
@@ -365,79 +370,76 @@ with tabs[2]:
     
     if classification_model:
         
-        col_class_input, col_class_output = st.columns(2)
+        # --- Bagian Input (FULL WIDTH) ---
+        uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
 
-        # --- Bagian Input ---
-        with col_class_input:
-            uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
+        # PENTING: Logika reset hasil jika file baru diupload atau dihapus
+        if st.session_state.get('last_classify_uploader') != uploaded_file_class:
+            st.session_state['classification_final_result'] = None
+            st.session_state['classification_image_input'] = None
+            st.session_state['last_classify_uploader'] = uploaded_file_class # Update tracker
 
-            # PENTING: Logika reset hasil jika file baru diupload atau dihapus
-            if st.session_state.get('last_classify_uploader') != uploaded_file_class:
-                st.session_state['classification_final_result'] = None
-                st.session_state['classification_image_input'] = None
-                st.session_state['last_classify_uploader'] = uploaded_file_class # Update tracker
+        if uploaded_file_class:
+            image_pil = Image.open(uploaded_file_class)
+            image_class_resized = image_pil.resize((224, 224))
+            
+            st.session_state['classification_image_input'] = image_class_resized
+            
+            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
 
-            if uploaded_file_class:
-                image_pil = Image.open(uploaded_file_class)
-                image_class_resized = image_pil.resize((224, 224))
-                
-                st.session_state['classification_image_input'] = image_class_resized
-                
-                st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
+            if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
+                with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
+                    try:
+                        img_array = np.array(image_class_resized)
+                        if img_array.ndim == 2:
+                            img_array = np.stack((img_array,)*3, axis=-1)
+                        if img_array.shape[2] == 4:
+                            img_array = img_array[:,:,:3] 
 
-                if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
-                    with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
-                        try:
-                            img_array = np.array(image_class_resized)
-                            if img_array.ndim == 2:
-                                img_array = np.stack((img_array,)*3, axis=-1)
-                            if img_array.shape[2] == 4:
-                                img_array = img_array[:,:,:3] 
+                        preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
+                        
+                        predictions = classification_model.predict(preprocessed_img)
+                        decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
+                        
+                        is_pizza = False
+                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'focaccia', 'quiche'] 
+                        
+                        for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
+                            if any(keyword in label.lower() for keyword in pizza_keywords):
+                                is_pizza = True
+                                
+                        
+                        if is_pizza:
+                            final_result = "Pizza"
+                            st.session_state['classification'] = 'pizza'
+                            st.balloons()
+                        else:
+                            final_result = "Bukan Pizza"
+                            st.session_state['classification'] = 'not_pizza'
+                            st.snow()
+                        
+                        st.session_state['classification_final_result'] = final_result
+                        
+                    except Exception as e:
+                        st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
 
-                            preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
-                            
-                            predictions = classification_model.predict(preprocessed_img)
-                            decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
-                            
-                            is_pizza = False
-                            pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'focaccia', 'quiche'] 
-                            
-                            for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
-                                if any(keyword in label.lower() for keyword in pizza_keywords):
-                                    is_pizza = True
-                                    
-                            
-                            if is_pizza:
-                                final_result = "Pizza"
-                                st.session_state['classification'] = 'pizza'
-                                st.balloons()
-                            else:
-                                final_result = "Bukan Pizza"
-                                st.session_state['classification'] = 'not_pizza'
-                                st.snow()
-                            
-                            st.session_state['classification_final_result'] = final_result
-                            
-                        except Exception as e:
-                            st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
-
-        # --- Bagian Output ---
-        with col_class_output:
-            if st.session_state.get('classification_final_result') is not None:
-                final_result = st.session_state['classification_final_result']
-                
-                st.markdown("### Hasil Klasifikasi AI")
-                
-                if final_result == "Pizza":
-                    st.success(f"🎉 Selamat! Objek ini terklasifikasi sebagai {final_result}.")
-                else:
-                    st.info(f"😕 Objek ini terklasifikasi sebagai {final_result} (mungkin makanan atau masakan lain).")
-
-                st.markdown(f"---")
-                st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
+        st.markdown("---") # Garis pemisah antara input dan output
+        
+        # --- Bagian Output (Di Bawah Input) ---
+        if st.session_state.get('classification_final_result') is not None:
+            final_result = st.session_state['classification_final_result']
+            
+            st.markdown("### Hasil Klasifikasi AI")
+            
+            if final_result == "Pizza":
+                st.success(f"🎉 Selamat! Objek ini terklasifikasi sebagai {final_result}.")
             else:
-                # SPASI KOSONG PENGGANTI PLACEHOLDER TEKS
-                st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True)
+                st.info(f"😕 Objek ini terklasifikasi sebagai {final_result} (mungkin makanan atau masakan lain).")
+
+            st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
+        else:
+            # SPASI KOSONG PENGGANTI PLACEHOLDER TEKS
+            st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
 
 
     else:

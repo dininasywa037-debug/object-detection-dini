@@ -4,7 +4,7 @@ import tensorflow as tf
 from PIL import Image
 import numpy as np
 import cv2
-from io import StringIO # Diperlukan untuk model.summary()
+from io import StringIO
 
 st.set_page_config(
     page_title="Dashboard Model - Dini Arifatul Nasywa", # Diperbarui
@@ -114,7 +114,7 @@ elif model_choice == "TensorFlow - Model Kustom (Dini)":
         with st.spinner("Loading TensorFlow model..."):
             model = load_tensorflow()
         
-        st.success("✅ Model berhasil dimuat! Input disetel ke {TARGET_SIZE} agar sesuai arsitektur.")
+        st.success(f"✅ Model berhasil dimuat! Input disetel ke {TARGET_SIZE} agar sesuai arsitektur.")
         
     except Exception as e:
         st.warning(f"⚠ Gagal load model: {str(e)[:150]}...")
@@ -168,7 +168,7 @@ elif model_choice == "TensorFlow - Model Kustom (Dini)":
             col1, col2 = st.columns(2)
             
             with col1:
-                st.subheader("📷 Gambar Input (Diresize ke {TARGET_SIZE})")
+                st.subheader(f"📷 Gambar Input (Diresize ke {TARGET_SIZE})")
                 
                 # Menampilkan gambar input yang sudah di resize
                 resized_image_display = image.resize(TARGET_SIZE)
@@ -191,7 +191,6 @@ elif model_choice == "TensorFlow - Model Kustom (Dini)":
                     # 4. Tambahkan dimensi batch
                     img_array = np.expand_dims(img_array, axis=0)
                     
-                    # HAPUS: tf.keras.applications.resnet50.preprocess_input(img_array)
                     # --- AKHIR PREPROCESS KRUSIAL ---
                     
                     # Prediksi
@@ -200,7 +199,7 @@ elif model_choice == "TensorFlow - Model Kustom (Dini)":
                     except Exception as pred_error:
                         st.error(f"❌ Terjadi kesalahan saat prediksi: {pred_error}")
                         st.warning(f"Coba ubah TARGET_SIZE dari {TARGET_SIZE} ke ukuran lain (misalnya 96x96 atau 48x48) jika error dimensi tetap terjadi.")
-                        return
+                        st.stop() # <-- SOLUSI: Mengganti 'return' dengan 'st.stop()'
 
                     
                     with col2:

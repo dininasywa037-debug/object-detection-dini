@@ -13,11 +13,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (PERBAIKAN FOKUS PADA JUDUL) ==========================
+# ========================== CUSTOM STYLE (MODIFIKASI DAN PERBAIKAN) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
 
+        /* Background dan Font Utama */
         body, .stApp {
             background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%);
             color: #3e2723;
@@ -30,9 +31,10 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
         }
 
+        /* PERBAIKAN: MAIN TITLE agar tidak tertutup */
         .main-title {
             text-align: center;
-            font-size: 8rem; 
+            font-size: 8rem; /* Ukuran yang lebih wajar */
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
@@ -41,22 +43,23 @@ st.markdown("""
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
-            line-height: 1.2; 
+            line-height: 1.2; /* Mengurangi jarak antar baris */
         }
         
         @media (max-width: 600px) {
             .main-title {
-                font-size: 5rem;
+                font-size: 5rem; /* Ukuran yang lebih kecil untuk mobile */
             }
         }
 
-        /* PERBAIKAN: Posisikan emoji di sisi kiri dan kanan elemen, bukan di tengah atas */
+        /* PERBAIKAN POSISI EMOJI PIZZA */
         .main-title::before {
             content: '🍕';
             position: absolute;
-            left: 50%; /* Mulai dari tengah */
-            transform: translateX(-250%) translateY(0%); /* Geser ke kiri dari tengah */
-            top: 10%; /* Rata dengan bagian atas teks */
+            /* Posisikan di kiri atas judul */
+            left: 50%; 
+            transform: translateX(-150%) translateY(10%); /* Geser ke kiri dari tengah */
+            top: 10%; 
             font-size: 4rem;
             animation: spin 3s linear infinite;
         }
@@ -64,13 +67,15 @@ st.markdown("""
         .main-title::after {
             content: '🍕';
             position: absolute;
-            right: 50%; /* Mulai dari tengah */
-            transform: translateX(250%) translateY(0%); /* Geser ke kanan dari tengah */
-            top: 10%; /* Rata dengan bagian atas teks */
+            /* Posisikan di kanan atas judul */
+            right: 50%; 
+            transform: translateX(150%) translateY(10%); /* Geser ke kanan dari tengah */
+            top: 10%; 
             font-size: 4rem;
             animation: spin 3s linear infinite reverse;
         }
 
+        /* Animasi */
         @keyframes bounceIn {
             0% { transform: scale(0.3); opacity: 0; }
             50% { transform: scale(1.1); }
@@ -121,33 +126,19 @@ st.markdown("""
             to { opacity: 1; transform: translateX(0); }
         }
 
+        /* Button Styling */
         .stButton > button {
             background: linear-gradient(45deg, #ff5722, #e64a19);
             color: #fff !important;
-            border-radius: 25px !important;
+            border-radius: 30px !important; /* Diperbesar */
             font-weight: 600 !important;
-            padding: 1rem 2rem !important;
+            padding: 1rem 2.5rem !important; /* Diperbesar */
             box-shadow: 0 6px 20px rgba(0,0,0,0.4);
             transition: all 0.4s ease;
-            font-size: 1.1rem;
-            border: none;
+            font-size: 1.2rem; /* Diperbesar */
+            border: 2px solid #fff; /* Border putih kontras */
             position: relative;
             overflow: hidden;
-        }
-
-        .stButton > button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.4s;
-        }
-
-        .stButton > button:hover::before {
-            left: 100%;
         }
 
         .stButton > button:hover {
@@ -155,35 +146,8 @@ st.markdown("""
             transform: scale(1.05);
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
-
-        [data-testid="stMetricValue"], [data-testid="stMetricDelta"], [data-testid="stMetricLabel"] {
-            color: #3e2723 !important;
-            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.5);
-        }
-
-        .streamlit-expanderHeader, .streamlit-expanderContent {
-            color: #3e2723 !important;
-        }
-
-        [data-testid="stFileUploader"] label {
-            color: #3e2723 !important;
-            font-weight: 600;
-        }
-
-        .footer {
-            text-align: center;
-            color: #5d4037;
-            font-size: 1.2rem;
-            margin-top: 3rem;
-            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        
+        /* Garis Pemisah (HR) */
         hr {
             border: 3px solid #d7ccc8;
             border-radius: 15px;
@@ -191,68 +155,37 @@ st.markdown("""
             position: relative;
             margin: 2rem 0; 
         }
-
-        hr::after {
-            content: '🍕';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.2rem;
-            color: #ff5722;
-        }
-
-        @keyframes grow {
-            from { width: 0%; }
-            to { width: 100%; }
-        }
-
+        
+        /* Card Styling */
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
             padding: 2.5rem; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 2rem;
-            border: 3px solid #d7ccc8;
+            border: 3px solid #ffcc80; /* Warna border lebih cerah */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.5s;
-        }
-
-        .card:hover::before {
-            top: -100%;
-            left: -100%;
-        }
-
         .card:hover {
-            transform: translateY(-10px) scale(1.01);
+            transform: translateY(-5px) scale(1.01);
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
 
+        /* Menu Item Styling (Tab Rekomendasi) */
         .menu-item {
             background: linear-gradient(45deg, rgba(255, 248, 220, 0.95), rgba(255, 235, 204, 0.95));
             border-radius: 20px;
-            padding: 2rem;
+            padding: 1.5rem;
             margin: 0.8rem 0; 
             text-align: center;
             font-weight: 600;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             font-size: 1.1rem;
-            position: relative;
-            border: 2px solid #ffcc80; 
+            border: 2px solid #ff5722; /* Border tegas */
         }
 
         .menu-item:hover {
@@ -261,45 +194,7 @@ st.markdown("""
             background: linear-gradient(45deg, rgba(255, 240, 200, 0.95), rgba(255, 220, 180, 0.95));
         }
 
-        .stTabs [data-baseweb="tab-list"] {
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 0.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .stTabs [data-baseweb="tab"] {
-            color: #3e2723 !important;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            border-radius: 12px;
-        }
-
-        .stTabs [data-baseweb="tab"]:hover {
-            background-color: rgba(255, 87, 34, 0.2) !important;
-            transform: scale(1.02);
-        }
-
-        .stTabs [data-baseweb="tab"][aria-selected="true"] {
-            background-color: #ff5722 !important;
-            color: #fff !important;
-            border-radius: 15px;
-            transform: scale(1.05);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-        }
-
-        img {
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        img:hover {
-            transform: scale(1.02); 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-        }
-
+        /* Testimonial Styling (Dibuat lebih menonjol) */
         .testimonial {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
@@ -309,13 +204,16 @@ st.markdown("""
             font-style: italic;
             text-align: center;
             transition: transform 0.3s ease;
-            border-left: 5px solid #ff5722; 
+            border-left: 7px solid #ff5722; /* Garis vertikal menonjol */
+            border-bottom: 2px solid #ffcc80;
         }
 
         .testimonial:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-
+        
+        /* Contact Info Styling */
         .contact-info {
             background: #fff8dc;
             padding: 1.5rem;
@@ -323,7 +221,7 @@ st.markdown("""
             border: 2px dashed #ff5722;
             text-align: center;
             font-size: 1.2rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -361,11 +259,11 @@ tabs = st.tabs(["Beranda ✨", "Deteksi Alat Makan 🍽️", "Klasifikasi Makana
 
 # ========================== MAIN CONTENT BASED ON TABS ==========================
 
-# ----------------- BERANDA -----------------
+# ----------------- BERANDA (Fitur Unggulan Kami Dihapus) -----------------
 with tabs[0]:
     st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut: Rasa dan Teknologi!</h2>", unsafe_allow_html=True)
     
-    # PERUBAHAN: Menghapus bagian "Fitur Unggulan Kami"
+    # KONTEN CARD UTAMA (Lebih Ringkas & Fokus)
     st.markdown(f"""
     <div class='card'>
         <p style='font-size: 1.4rem; text-align: center; font-style: italic;'>
@@ -373,10 +271,10 @@ with tabs[0]:
         </p>
         <br>
         <p style='font-size: 1.2rem;'>
-            Kami menghadirkan dimensi baru dalam pengalaman kuliner Anda dengan menggabungkan <span style='font-weight: bold; color: #cc0000;'>Kecerdasan Buatan (AI)</span> dengan hidangan Italia klasik. Dari deteksi peralatan makan hingga personalisasi menu, Pijjahut adalah restoran masa depan.
+            Kami menghadirkan dimensi baru dalam pengalaman kuliner Anda. Pijjahut menggabungkan <span style='font-weight: bold; color: #cc0000;'>Kecerdasan Buatan (AI)</span> dengan hidangan Italia klasik. Mulai dari **Deteksi Alat Makan** menggunakan YOLO hingga **Klasifikasi Makanan** menggunakan ResNet50, semuanya untuk memastikan Anda mendapat **Rekomendasi Menu Personal** terbaik!
         </p>
         <p style='font-size: 1.2rem;'>
-            Coba fitur kami: <span style='font-weight: bold;'>Deteksi Alat Makan</span> menggunakan YOLO dan <span style='font-weight: bold;'>Klasifikasi Makanan</span> menggunakan ResNet50 untuk mendapatkan **Rekomendasi Menu Personal** dari kami!
+            Ayo, jelajahi tab di atas dan rasakan pengalaman bersantap masa depan!
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -387,11 +285,11 @@ with tabs[0]:
     st.markdown("<h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2rem;'>Apa Kata Pengguna Kami 💬</h3>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("<div class='testimonial'>'Pizza' di sini luar biasa. <span style='font-weight: bold;'>AI-nya sangat keren</span>, deteksi piringnya cepat dan tepat! Saya suka alur kerjanya.' - Balqis, <span style='color:#ff5722;'>Food Blogger</span></div>", unsafe_allow_html=True)
-        st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran. Saya coba menu non-pizza dan itu *worth it*.' - Syira, <span style='color:#ff5722;'>Pelanggan Setia</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>'Pizza' di sini luar biasa. <span style='font-weight: bold; color: #cc0000;'>AI-nya sangat keren</span>, deteksi piringnya cepat dan tepat! Saya suka alur kerjanya.' - Balqis, <span style='color:#ff5722;'>Food Blogger</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi <span style='font-weight: bold; color: #cc0000;'>sangat akurat</span> dan bikin penasaran. Saya coba menu non-pizza dan itu *worth it*.' - Syira, <span style='color:#ff5722;'>Pelanggan Setia</span></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='testimonial'>'Mengunggah foto dan langsung tahu itu pizza atau bukan. <span style='font-weight: bold;'>Pengalaman kuliner yang inovatif</span>. Waktu tunggunya juga cepat.' - Oja, <span style='color:#ff5722;'>Tech Enthusiast</span></div>", unsafe_allow_html=True)
-        st.markdown("<div class='testimonial'>'Desain web yang cantik dan fungsional. Saya suka <span style='font-weight: bold;'>estetika Pijjahut</span>! Warna dan font-nya sangat menyelerakan.' - Marlin, <span style='color:#ff5722;'>Desainer Grafis</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>'Mengunggah foto dan langsung tahu itu pizza atau bukan. <span style='font-weight: bold; color: #cc0000;'>Pengalaman kuliner yang inovatif</span>. Waktu tunggunya juga cepat.' - Oja, <span style='color:#ff5722;'>Tech Enthusiast</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='testimonial'>'Desain web yang cantik dan fungsional. Saya suka <span style='font-weight: bold; color: #cc0000;'>estetika Pijjahut</span>! Warna dan font-nya sangat menyelerakan.' - Marlin, <span style='color:#ff5722;'>Desainer Grafis</span></div>", unsafe_allow_html=True)
     
 
 # ----------------- DETEKSI OBJEK -----------------
@@ -400,9 +298,9 @@ with tabs[1]:
     st.markdown("""
     <div class='card'>
         <p style='font-size: 1.2rem; text-align: center;'>
-            <span style='font-weight: bold; color: #ff5722;'>Langkah 1:</span> Unggah gambar meja makan Anda. <span style='font-weight: bold; color: #ff5722;'>Langkah 2:</span> Tekan tombol deteksi!
+            <span style='font-weight: bold; color: #ff5722;'>Fungsi Utama:</span> Identifikasi <span style='font-weight: bold;'>Piring (plate)</span> dan <span style='font-weight: bold;'>Gelas (glass)</span>.
         </p>
-        <p>Model <span style='font-weight: bold;'>YOLO (You Only Look Once)</span> yang kami latih secara khusus dapat mengenali <span style='font-weight: bold;'>Piring (plate)</span> dan <span style='font-weight: bold;'>Gelas (glass)</span>. Kami memastikan meja Anda siap untuk hidangan berikutnya!</p>
+        <p>Model <span style='font-weight: bold;'>YOLO (You Only Look Once)</span> yang kami latih memastikan meja Anda siap untuk hidangan berikutnya!</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -412,7 +310,7 @@ with tabs[1]:
         uploaded_file = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo")
 
         if uploaded_file:
-            st.divider() # Pemisah visual
+            st.divider() 
             col_input, col_output = st.columns(2)
             image = Image.open(uploaded_file)
             
@@ -461,7 +359,7 @@ with tabs[2]:
         <p style='font-size: 1.2rem; text-align: center;'>
             <span style='font-weight: bold; color: #ff5722;'>FUNGSI UTAMA!</span> Hasil klasifikasi ini akan membuka <span style='font-weight: bold;'>Rekomendasi Menu Spesial</span> di tab berikutnya.
         </p>
-        <p>Upload gambar makanan Anda. Model klasifikasi berbasis <span style='font-weight: bold;'>ResNet50</span>, yang dilatih pada ImageNet, akan mengidentifikasi 5 kemungkinan teratas. Kami akan memutuskan apakah itu masuk kategori "Pizza" atau "Bukan Pizza".</p>
+        <p>Upload gambar makanan Anda. Model <span style='font-weight: bold;'>ResNet50</span> akan memutuskan: **Pizza** atau **Bukan Pizza**.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -495,7 +393,8 @@ with tabs[2]:
                         
                         # LOGIKA PENENTUAN KLASIFIKASI
                         is_pizza = False
-                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'foccacia', 'gong_gong'] 
+                        # Daftar keyword yang lebih relevan untuk kategori 'Pizza' (termasuk beberapa false positive ResNet50)
+                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'focaccia', 'gong_gong'] 
                         main_label = decoded_predictions[0][1].replace('_', ' ').title()
                         
                         # Cek apakah ada keyword "pizza" di Top 5 prediksi
@@ -507,8 +406,7 @@ with tabs[2]:
                         with col_class_output:
                             st.markdown("### Hasil Klasifikasi AI 🎯")
                             st.markdown(f"**Prediksi Utama:** <span style='color:#ff5722; font-weight: bold;'>{main_label}</span>", unsafe_allow_html=True)
-                            st.markdown(f"**Waktu Pemrosesan:** {end_time - start_time:.3f} s")
-
+                            
                             st.markdown(f"---")
                             if is_pizza:
                                 final_result = "Pizza"
@@ -518,10 +416,10 @@ with tabs[2]:
                             else:
                                 final_result = "Bukan Pizza"
                                 st.session_state['classification'] = 'not_pizza'
-                                st.snow()
                                 st.info(f"😕 Keputusan AI: Objek ini {final_result}. Kami punya alternatif lezat untuk Anda!")
                                 
                             st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>KESIMPULAN: {final_result}</p>", unsafe_allow_html=True)
+                            st.metric(label="Waktu Pemrosesan", value=f"{end_time - start_time:.3f} s")
                             
                         with st.expander("Lihat Detail Prediksi (Top 5 ImageNet)"):
                             for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
@@ -637,7 +535,7 @@ with tabs[4]:
     </div>
     """, unsafe_allow_html=True)
     
-# ----------------- TENTANG KAMI -----------------
+# ----------------- TENTANG PROYEK -----------------
 with tabs[5]:
     st.markdown("<h2 class='section-title'>Tentang Proyek Pijjahut 🎓</h2>", unsafe_allow_html=True)
     st.markdown(f"""

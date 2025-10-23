@@ -110,7 +110,7 @@ st.markdown("""
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 12px;
+            letter-spacing: 45px;
         }
         /* ============================================ */
 
@@ -249,7 +249,8 @@ st.markdown("""
 
 # ========================== HEADER ==========================
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_allow_html=True)
+# >>> PERBAIKAN ERROR DI BARIS INI: unsafe_allow_allow_html menjadi unsafe_allow_html
+st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================
@@ -674,7 +675,7 @@ with tabs[4]:
     # CARD KONTAK (Menggunakan .card yang sudah diseragamkan)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut.</p>
+        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut!</p>
         <div class='contact-info'>
             <p><span style='font-weight: bold;'>📍 Alamat:</span> Jl. Digitalisasi No. 101, Kota Streamlit, Kode Pos 404 </p>
             <p><span style='font-weight: bold;'>📞 Telepon:</span> (021) 123-PIZZA (74992)</p>

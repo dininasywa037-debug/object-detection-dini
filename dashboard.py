@@ -43,6 +43,41 @@ st.markdown("""
             width: auto;
         }
         /* ==================================================== */
+        
+        /* === Perbaikan untuk Tampilan Tabs Navigasi (BARU) === */
+        div[role="tablist"] {
+            padding: 0.5rem 1rem;
+            margin-bottom: 2rem; 
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.6); /* Latar belakang semi-transparan yang bersih */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ffccbc;
+        }
+
+        .stTabs [data-testid="stTab"] {
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            margin: 0 5px;
+            color: #3e2723 !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            border: none;
+        }
+
+        .stTabs [data-testid="stTab"]:hover {
+            background-color: #ffccbc !important; 
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stTabs [data-testid="stTab"][aria-selected="true"] {
+            color: #cc0000 !important; 
+            border-bottom: 3px solid #cc0000; 
+            font-weight: 700 !important;
+        }
+        /* ================================================== */
+
 
         body, .stApp {
             background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%);
@@ -56,22 +91,31 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
+        /* === PERBAIKAN JUDUL UTAMA (.main-title) === */
         .main-title {
             text-align: center;
-            font-size: 25vw; 
+            font-size: clamp(4rem, 10vw, 8rem); /* Ukuran responsif yang terkontrol */
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
-            text-shadow: 6px 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(204,0,0,0.8); 
-            margin-top: 1rem;
+            
+            /* Ganti text-shadow untuk efek 3D & glow yang lebih tajam dan elegan */
+            text-shadow: 
+                -3px -3px 0px rgba(255, 255, 255, 0.8), /* Bayangan putih untuk efek 3D/menonjol */
+                3px 3px 0px #8b0000, /* Bayangan gelap utama */
+                0 0 15px rgba(255, 0, 0, 0.9), /* Efek glow merah yang lebih fokus */
+                0 0 30px rgba(204, 0, 0, 0.5); /* Efek glow merah yang lebih menyebar */
+                
+            margin-top: 2rem; /* Tambah jarak atas */
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 40px; 
+            letter-spacing: 12px; /* Jarak antar huruf yang lebih proporsional */
         }
-        
+        /* ============================================ */
+
         .subtitle {
             text-align: center;
             color: #5d4037 !important;
@@ -192,7 +236,6 @@ st.markdown("""
 
 # ========================== HEADER ==========================
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
-# >>> BARIS INI TELAH DIPERBAIKI: unsafe_allow_allow_html -> unsafe_allow_html
 st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
 st.markdown("---")
 

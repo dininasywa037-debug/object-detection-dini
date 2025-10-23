@@ -30,7 +30,7 @@ if model_choice == "PyTorch - YOLO (Balqis)":
         @st.cache_resource
         def load_yolo():
             # PATH MODEL KAWAN ANDA
-            return YOLO('model/Balqis Isaura_Laporan 4.pt') 
+            return YOLO('model/DINI ARIFATUL NASYWA_Laporan 4.pt') 
         
         with st.spinner("Loading YOLO model..."):
             model = load_yolo()

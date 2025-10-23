@@ -213,16 +213,16 @@ def load_yolo_model(path):
 
 @st.cache_resource
 def load_classification_model():
-    # GANTI DENGAN PATH KE MODEL KLASIFIKASI KEMBARAN ANDA
-    MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' # <--- GANTI PATH INI
+    # Model Klasifikasi Kustom Anda
+    MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' 
     
     try:
         # Menggunakan tf.keras.models.load_model untuk model kustom Keras
         model = tf.keras.models.load_model(MODEL_PATH) 
         return model
     except Exception as e:
-        # Jika model kustom tidak ditemukan, beri peringatan spesifik
-        st.error(f"Gagal memuat model Klasifikasi kustom dari '{MODEL_PATH}'. Pastikan file model ada dan formatnya benar. Error: {e}")
+        # Pesan error yang lebih spesifik untuk model kustom
+        st.error(f"Gagal memuat model Klasifikasi kustom dari '{MODEL_PATH}'. Pastikan file model ada di lokasi tersebut dan formatnya benar (.h5 atau SavedModel). Error: {e}")
         return None
 
 # ========================== KONTROL STATE SAAT BERPINDAH TAB ==========================
@@ -290,7 +290,7 @@ with tabs[0]:
 
     st.markdown("---")
 
-    # Judul Fitur Canggih Kami sudah disamakan
+    # Judul Fitur Canggih Kami
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Fitur Canggih Kami</h2>", unsafe_allow_html=True)
     
     # Bagian Fitur Canggih (3 Kolom)
@@ -406,7 +406,7 @@ with tabs[2]:
 
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
-            # Pastikan ukuran ini sesuai dengan input model kustom Anda (umumnya 224x224 atau 150x150)
+            # Resolusi 224x224 adalah standar. GANTI ini jika model Anda menggunakan resolusi yang berbeda!
             image_class_resized = image_pil.resize((224, 224)) 
             
             st.session_state['classification_image_input'] = image_class_resized
@@ -434,8 +434,7 @@ with tabs[2]:
                         # 2. Prediksi Menggunakan Model Kustom
                         predictions = classification_model.predict(final_img_input)
                         
-                        # Asumsi: Model Kustom Anda menggunakan Sigmoid dan output 1 probabilitas untuk kelas "Pizza"
-                        # Ganti logika ini jika model Anda menggunakan Softmax (output > 1 probabilitas)
+                        # Asumsi: Model Anda menggunakan Sigmoid dan output 1 probabilitas untuk kelas "Pizza"
                         pizza_probability = predictions[0][0] 
                         
                         # 3. Logika Klasifikasi (Ambil Keputusan)
@@ -477,7 +476,8 @@ with tabs[2]:
 
 
     else:
-        st.warning(f"Model Klasifikasi kustom tidak dapat dimuat dari path yang ditentukan. Pastikan file model Anda benar.")
+        # Pesan ini akan muncul jika model gagal dimuat
+        st.warning("Model Klasifikasi kustom tidak dapat dimuat. Pastikan file 'model/BISMILLAHDINI2_Laporan2.h5' tersedia dan formatnya benar.")
 
 
 # ----------------- MENU REKOMENDASI -----------------

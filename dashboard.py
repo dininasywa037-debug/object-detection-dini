@@ -31,6 +31,19 @@ st.markdown("""
         }
         /* ====================================================================== */
 
+        /* === PERUBAHAN BARU UNTUK MEMUSATKAN TABS NAVIGASI === */
+        /* Mencari div container di atas tabs (data-testid="stDecoration" adalah garis horizontal) */
+        div[data-testid="stDecoration"] + div {
+            display: flex;
+            justify-content: center; /* Memposisikan konten di tengah secara horizontal */
+        }
+
+        /* Mengatur lebar container tabs agar tidak mengambil 100% lebar (agar justify-content bekerja) */
+        div[data-testid="stDecoration"] + div > div:first-child {
+            width: auto;
+        }
+        /* ==================================================== */
+
         body, .stApp {
             background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%);
             color: #3e2723;
@@ -179,7 +192,7 @@ st.markdown("""
 
 # ========================== HEADER ==========================
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_allow_html=True)
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================
@@ -600,6 +613,7 @@ with tabs[5]:
             <li><span style='font-weight: bold;'>Deteksi Objek (YOLOv8):</span> Digunakan untuk mengenali peralatan makan dasar, piring dan gelas.</li>
             <li><span style='font-weight: bold;'>Klasifikasi Gambar (Model Kustom Keras):</span> Dimanfaatkan untuk mengidentifikasi produk utama kami: Pizza.</li>
             <li><span style='font-weight: bold;'>Platform:</span> Dibangun menggunakan <span style='font-weight: bold;'>Streamlit</span> untuk tampilan antarmuka yang interaktif dan <span style='font-weight: bold;'>user-friendly</span>.</li>
+            <li><span style='font-weight: bold;'>**Nilai Threshold Klasifikasi:**</span> Ditetapkan sebesar **$0.4$**.</li>
         </ul>
         <p>Terima kasih telah menjadi bagian dari perjalanan inovatif ini!</p>
         <div style='text-align: center; margin-top: 2rem;'>

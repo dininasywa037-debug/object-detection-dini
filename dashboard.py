@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (Revisi Header & File Uploader) ==========================
+# ========================== CUSTOM STYLE (Revisi Header & File Uploader & Peringatan Rekomendasi) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -102,35 +102,25 @@ st.markdown("""
             position: relative;
         }
         
-        /* ANCHOR: CUSTOM CSS UNTUK FILE UPLOADER */
-        /* Menargetkan kontainer Streamlit untuk File Uploader */
-        /* Ini adalah CSS yang lebih spesifik untuk Streamlit 1.x / 2.x */
+        /* ANCHOR: CUSTOM CSS FILE UPLOADER */
         .stFileUploader {
-            /* Margin atau padding agar tidak terlalu mepet */
             margin-top: 1rem;
             margin-bottom: 1rem;
         }
-        
-        /* Menargetkan area dropzone */
         .stFileUploader > div:first-child > div:first-child {
-            /* Menggunakan gaya 'card' yang lembut */
             background-color: rgba(255, 255, 255, 0.9);
-            border: 3px dashed #ff5722; /* Border dashed merah bata */
-            border-radius: 25px; /* Border lebih melengkung */
-            padding: 2.5rem 1.5rem; /* Padding lebih besar */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Bayangan lembut */
+            border: 3px dashed #ff5722; 
+            border-radius: 25px; 
+            padding: 2.5rem 1.5rem; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
             transition: all 0.3s ease;
         }
-
-        /* Efek hover untuk area dropzone */
         .stFileUploader > div:first-child > div:first-child:hover {
             border: 3px dashed #cc0000;
-            background-color: #fff8e1; /* Warna latar sedikit berubah */
+            background-color: #fff8e1;
         }
-
-        /* Menargetkan tombol 'Browse files' */
         .stFileUploader button {
-            background: linear-gradient(45deg, #cc0000, #a00000); /* Merah gelap */
+            background: linear-gradient(45deg, #cc0000, #a00000); 
             color: #fff !important;
             border: none;
             border-radius: 15px !important;
@@ -139,15 +129,40 @@ st.markdown("""
             box-shadow: 0 3px 10px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
         }
-        
-        /* Mengatur teks di dalam dropzone */
         .stFileUploader .css-1by9afl p {
             font-size: 1.1rem;
             font-weight: 600;
             color: #d84315 !important;
             text-shadow: none;
         }
-        /* END ANCHOR: CUSTOM CSS UNTUK FILE UPLOADER */
+        /* END ANCHOR: CUSTOM CSS FILE UPLOADER */
+
+        /* ANCHOR: CUSTOM CSS PESAN PERINGATAN REKOMENDASI */
+        .recommendation-alert {
+            padding: 1.5rem;
+            border: 3px solid #ffcc00; /* Warna kuning yang lebih hangat */
+            border-radius: 15px;
+            background: linear-gradient(45deg, #fff3e0, #ffecb3); /* Gradien kuning-putih */
+            text-align: center;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .recommendation-alert p {
+            margin: 0;
+            color: #e65100 !important; /* Warna oranye gelap */
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-shadow: none;
+        }
+        
+        .recommendation-alert .icon {
+            font-size: 1.8rem;
+            margin-right: 10px;
+            color: #cc0000 !important; /* Ikon warna merah khas Pijjahut */
+        }
+        /* END ANCHOR: CUSTOM CSS PESAN PERINGATAN REKOMENDASI */
     </style>
 """, unsafe_allow_html=True)
 
@@ -414,18 +429,12 @@ with tabs[3]:
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
     else:
-        # Pesan untuk meminta klasifikasi
+        # Pesan untuk meminta klasifikasi (Menggunakan CSS Baru)
         st.markdown("""
-        <div style='
-            padding: 1rem;
-            border: 1px solid #00bcd4;
-            border-radius: 0.5rem;
-            background-color: #e0f7fa;  
-            text-align: center;
-            margin-top: 1rem;
-        '>
-            <p style='margin: 0; color: #00838f;'>
-                💡 <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.
+        <div class='recommendation-alert'>
+            <p>
+                <span class='icon'>🍕</span> 
+                <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.
             </p>
         </div>
         """, unsafe_allow_html=True)

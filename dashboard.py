@@ -218,6 +218,7 @@ def load_yolo_model(path):
 @st.cache_resource
 def load_classification_model():
     # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA (Sudah diubah)
+    # >>> Perhatikan: Asumsi path file model Anda adalah 'model/BISMILLAHDINI_Laporan2.h5' seperti di kode yang Anda berikan.
     MODEL_PATH = 'model/BISMILLAHDINI_Laporan2.h5' 
     
     # Cek keberadaan file sebelum memuat
@@ -447,16 +448,25 @@ with tabs[2]:
                         predictions = classification_model.predict(final_img_input)
                         
                         # Asumsi: Model Anda menggunakan Sigmoid dan output 1 probabilitas untuk kelas "Pizza"
-                        pizza_probability = predictions[0][0] 
+                        # Jika Anda menggunakan Softmax (2 output), Anda harus mengambil probabilitas [0][1] (atau index kelas Pizza)
+                        if predictions.shape[1] == 1:
+                            # Model Sigmoid (Binary Crossentropy)
+                            pizza_probability = predictions[0][0] 
+                        else:
+                            # Model Softmax (Categorical Crossentropy) dengan 2 kelas (index 1 = Pizza)
+                            pizza_probability = predictions[0][1] # Asumsi index 1 adalah kelas Pizza
                         
                         # 3. Logika Klasifikasi (Ambil Keputusan)
-                        THRESHOLD = 0.5 
+                        # >>> PERBAIKAN: NAIKKAN THRESHOLD UNTUK MENGATASI OVERCONFIDENCE <<<
+                        # Jika model selalu memprediksi Pizza, naikkan THRESHOLD.
+                        # Nilai 0.95 adalah nilai coba-coba yang lebih konservatif.
+                        THRESHOLD = 0.95 
                         
                         if pizza_probability > THRESHOLD:
                             final_result = "Pizza"
                             st.session_state['classification'] = 'pizza'
                             st.balloons()
-                            st.info(f"Probabilitas Klasifikasi: **{pizza_probability:.2f}** (Threshold > {THRESHOLD})")
+                            st.success(f"Probabilitas Klasifikasi: **{pizza_probability:.2f}** (Threshold > {THRESHOLD})")
                         else:
                             final_result = "Bukan Pizza"
                             st.session_state['classification'] = 'not_pizza'
@@ -558,7 +568,7 @@ with tabs[3]:
         <div class='recommendation-alert'>
             <p>
                 <span class='icon'>🍕</span> 
-                <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.
+                <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.<br>
             </p>
         </div>
         """, unsafe_allow_html=True)

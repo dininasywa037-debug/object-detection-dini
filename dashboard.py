@@ -457,8 +457,8 @@ with tabs[2]:
                             pizza_probability = predictions[0][1] # Asumsi index 1 adalah kelas Pizza
                         
                         # 3. Logika Klasifikasi (Ambil Keputusan)
-                        # >>> PERUBAHAN: NILAI THRESHOLD MENJADI 0.6 SESUAI PERMINTAAN ANDA <<<
-                        THRESHOLD = 0.6 
+                        # >>> PERUBAHAN: NILAI THRESHOLD MENJADI 0.55 SESUAI PERMINTAAN ANDA <<<
+                        THRESHOLD = 0.55 
                         
                         if pizza_probability > THRESHOLD:
                             final_result = "Pizza"

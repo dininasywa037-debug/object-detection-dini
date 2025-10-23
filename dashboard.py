@@ -258,6 +258,31 @@ with tabs[0]:
     </div>
     """, unsafe_allow_html=True)
     
+    # Bagian Apa Kata Pengguna Kami
+    st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Apa Kata Pengguna Kami</h2>", unsafe_allow_html=True)
+    
+    col_k1, col_k2, col_k3, col_k4 = st.columns(4)
+    
+    # Data Testimoni (Sesuai dengan image_d4dc50.png)
+    testimonials = [
+        ("Balfis, Food Blogger", "Pizza di luar biasa. **AI-nya sangat keren**, deteksi piringnya cepat dan tepat!"),
+        ("Oija, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. **Pengalaman kuliner yang inovatif**!"),
+        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi **sangat akurat** dan bikin penasaran."),
+        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka **estetika Pijjahut**!")
+    ]
+
+    for i, (col, (author, quote)) in enumerate(zip([col_k1, col_k2, col_k3, col_k4], testimonials)):
+        with col:
+            st.markdown(f"""
+            <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem; border: 2px solid #ff5722;'>
+                "{quote}"
+                <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
+                    - {author}
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+
     st.markdown("---")
 
     st.markdown("<h3 style='text-align: center; color: #5d4037; font-family: Pacifico, cursive; font-size: 2.2rem; margin-bottom: 1.5rem;'>Fitur Canggih Kami</h3>", unsafe_allow_html=True)
@@ -295,7 +320,7 @@ with tabs[0]:
     st.markdown("<br><br>", unsafe_allow_html=True) 
     
 
-# ----------------- DETEKSI OBJEK (Input dan Output HORIZONTAL) -----------------
+# ----------------- DETEKSI OBJEK (Layout VERTICAL) -----------------
 with tabs[1]:
     clear_inactive_results(1)
     st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)
@@ -310,53 +335,47 @@ with tabs[1]:
     
     if yolo_model:
         
-        # Kolom untuk Input dan Output (Sejajar Horizontal)
-        col_input_deteksi, col_output_deteksi = st.columns(2) 
+        # --- Bagian Input (FULL WIDTH) ---
+        uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
+        
+        # PENTING: Logika reset hasil jika file baru diupload atau dihapus
+        if st.session_state.get('last_yolo_uploader') != uploaded_file_deteksi:
+            st.session_state['detection_result_img'] = None
+            st.session_state['last_yolo_uploader'] = uploaded_file_deteksi # Update tracker
 
-        # --- Bagian Input ---
-        with col_input_deteksi:
-            # Menggunakan key "yolo_uploader"
-            uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
+        if uploaded_file_deteksi:
+            image = Image.open(uploaded_file_deteksi)
+            st.image(image, caption="Gambar Input Anda", use_container_width=True)
+
+            if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
+                with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
+                    try:
+                        # Model inference
+                        results = yolo_model(image)
+                        result_img = results[0].plot()  
+                        # Ubah dari BGR (YOLO default) ke RGB (PIL/Streamlit default)
+                        result_img_rgb = Image.fromarray(result_img[..., ::-1])
+                        
+                        st.session_state['detection_result_img'] = result_img_rgb
+                        st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
+                    except Exception as e:
+                        st.error(f"Terjadi kesalahan saat deteksi: {e}. Pastikan format gambar dan model benar.")
+
+        st.markdown("---") # Garis pemisah antara input dan output
+        
+        # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
+        st.markdown("### Hasil Deteksi")
+        if st.session_state.get('detection_result_img') is not None:
+            st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
+        else:
+            # SPASI KOSONG (menjaga layout tetap rapi)
+            st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True) 
             
-            # PENTING: Logika reset hasil jika file baru diupload atau dihapus
-            if st.session_state.get('last_yolo_uploader') != uploaded_file_deteksi:
-                st.session_state['detection_result_img'] = None
-                st.session_state['last_yolo_uploader'] = uploaded_file_deteksi # Update tracker
-
-            if uploaded_file_deteksi:
-                image = Image.open(uploaded_file_deteksi)
-                st.image(image, caption="Gambar Input Anda", use_container_width=True)
-
-                if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
-                    with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
-                        try:
-                            # Model inference
-                            results = yolo_model(image)
-                            result_img = results[0].plot()  
-                            # Ubah dari BGR (YOLO default) ke RGB (PIL/Streamlit default)
-                            result_img_rgb = Image.fromarray(result_img[..., ::-1])
-                            
-                            st.session_state['detection_result_img'] = result_img_rgb
-                            st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
-                        except Exception as e:
-                            st.error(f"Terjadi kesalahan saat deteksi: {e}. Pastikan format gambar dan model benar.")
-
-        # --- Bagian Output ---
-        with col_output_deteksi:
-            st.markdown("### Hasil Deteksi")
-            if st.session_state.get('detection_result_img') is not None:
-                st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
-            elif uploaded_file_deteksi:
-                 # SPASI KOSONG (setinggi 300px jika belum ada hasil deteksi)
-                 st.markdown("<div style='height: 300px; border: 2px dashed #d7ccc8; border-radius: 15px;'></div>", unsafe_allow_html=True)
-            else:
-                # SPASI KOSONG (menjaga layout kolom tetap sama tingginya)
-                st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True) 
     else:
         st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
 
 
-# ----------------- KLASIFIKASI GAMBAR (Input dan Output VERTIKAL) -----------------
+# ----------------- KLASIFIKASI GAMBAR (Layout VERTICAL) -----------------
 with tabs[2]:
     clear_inactive_results(2)
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
@@ -425,7 +444,7 @@ with tabs[2]:
 
         st.markdown("---") # Garis pemisah antara input dan output
         
-        # --- Bagian Output (Di Bawah Input) ---
+        # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
         if st.session_state.get('classification_final_result') is not None:
             final_result = st.session_state['classification_final_result']
             

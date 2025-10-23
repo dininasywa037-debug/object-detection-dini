@@ -112,7 +112,7 @@ st.markdown("""
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 12px; /* Jarak antar huruf yang lebih proporsional */
+            letter-spacing: 25px; /* Jarak antar huruf yang lebih proporsional */
         }
         /* ============================================ */
 

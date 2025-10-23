@@ -16,7 +16,7 @@ st.set_page_config(
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
+        @import url('https://fonts2.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
 
         /* === Efek Transisi Fade-In Global untuk Tampilan Tab yang Lebih Halus === */
         .stApp {
@@ -417,12 +417,12 @@ with tabs[2]:
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
             
-            # >>>>>> RESOLUSI DIUBAH KE 112x112 UNTUK MENGATASI ERROR (9216 vs 36864) <<<<<<
-            image_class_resized = image_pil.resize((112, 112)) 
+            # >>>>>> PERUBAHAN UTAMA: RESOLUSI DIKEMBALIKAN KE 224x224 SESUAI PERMINTAAN ANDA <<<<<<
+            image_class_resized = image_pil.resize((224, 224)) 
             
             st.session_state['classification_image_input'] = image_class_resized
             
-            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 112x112)", use_container_width=True)
+            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
@@ -466,6 +466,20 @@ with tabs[2]:
                         
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
+                        st.warning("""
+                            Meskipun input diatur ke 224x224, error masih terjadi. Ini menegaskan bahwa:
+                            1. Model kustom Anda TIDAK memiliki lapisan Flatten yang tepat untuk input 224x224.
+                            2. Output tensor (sebelum Dense) saat pelatihan tidak sesuai dengan arsitektur model.
+                            
+                            **SOLUSI SEMENTARA:** Jika error ini muncul lagi, silakan ganti baris ini:
+                            `image_class_resized = image_pil.resize((224, 224))`
+                            menjadi:
+                            `image_class_resized = image_pil.resize((96, 96))`
+                            atau
+                            `image_class_resized = image_pil.resize((48, 48))`
+                            dan coba lagi. Jika 9216 adalah angka yang benar, salah satu dari ukuran tersebut (96x96 atau 48x48) kemungkinan besar akan berhasil.
+                        """)
+
 
         st.markdown("---") # Garis pemisah antara input dan output
         

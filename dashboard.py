@@ -192,7 +192,8 @@ st.markdown("""
 
 # ========================== HEADER ==========================
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_allow_html=True)
+# >>> BARIS INI TELAH DIPERBAIKI: unsafe_allow_allow_html -> unsafe_allow_html
+st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================

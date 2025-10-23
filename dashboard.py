@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-import os 
+import os
 from io import BytesIO
 
 # ========================== CONFIG PAGE ==========================
@@ -16,7 +16,7 @@ st.set_page_config(
 # ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
+        @import url('https://fonts.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
 
         /* === Efek Transisi Fade-In Global untuk Tampilan Tab yang Lebih Halus === */
         .stApp {
@@ -217,13 +217,13 @@ def load_yolo_model(path):
 
 @st.cache_resource
 def load_classification_model():
-    # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA
-    MODEL_PATH = 'model/DINIARIFATUL_Laporan2.h5' 
+    # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA (Sudah diubah)
+    MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' 
     
     # Cek keberadaan file sebelum memuat
     if not os.path.exists(MODEL_PATH):
         st.error(f"❌ File model klasifikasi TIDAK DITEMUKAN di: '{MODEL_PATH}'.")
-        st.error("Pastikan file DINIARIFATUL_Laporan2.h5 ada di dalam folder 'model'.")
+        st.error("Pastikan file BISMILLAHDINI2_Laporan2.h5 ada di dalam folder 'model'.")
         return None
 
     try:
@@ -397,7 +397,7 @@ with tabs[2]:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (DINIARIFATUL_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
+        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (BISMILLAHDINI2_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -417,13 +417,13 @@ with tabs[2]:
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
             
-            # >>>>>> PENYESUAIAN KRUSIAL: UKURAN DIUBAH KE 64x64 UNTUK MENGHILANGKAN ERROR DIMENSI <<<<<<
-            image_class_resized = image_pil.resize((64, 64)) 
+            # >>>>>> PENYESUAIAN KRUSIAL: UKURAN DIUBAH KE 128x128 SESUAI PERMINTAAN <<<<<<<
+            image_class_resized = image_pil.resize((128, 128)) 
             
             st.session_state['classification_image_input'] = image_class_resized
             
-            # Perbarui caption untuk mencerminkan ukuran 64x64
-            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 64x64 agar sesuai model)", use_container_width=True)
+            # Perbarui caption untuk mencerminkan ukuran 128x128
+            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 128x128 agar sesuai model)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
@@ -580,7 +580,6 @@ with tabs[4]:
     </div>
     """, unsafe_allow_html=True)
     
-
 # ----------------- TENTANG KAMI -----------------
 with tabs[5]:
     clear_inactive_results(5)

@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-import os # Keep os for potential path handling
+import os 
 
 # ========================== CONFIG PAGE ==========================
 st.set_page_config(
@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (Revisi Header) ==========================
+# ========================== CUSTOM STYLE (Revisi Header & Penghapusan Emotikon Berputar) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -29,51 +29,28 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
-        /* REVISI HEADER */
+        /* REVISI HEADER: Lebih besar, berjarak, dan 100% di tengah */
         .main-title {
             text-align: center;
-            font-size: 10vw; 
+            font-size: 15vw; /* Dibuat jauh lebih besar dan responsif */
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
-            text-shadow: 4px 4px 15px rgba(0,0,0,0.5), 0 0 30px rgba(204,0,0,0.6);
+            text-shadow: 6px 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(204,0,0,0.8); /* Bayangan lebih dramatis */
             margin-top: 1rem;
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
-            display: inline-block; 
-            margin: 1rem auto 0.5rem auto; 
-            padding: 0 50px; 
-            display: table; 
+            /* Pastikan centering bekerja */
+            width: 100%;
+            display: block; 
+            letter-spacing: 15px; /* Menjauhkan jarak antar huruf */
         }
         
-        /* Definisi animasi putar */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Emotikon Pizza Berputar (Kiri) */
-        .main-title::before {
-            content: '🍕';
-            font-size: 0.5em; 
-            position: absolute;
-            left: -5px; 
-            top: 50%;
-            transform: translateY(-50%);
-            animation: spin 3s linear infinite;
-        }
-        
-        /* Emotikon Api Berputar (Kanan) */
-        .main-title::after {
-            content: '🔥';
-            font-size: 0.5em; 
-            position: absolute;
-            right: -5px; 
-            top: 50%;
-            transform: translateY(-50%);
-            animation: spin 3s linear infinite reverse; 
-        }
+        /* HAPUS: Animasi spin dan pseudo-element::before/::after */
+        /* HAPUS: @keyframes spin { ... } */
+        /* HAPUS: .main-title::before { ... } */
+        /* HAPUS: .main-title::after { ... } */
         /* END REVISI HEADER */
         
         .subtitle {
@@ -135,7 +112,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========================== HEADER ==========================
-# JUDUL UTAMA DENGAN ANIMASI BERPUTAR
+# JUDUL UTAMA (Besar, berjarak, tanpa emotikon berputar)
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
 st.markdown("---")
@@ -221,7 +198,7 @@ with tabs[0]:
 
     st.markdown("<br><br>", unsafe_allow_html=True) 
     
-    # BAGIAN TESTIMONIAL SUDAH DIHAPUS
+    # BAGIAN TESTIMONIAL TELAH DIHAPUS
 
 # ----------------- DETEKSI OBJEK -----------------
 with tabs[1]:

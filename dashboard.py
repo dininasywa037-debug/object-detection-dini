@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (Fokus pada Transisi Halus) ==========================
+# ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -183,50 +183,61 @@ st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Detek
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================
-# Inisialisasi semua state yang diperlukan
 if 'classification' not in st.session_state:
     st.session_state['classification'] = 'none'
-
 if 'detection_result_img' not in st.session_state:
     st.session_state['detection_result_img'] = None
 if 'classification_final_result' not in st.session_state:
     st.session_state['classification_final_result'] = None
 if 'classification_image_input' not in st.session_state:
     st.session_state['classification_image_input'] = None
-
-# Tambahkan state tracker untuk uploader (untuk kontrol flicker yang lebih baik)
 if 'last_yolo_uploader' not in st.session_state:
     st.session_state['last_yolo_uploader'] = None
 if 'last_classify_uploader' not in st.session_state:
     st.session_state['last_classify_uploader'] = None
 
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
-# Menggunakan st.cache_resource untuk objek berat seperti model ML
 @st.cache_resource
 def load_yolo_model(path):
+    # PATH MODEL DETEKSI ANDA
+    YOLO_MODEL_PATH = 'model/DINI ARIFATUL NASYWA_Laporan 4.pt'
+    
+    # Cek keberadaan file sebelum memuat
+    if not os.path.exists(YOLO_MODEL_PATH):
+        st.error(f"❌ File model YOLO TIDAK DITEMUKAN di: '{YOLO_MODEL_PATH}'.")
+        st.error("Pastikan file DINI ARIFATUL NASYWA_Laporan 4.pt ada di dalam folder 'model'.")
+        return None
+        
     try:
-        model = YOLO(path)
+        model = YOLO(YOLO_MODEL_PATH)
         return model
     except Exception as e:
-        st.error(f"Gagal memuat model YOLO dari '{path}'. Pastikan file model ada di lokasi tersebut. Error: {e}")
+        st.error(f"Gagal memuat model YOLO dari '{YOLO_MODEL_PATH}'. Error: {e}")
         return None
 
 @st.cache_resource
 def load_classification_model():
-    # Model Klasifikasi Kustom Anda
+    # PATH MODEL KLASIFIKASI KUSTOM ANDA
     MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' 
     
+    # Cek keberadaan file sebelum memuat
+    if not os.path.exists(MODEL_PATH):
+        st.error(f"❌ File model klasifikasi TIDAK DITEMUKAN di: '{MODEL_PATH}'.")
+        st.error("Pastikan file BISMILLAHDINI2_Laporan2.h5 ada di dalam folder 'model'.")
+        return None
+
     try:
-        # Menggunakan tf.keras.models.load_model untuk model kustom Keras
+        # Mencoba memuat model Keras
         model = tf.keras.models.load_model(MODEL_PATH) 
         return model
     except Exception as e:
-        # Pesan error yang lebih spesifik untuk model kustom
-        st.error(f"Gagal memuat model Klasifikasi kustom dari '{MODEL_PATH}'. Pastikan file model ada di lokasi tersebut dan formatnya benar (.h5 atau SavedModel). Error: {e}")
+        # Pesan error spesifik untuk membantu diagnosa format/integritas file
+        st.error(f"Gagal memuat model Klasifikasi kustom dari '{MODEL_PATH}'.")
+        st.error(f"Detail Error: {e}")
+        st.warning("Penyebab error 'file signature not found' biasanya karena: 1) File korup/tidak selesai di-download, atau 2) File BUKAN dalam format .h5 Keras/TensorFlow yang valid.")
         return None
 
 # ========================== KONTROL STATE SAAT BERPINDAH TAB ==========================
-# Fungsi untuk membersihkan hasil dari tab yang TIDAK aktif (meminimalkan flicker)
 def clear_inactive_results(current_tab_index):
     # Tab Deteksi Objek (Index 1)
     if current_tab_index != 1 and st.session_state.get('detection_result_img') is not None:
@@ -336,15 +347,14 @@ with tabs[1]:
     </div>
     """, unsafe_allow_html=True)
     
-    YOLO_MODEL_PATH = 'model/DINI ARIFATUL NASYWA_Laporan 4.pt'
-    yolo_model = load_yolo_model(YOLO_MODEL_PATH)
+    yolo_model = load_yolo_model('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
     
     if yolo_model:
         
         # --- Bagian Input (FULL WIDTH) ---
         uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
         
-        # PENTING: Logika reset hasil jika file baru diupload atau dihapus
+        # Logika reset hasil jika file baru diupload atau dihapus
         if st.session_state.get('last_yolo_uploader') != uploaded_file_deteksi:
             st.session_state['detection_result_img'] = None
             st.session_state['last_yolo_uploader'] = uploaded_file_deteksi # Update tracker
@@ -374,11 +384,11 @@ with tabs[1]:
         if st.session_state.get('detection_result_img') is not None:
             st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
         else:
-            # SPASI KOSONG (menjaga layout tetap rapi)
+            # SPASI KOSONG
             st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True) 
             
     else:
-        st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
+        st.warning("Model Deteksi YOLO tidak dapat dimuat. Silakan periksa pesan error di atas.")
 
 
 # ----------------- KLASIFIKASI GAMBAR (Layout VERTICAL) -----------------
@@ -387,7 +397,7 @@ with tabs[2]:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
+        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (BISMILLAHDINI2_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -398,7 +408,7 @@ with tabs[2]:
         # --- Bagian Input (FULL WIDTH) ---
         uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
 
-        # PENTING: Logika reset hasil jika file baru diupload atau dihapus
+        # Logika reset hasil jika file baru diupload atau dihapus
         if st.session_state.get('last_classify_uploader') != uploaded_file_class:
             st.session_state['classification_final_result'] = None
             st.session_state['classification_image_input'] = None
@@ -406,7 +416,7 @@ with tabs[2]:
 
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
-            # Resolusi 224x224 adalah standar. GANTI ini jika model Anda menggunakan resolusi yang berbeda!
+            # Resolusi 224x224. Ubah jika model Anda dilatih dengan ukuran yang berbeda!
             image_class_resized = image_pil.resize((224, 224)) 
             
             st.session_state['classification_image_input'] = image_class_resized
@@ -416,7 +426,7 @@ with tabs[2]:
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
                     try:
-                        # 1. Konversi dan Pra-pemrosesan Sederhana (sesuai dengan Pelatihan Model Kustom)
+                        # 1. Konversi dan Pra-pemrosesan 
                         img_array = np.array(image_class_resized, dtype=np.float32)
                         
                         # Handle Grayscale/Alpha channel
@@ -477,7 +487,7 @@ with tabs[2]:
 
     else:
         # Pesan ini akan muncul jika model gagal dimuat
-        st.warning("Model Klasifikasi kustom tidak dapat dimuat. Pastikan file 'model/BISMILLAHDINI2_Laporan2.h5' tersedia dan formatnya benar.")
+        st.warning("Model Klasifikasi kustom tidak dapat dimuat. Silakan periksa pesan error di atas untuk detail diagnosis.")
 
 
 # ----------------- MENU REKOMENDASI -----------------

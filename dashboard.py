@@ -31,25 +31,23 @@ st.markdown("""
         }
         /* ====================================================================== */
 
-        /* === PERUBAHAN BARU UNTUK MEMUSATKAN TABS NAVIGASI === */
-        /* Mencari div container di atas tabs (data-testid="stDecoration" adalah garis horizontal) */
+        /* === PERUBAHAN UNTUK MEMUSATKAN TABS NAVIGASI === */
         div[data-testid="stDecoration"] + div {
             display: flex;
-            justify-content: center; /* Memposisikan konten di tengah secara horizontal */
+            justify-content: center;
         }
 
-        /* Mengatur lebar container tabs agar tidak mengambil 100% lebar (agar justify-content bekerja) */
         div[data-testid="stDecoration"] + div > div:first-child {
             width: auto;
         }
         /* ==================================================== */
         
-        /* === Perbaikan untuk Tampilan Tabs Navigasi (BARU) === */
+        /* === Tampilan Tabs Navigasi (Dipercantik) === */
         div[role="tablist"] {
             padding: 0.5rem 1rem;
             margin-bottom: 2rem; 
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.6); /* Latar belakang semi-transparan yang bersih */
+            background: rgba(255, 255, 255, 0.6); 
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid #ffccbc;
         }
@@ -91,28 +89,28 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
-        /* === PERBAIKAN JUDUL UTAMA (.main-title) === */
+        /* === JUDUL UTAMA (Diperbaiki jarak dan shadow) === */
         .main-title {
             text-align: center;
-            font-size: clamp(4rem, 10vw, 8rem); /* Ukuran responsif yang terkontrol */
+            font-size: clamp(4rem, 10vw, 8rem);
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
             
-            /* Ganti text-shadow untuk efek 3D & glow yang lebih tajam dan elegan */
+            /* Efek shadow/glow yang lebih tajam dan elegan */
             text-shadow: 
-                -3px -3px 0px rgba(255, 255, 255, 0.8), /* Bayangan putih untuk efek 3D/menonjol */
-                3px 3px 0px #8b0000, /* Bayangan gelap utama */
-                0 0 15px rgba(255, 0, 0, 0.9), /* Efek glow merah yang lebih fokus */
-                0 0 30px rgba(204, 0, 0, 0.5); /* Efek glow merah yang lebih menyebar */
+                -3px -3px 0px rgba(255, 255, 255, 0.8), 
+                3px 3px 0px #8b0000, 
+                0 0 15px rgba(255, 0, 0, 0.9), 
+                0 0 30px rgba(204, 0, 0, 0.5); 
                 
-            margin-top: 2rem; /* Tambah jarak atas */
+            margin-top: 2rem; 
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 40px; /* Jarak antar huruf yang lebih proporsional */
+            letter-spacing: 12px; /* Jarak antar huruf yang dipercantik */
         }
         /* ============================================ */
 
@@ -231,6 +229,14 @@ st.markdown("""
             margin-right: 10px;
             color: #cc0000 !important; 
         }
+        
+        .footer {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            color: #795548 !important;
+            font-style: italic;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -274,8 +280,7 @@ def load_yolo_model(path):
 
 @st.cache_resource
 def load_classification_model():
-    # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA (Sudah diubah)
-    # >>> Perhatikan: Asumsi path file model Anda adalah 'model/BISMILLAHDINI_Laporan2.h5' seperti di kode yang Anda berikan.
+    # PATH MODEL KLASIFIKASI KUSTOM 
     MODEL_PATH = 'model/BISMILLAHDINI_Laporan2.h5' 
     
     # Cek keberadaan file sebelum memuat
@@ -438,8 +443,8 @@ with tabs[1]:
         st.markdown("---") # Garis pemisah antara input dan output
         
         # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
-          st.markdown("<h2 class='section-title'>Hasil Deteksi</h2>", unsafe_allow_html=True)
-    st.markdown("""
+        # BARIS INI TELAH DIKOREKSI GAYA DAN INDENTASINYA
+        st.markdown("<h2 class='section-title'>Hasil Deteksi</h2>", unsafe_allow_html=True)
         if st.session_state.get('detection_result_img') is not None:
             st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
         else:
@@ -476,7 +481,7 @@ with tabs[2]:
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
             
-            # >>>>>> PENYESUAIAN KRUSIAL: UKURAN DIUBAH KE 128x128 SESUAI PERMINTAAN <<<<<<<
+            # PENYESUAIAN UKURAN KE 128x128 
             image_class_resized = image_pil.resize((128, 128)) 
             
             st.session_state['classification_image_input'] = image_class_resized
@@ -505,17 +510,13 @@ with tabs[2]:
                         # 2. Prediksi Menggunakan Model Kustom
                         predictions = classification_model.predict(final_img_input)
                         
-                        # Asumsi: Model Anda menggunakan Sigmoid dan output 1 probabilitas untuk kelas "Pizza"
-                        # Jika Anda menggunakan Softmax (2 output), Anda harus mengambil probabilitas [0][1] (atau index kelas Pizza)
+                        # Logika prediksi
                         if predictions.shape[1] == 1:
-                            # Model Sigmoid (Binary Crossentropy)
                             pizza_probability = predictions[0][0] 
                         else:
-                            # Model Softmax (Categorical Crossentropy) dengan 2 kelas (index 1 = Pizza)
                             pizza_probability = predictions[0][1] # Asumsi index 1 adalah kelas Pizza
                         
-                        # 3. Logika Klasifikasi (Ambil Keputusan)
-                        # >>> PERUBAHAN: NILAI THRESHOLD MENJADI 0.4 SESUAI PERMINTAAN ANDA <<<
+                        # 3. Logika Klasifikasi (THRESHOLD 0.4)
                         THRESHOLD = 0.4 
                         
                         if pizza_probability > THRESHOLD:
@@ -636,7 +637,7 @@ with tabs[4]:
     st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut!</p>
+        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut.</p>
         <div class='contact-info'>
             <p><span style='font-weight: bold;'>📍 Alamat:</span> Jl. Digitalisasi No. 101, Kota Streamlit, Kode Pos 404 </p>
             <p><span style='font-weight: bold;'>📞 Telepon:</span> (021) 123-PIZZA (74992)</p>
@@ -658,7 +659,7 @@ with tabs[5]:
             <li><span style='font-weight: bold;'>Deteksi Objek (YOLOv8):</span> Digunakan untuk mengenali peralatan makan dasar, piring dan gelas.</li>
             <li><span style='font-weight: bold;'>Klasifikasi Gambar (Model Kustom Keras):</span> Dimanfaatkan untuk mengidentifikasi produk utama kami: Pizza.</li>
             <li><span style='font-weight: bold;'>Platform:</span> Dibangun menggunakan <span style='font-weight: bold;'>Streamlit</span> untuk tampilan antarmuka yang interaktif dan <span style='font-weight: bold;'>user-friendly</span>.</li>
-            <li><span style='font-weight: bold;'>Nilai Threshold Klasifikasi:</span> Ditetapkan sebesar 0,4.</li>
+            <li><span style='font-weight: bold;'>Nilai Threshold Klasifikasi:</span> Ditetapkan sebesar <span style='font-weight: bold;'>0.4</span>.</li>
         </ul>
         <p>Terima kasih telah menjadi bagian dari perjalanan inovatif ini!</p>
         <div style='text-align: center; margin-top: 2rem;'>

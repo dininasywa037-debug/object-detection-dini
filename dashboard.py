@@ -58,7 +58,7 @@ st.markdown("""
 
         .main-title {
             text-align: center;
-            font-size: 15vw; 
+            font-size: 25vw; 
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
@@ -69,7 +69,7 @@ st.markdown("""
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 25px; 
+            letter-spacing: 30px; 
         }
         
         .subtitle {

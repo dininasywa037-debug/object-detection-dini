@@ -3,605 +3,230 @@ from ultralytics import YOLO
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-import os 
-from io import BytesIO
+import cv2
+from io import StringIO # Diperlukan untuk model.summary()
 
-# ========================== CONFIG PAGE ==========================
 st.set_page_config(
-    page_title="Pijjahut - Dini Arifatul Nasywa",
-    page_icon="🍕",
+    page_title="Dashboard Model - Dini Arifatul Nasywa", # Diperbarui
+    page_icon="🎯",
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE ==========================
-st.markdown("""
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
-
-        /* === Efek Transisi Fade-In Global untuk Tampilan Tab yang Lebih Halus === */
-        .stApp {
-            animation: fadeInAnimation ease 0.4s; 
-            animation-iteration-count: 1;
-            animation-fill-mode: forwards;
-        }
-
-        @keyframes fadeInAnimation {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-        /* ====================================================================== */
-
-        body, .stApp {
-            background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%);
-            color: #3e2723;
-            font-family: 'Arial', sans-serif;
-            overflow-x: hidden;
-        }
-
-        * {
-            color: #3e2723 !important;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
-        }
-
-        .main-title {
-            text-align: center;
-            font-size: 15vw; 
-            font-weight: 900;
-            font-family: 'Great Vibes', cursive;
-            color: #cc0000 !important;
-            text-shadow: 6px 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(204,0,0,0.8); 
-            margin-top: 1rem;
-            margin-bottom: 0.5rem;
-            animation: bounceIn 2s ease-in-out, pulse 3s infinite;
-            position: relative;
-            width: 100%;
-            display: block; 
-            letter-spacing: 15px; 
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #5d4037 !important;
-            font-size: 1.8rem;
-            margin-bottom: 2rem;
-            font-style: italic;
-            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7);
-            animation: fadeInUp 2s ease-in-out;
-        }
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #ff5722 !important;
-            text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-            margin-top: 2rem;
-            text-align: center;
-            font-family: 'Pacifico', cursive;
-            animation: slideInLeft 1.5s ease-in-out;
-        }
-        .stButton > button {
-            background: linear-gradient(45deg, #ff5722, #e64a19);
-            color: #fff !important;
-            border-radius: 25px !important;
-            font-weight: 600 !important;
-            padding: 1rem 2rem !important;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            transition: all 0.4s ease;
-            font-size: 1.1rem;
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            margin-bottom: 2rem;
-            border: 3px solid #d7ccc8;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .menu-item {
-            background: linear-gradient(45deg, rgba(255, 248, 220, 0.95), rgba(255, 235, 204, 0.95));
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 0.5rem 0;
-            text-align: center;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            font-size: 1.1rem;
-            position: relative;
-        }
-        
-        /* CUSTOM CSS FILE UPLOADER */
-        .stFileUploader {
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        .stFileUploader > div:first-child > div:first-child {
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 3px dashed #ff5722; 
-            border-radius: 25px; 
-            padding: 2.5rem 1.5rem; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            transition: all 0.3s ease;
-        }
-        .stFileUploader > div:first-child > div:first-child:hover {
-            border: 3px dashed #cc0000;
-            background-color: #fff8e1;
-        }
-        .stFileUploader button {
-            background: linear-gradient(45deg, #cc0000, #a00000); 
-            color: #fff !important;
-            border: none;
-            border-radius: 15px !important;
-            padding: 0.5rem 1.5rem !important;
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-        .stFileUploader .css-1by9afl p {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #d84315 !important;
-            text-shadow: none;
-        }
-
-        /* CUSTOM CSS PESAN PERINGATAN REKOMENDASI */
-        .recommendation-alert {
-            padding: 1.5rem;
-            border: 3px solid #ffcc00; 
-            border-radius: 15px;
-            background: linear-gradient(45deg, #fff3e0, #ffecb3); 
-            text-align: center;
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            animation: fadeIn 1s ease-out;
-        }
-
-        .recommendation-alert p {
-            margin: 0;
-            color: #e65100 !important; 
-            font-size: 1.25rem;
-            font-weight: 600;
-            text-shadow: none;
-        }
-        
-        .recommendation-alert .icon {
-            font-size: 1.8rem;
-            margin-right: 10px;
-            color: #cc0000 !important; 
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# ========================== HEADER ==========================
-st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
-st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
+st.title("🎯 Dashboard Model - Dini Arifatul Nasywa") # Diperbarui
 st.markdown("---")
 
-# ========================== INITIALIZE SESSION STATE ==========================
-if 'classification' not in st.session_state:
-    st.session_state['classification'] = 'none'
-if 'detection_result_img' not in st.session_state:
-    st.session_state['detection_result_img'] = None
-if 'classification_final_result' not in st.session_state:
-    st.session_state['classification_final_result'] = None
-if 'classification_image_input' not in st.session_state:
-    st.session_state['classification_image_input'] = None
-if 'last_yolo_uploader' not in st.session_state:
-    st.session_state['last_yolo_uploader'] = None
-if 'last_classify_uploader' not in st.session_state:
-    st.session_state['last_classify_uploader'] = None
+# Sidebar untuk pilih model
+model_choice = st.sidebar.radio(
+    "Pilih Model:",
+    ["PyTorch - YOLO (Balqis)", "TensorFlow - Model Kustom (Dini)"] # Label diperbarui
+)
 
-# ========================== UTILITY FUNCTIONS (Load Models) ==========================
-@st.cache_resource
-def load_yolo_model(path):
-    # PATH MODEL DETEKSI ANDA
-    YOLO_MODEL_PATH = 'model/DINI ARIFATUL NASYWA_Laporan 4.pt'
+# ==================== MODEL PYTORCH YOLO (Tetap menggunakan model kawan Anda) ====================
+if model_choice == "PyTorch - YOLO (Balqis)":
+    st.header("🎯 Model PyTorch - YOLO (Balqis Isaura)")
     
-    # Cek keberadaan file sebelum memuat
-    if not os.path.exists(YOLO_MODEL_PATH):
-        st.error(f"❌ File model YOLO TIDAK DITEMUKAN di: '{YOLO_MODEL_PATH}'.")
-        st.error("Pastikan file DINI ARIFATUL NASYWA_Laporan 4.pt ada di dalam folder 'model'.")
-        return None
-        
     try:
-        model = YOLO(YOLO_MODEL_PATH)
-        return model
+        # Load YOLO model
+        @st.cache_resource
+        def load_yolo():
+            # PATH MODEL KAWAN ANDA
+            return YOLO('model/Balqis Isaura_Laporan 4.pt') 
+        
+        with st.spinner("Loading YOLO model..."):
+            model = load_yolo()
+        
+        st.success("✅ Model YOLO berhasil dimuat!")
+        
+        # Info model di sidebar
+        with st.sidebar.expander("📊 Info Model"):
+            st.text(str(model.info()))
+        
+        # Upload gambar
+        st.markdown("### Upload Gambar untuk Deteksi Objek")
+        uploaded_file = st.file_uploader(
+            "Pilih gambar...", 
+            type=['jpg', 'jpeg', 'png'],
+            key='yolo'
+        )
+        
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("📷 Gambar Input")
+                st.image(image, use_column_width=True)
+            
+            if st.button("🔍 Deteksi Objek", type="primary"):
+                with st.spinner("Mendeteksi objek..."):
+                    # Prediksi
+                    results = model(image)
+                    
+                    with col2:
+                        st.subheader("🎯 Hasil Deteksi")
+                        result_img = results[0].plot()
+                        # Mengubah ke format RGB agar Streamlit bisa menampilkan dari numpy array YOLO
+                        result_img_rgb = Image.fromarray(result_img[..., ::-1]) 
+                        st.image(result_img_rgb, use_column_width=True)
+                    
+                    # Detail deteksi
+                    st.markdown("---")
+                    st.subheader("📋 Detail Deteksi")
+                    
+                    boxes = results[0].boxes
+                    if len(boxes) > 0:
+                        cols = st.columns(3)
+                        for i, box in enumerate(boxes):
+                            col_idx = i % 3
+                            with cols[col_idx]:
+                                st.metric(
+                                    f"Objek {i+1}",
+                                    model.names[int(box.cls)],
+                                    f"{box.conf[0]:.1%}"
+                                )
+                    else:
+                        st.info("ℹ Tidak ada objek terdeteksi")
+                        
     except Exception as e:
-        st.error(f"Gagal memuat model YOLO dari '{YOLO_MODEL_PATH}'. Error: {e}")
-        return None
+        st.error(f"❌ Error: {e}")
+        st.info("Pastikan file model YOLO kawan Anda ada di folder 'model/'")
 
-@st.cache_resource
-def load_classification_model():
-    # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA
-    MODEL_PATH = 'model/DINIARIFATUL_Laporan2.h5' 
+# ==================== MODEL TENSORFLOW (Disesuaikan untuk Dini) ====================
+elif model_choice == "TensorFlow - Model Kustom (Dini)":
+    st.header("🧠 Model TensorFlow - Model Kustom (Dini Arifatul Nasywa)")
     
-    # Cek keberadaan file sebelum memuat
-    if not os.path.exists(MODEL_PATH):
-        st.error(f"❌ File model klasifikasi TIDAK DITEMUKAN di: '{MODEL_PATH}'.")
-        st.error("Pastikan file DINIARIFATUL_Laporan2.h5 ada di dalam folder 'model'.")
-        return None
-
+    # Resolusi Input yang Disesuaikan untuk Model Kustom (64x64 untuk menghindari error 9216)
+    TARGET_SIZE = (64, 64) 
+    
+    model = None
+    
     try:
-        # Mencoba memuat model Keras
-        model = tf.keras.models.load_model(MODEL_PATH) 
-        return model
+        # Load TensorFlow model
+        @st.cache_resource
+        def load_tensorflow():
+            # PATH MODEL KUSTOM ANDA
+            return tf.keras.models.load_model(
+                'model/DINIARIFATUL_Laporan2.h5', 
+                compile=False
+            )
+        
+        with st.spinner("Loading TensorFlow model..."):
+            model = load_tensorflow()
+        
+        st.success("✅ Model berhasil dimuat! Input disetel ke {TARGET_SIZE} agar sesuai arsitektur.")
+        
     except Exception as e:
-        # Pesan error spesifik untuk membantu diagnosa format/integritas file
-        st.error(f"Gagal memuat model Klasifikasi kustom dari '{MODEL_PATH}'.")
-        st.error(f"Detail Error: {e}")
-        st.warning("Penyebab error 'file signature not found' biasanya karena: 1) File korup/tidak selesai di-download, atau 2) File BUKAN dalam format .h5 Keras/TensorFlow yang valid.")
-        return None
-
-# ========================== KONTROL STATE SAAT BERPINDAH TAB ==========================
-def clear_inactive_results(current_tab_index):
-    # Tab Deteksi Objek (Index 1)
-    if current_tab_index != 1 and st.session_state.get('detection_result_img') is not None:
-        st.session_state['detection_result_img'] = None
-
-    # Tab Klasifikasi Gambar (Index 2)
-    if current_tab_index != 2:
-        if st.session_state.get('classification_final_result') is not None:
-            st.session_state['classification_final_result'] = None
-        if st.session_state.get('classification_image_input') is not None:
-            st.session_state['classification_image_input'] = None
-
-
-# ========================== HORIZONTAL NAVIGATION (Tabs at Top) ==========================
-tabs = st.tabs(["Beranda 🏠", "Deteksi Objek 🍽️", "Klasifikasi Gambar 🍕", "Menu Rekomendasi 🌟", "Kontak Kami 📞", "Tentang Kami ℹ️"])
-
-# ========================== MAIN CONTENT BASED ON TABS ==========================
-
-# ----------------- BERANDA -----------------
-with tabs[0]:
-    clear_inactive_results(0)
-    st.markdown("<h2 class='section-title'>Jelajahi Inovasi AI Kuliner</h2>", unsafe_allow_html=True)
-    
-    # KARTU SAMBUTAN
-    st.markdown(f"""
-    <div class='card' style='background: linear-gradient(180deg, #ffeedd 0%, #fffaf0 100%); border-color: #ff9800;'>
-        <p style='font-size: 1.5rem; text-align: center; color: #3e2723;'>
-            Kami menyajikan pengalaman kuliner masa depan dengan integrasi <span style='font-weight: bold; color: #cc0000;'>Kecerdasan Buatan (AI)</span>.
-            Temukan sajian terbaik, mulai dari deteksi peralatan makan hingga rekomendasi menu personal.
-        </p>
-        <p style='font-size: 1.1rem; text-align: center; font-style: italic; color: #5d4037;'>
-            Satu gigitan, satu algoritma yang sempurna.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Bagian Apa Kata Pengguna Kami
-    st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Apa Kata Pengguna Kami</h2>", unsafe_allow_html=True)
-    
-    col_k1, col_k2, col_k3, col_k4 = st.columns(4)
-    
-    # Data Testimoni
-    testimonials = [
-        ("Balfis, Food Blogger", "Pizza di luar biasa. **AI-nya sangat keren**, deteksi piringnya cepat dan tepat!"),
-        ("Oija, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. **Pengalaman kuliner yang inovatif**!"),
-        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi **sangat akurat** dan bikin penasaran."),
-        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka **estetika Pijjahut**!")
-    ]
-
-    for i, (col, (author, quote)) in enumerate(zip([col_k1, col_k2, col_k3, col_k4], testimonials)):
-        with col:
-            st.markdown(f"""
-            <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem; border: 2px solid #ff5722;'>
-                "{quote}"
-                <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
-                    - {author}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-
-
-    st.markdown("---")
-
-    # Judul Fitur Canggih Kami
-    st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Fitur Canggih Kami</h2>", unsafe_allow_html=True)
-    
-    # Bagian Fitur Canggih (3 Kolom)
-    col_feat1, col_feat2, col_feat3 = st.columns(3)
-    
-    with col_feat1:
-        st.markdown("""
-        <div class='menu-item'>
-            <p style='font-size: 2rem;'>🍽️</p>
-            <span style='font-weight: bold; color: #ff5722;'>Deteksi Objek Meja</span>
-            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Mengenali piring dan gelas di meja Anda secara instan menggunakan model <span style='font-weight: bold;'>YOLO</span>.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col_feat2:
-        st.markdown("""
-        <div class='menu-item'>
-            <p style='font-size: 2rem;'>✨</p>
-            <span style='font-weight: bold; color: #ff5722;'>Klasifikasi Pizza Akurat</span>
-            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Menganalisis gambar untuk mengidentifikasi apakah itu pizza atau bukan dengan <span style='font-weight: bold;'>Model Kustom Keras</span>.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col_feat3:
-        st.markdown("""
-        <div class='menu-item'>
-            <p style='font-size: 2rem;'>🎁</p>
-            <span style='font-weight: bold; color: #ff5722;'>Rekomendasi Personal</span>
-            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Dapatkan saran menu spesial yang disesuaikan berdasarkan hasil klasifikasi Anda.</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br><br>", unsafe_allow_html=True) 
-    
-
-# ----------------- DETEKSI OBJEK (Layout VERTICAL) -----------------
-with tabs[1]:
-    clear_inactive_results(1)
-    st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class='card'>
-        <p>Kami menggunakan model <span style='font-weight: bold;'>YOLO (You Only Look Once)</span> yang canggih untuk mengidentifikasi <span style='font-weight: bold;'>Piring</span> dan <span style='font-weight: bold;'>Gelas</span>. Coba upload gambar peralatan makan Anda, dan saksikan AI kami bekerja!</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    yolo_model = load_yolo_model('model/DINI ARIFATUL NASYWA_Laporan 4.pt')
-    
-    if yolo_model:
+        st.warning(f"⚠ Gagal load model: {str(e)[:150]}...")
         
-        # --- Bagian Input (FULL WIDTH) ---
-        uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
+        # Coba dengan safe_mode=False
+        try:
+            st.info("Mencoba metode alternatif...")
+            
+            @st.cache_resource
+            def load_tensorflow_safe():
+                import keras
+                keras.config.disable_traceback_filtering()
+                return tf.keras.models.load_model(
+                    'model/DINIARIFATUL_Laporan2.h5',
+                    compile=False,
+                    safe_mode=False
+                )
+            
+            model = load_tensorflow_safe()
+            st.success("✅ Model berhasil dimuat!")
+            
+        except Exception as e2:
+            st.error(f"❌ Model tidak bisa dimuat")
+            st.code(str(e2), language="text")
+            st.info("""
+            *Kemungkinan masalah:*
+            - Versi TensorFlow/Keras tidak kompatibel
+            - Model perlu disave ulang dengan format terbaru
+            - Pastikan file DINIARIFATUL_Laporan2.h5 ada di folder 'model/'.
+            """)
+    
+    # Jika model berhasil di-load
+    if model is not None:
+        # Info model
+        with st.sidebar.expander("📊 Architecture Model"):
+            stream = StringIO()
+            model.summary(print_fn=lambda x: stream.write(x + '\n'))
+            st.text(stream.getvalue())
         
-        # Logika reset hasil jika file baru diupload atau dihapus
-        if st.session_state.get('last_yolo_uploader') != uploaded_file_deteksi:
-            st.session_state['detection_result_img'] = None
-            st.session_state['last_yolo_uploader'] = uploaded_file_deteksi # Update tracker
-
-        if uploaded_file_deteksi:
-            image = Image.open(uploaded_file_deteksi)
-            st.image(image, caption="Gambar Input Anda", use_container_width=True)
-
-            if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
-                with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
+        # Upload gambar
+        st.markdown("### Upload Gambar untuk Prediksi")
+        uploaded_file = st.file_uploader(
+            "Pilih gambar...", 
+            type=['jpg', 'jpeg', 'png'],
+            key='tf'
+        )
+        
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.subheader("📷 Gambar Input (Diresize ke {TARGET_SIZE})")
+                
+                # Menampilkan gambar input yang sudah di resize
+                resized_image_display = image.resize(TARGET_SIZE)
+                st.image(resized_image_display, use_column_width=True)
+            
+            if st.button("🔮 Prediksi", type="primary"):
+                with st.spinner("Melakukan prediksi..."):
+                    # --- MULAI PREPROCESS KRUSIAL ---
+                    # 1. Resize gambar ke ukuran yang disesuaikan
+                    img_array = np.array(image.resize(TARGET_SIZE)) 
+                    
+                    # 2. Convert RGBA to RGB jika perlu
+                    if img_array.shape[-1] == 4:
+                        img_array = img_array[:, :, :3]
+                    
+                    # 3. Normalisasi
+                    # Model kustom biasanya menggunakan normalisasi 0-1 (dibagi 255.0)
+                    img_array = img_array.astype('float32') / 255.0 
+                    
+                    # 4. Tambahkan dimensi batch
+                    img_array = np.expand_dims(img_array, axis=0)
+                    
+                    # HAPUS: tf.keras.applications.resnet50.preprocess_input(img_array)
+                    # --- AKHIR PREPROCESS KRUSIAL ---
+                    
+                    # Prediksi
                     try:
-                        # Model inference
-                        results = yolo_model(image)
-                        result_img = results[0].plot()  
-                        # Ubah dari BGR (YOLO default) ke RGB (PIL/Streamlit default)
-                        result_img_rgb = Image.fromarray(result_img[..., ::-1])
-                        
-                        st.session_state['detection_result_img'] = result_img_rgb
-                        st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
-                    except Exception as e:
-                        st.error(f"Terjadi kesalahan saat deteksi: {e}. Pastikan format gambar dan model benar.")
+                        predictions = model.predict(img_array, verbose=0)
+                    except Exception as pred_error:
+                        st.error(f"❌ Terjadi kesalahan saat prediksi: {pred_error}")
+                        st.warning(f"Coba ubah TARGET_SIZE dari {TARGET_SIZE} ke ukuran lain (misalnya 96x96 atau 48x48) jika error dimensi tetap terjadi.")
+                        return
 
-        st.markdown("---") # Garis pemisah antara input dan output
-        
-        # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
-        st.markdown("### Hasil Deteksi")
-        if st.session_state.get('detection_result_img') is not None:
-            st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
-        else:
-            # SPASI KOSONG
-            st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True) 
-            
-    else:
-        st.warning("Model Deteksi YOLO tidak dapat dimuat. Silakan periksa pesan error di atas.")
-
-
-# ----------------- KLASIFIKASI GAMBAR (Layout VERTICAL) -----------------
-with tabs[2]:
-    clear_inactive_results(2)
-    st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class='card'>
-        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (DINIARIFATUL_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    classification_model = load_classification_model()
-    
-    if classification_model:
-        
-        # --- Bagian Input (FULL WIDTH) ---
-        uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
-
-        # Logika reset hasil jika file baru diupload atau dihapus
-        if st.session_state.get('last_classify_uploader') != uploaded_file_class:
-            st.session_state['classification_final_result'] = None
-            st.session_state['classification_image_input'] = None
-            st.session_state['last_classify_uploader'] = uploaded_file_class # Update tracker
-
-        if uploaded_file_class:
-            image_pil = Image.open(uploaded_file_class)
-            
-            # >>>>>> PENYESUAIAN KRUSIAL: UKURAN DIUBAH KE 64x64 UNTUK MENGHILANGKAN ERROR DIMENSI <<<<<<
-            image_class_resized = image_pil.resize((64, 64)) 
-            
-            st.session_state['classification_image_input'] = image_class_resized
-            
-            # Perbarui caption untuk mencerminkan ukuran 64x64
-            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 64x64 agar sesuai model)", use_container_width=True)
-
-            if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
-                with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
-                    try:
-                        # 1. Konversi dan Pra-pemrosesan 
-                        img_array = np.array(image_class_resized, dtype=np.float32)
+                    
+                    with col2:
+                        st.subheader("🎯 Hasil Prediksi")
                         
-                        # Handle Grayscale/Alpha channel
-                        if img_array.ndim == 2:
-                            img_array = np.stack((img_array,)*3, axis=-1)
-                        if img_array.shape[2] == 4:
-                            img_array = img_array[:,:,:3] 
-                        
-                        # Normalisasi (Asumsi model dilatih dengan normalisasi 0-1)
-                        img_array /= 255.0
-                        
-                        # Tambahkan dimensi batch 
-                        final_img_input = np.expand_dims(img_array, axis=0)
-
-                        # 2. Prediksi Menggunakan Model Kustom
-                        predictions = classification_model.predict(final_img_input)
-                        
-                        # Asumsi: Model Anda menggunakan Sigmoid dan output 1 probabilitas untuk kelas "Pizza"
-                        pizza_probability = predictions[0][0] 
-                        
-                        # 3. Logika Klasifikasi (Ambil Keputusan)
-                        THRESHOLD = 0.5 
-                        
-                        if pizza_probability > THRESHOLD:
-                            final_result = "Pizza"
-                            st.session_state['classification'] = 'pizza'
-                            st.balloons()
-                            st.info(f"Probabilitas Klasifikasi: **{pizza_probability:.2f}** (Threshold > {THRESHOLD})")
+                        # Asumsi model Anda memiliki output tunggal (misalnya Sigmoid) atau Softmax dengan beberapa kelas
+                        if predictions.shape[-1] == 1:
+                            # Klasifikasi Biner (Contoh: Pizza vs Bukan Pizza)
+                            confidence = predictions[0][0]
+                            predicted_class_name = "Class 1" if confidence > 0.5 else "Class 0"
+                            st.metric("Kelas Prediksi", predicted_class_name)
+                            st.metric("Confidence (Class 1)", f"{confidence:.2%}")
+                            st.progress(float(confidence), text=f"Class 1: {confidence:.4f}")
                         else:
-                            final_result = "Bukan Pizza"
-                            st.session_state['classification'] = 'not_pizza'
-                            st.snow()
-                            st.info(f"Probabilitas Klasifikasi: **{pizza_probability:.2f}** (Threshold < {THRESHOLD})")
-                        
-                        st.session_state['classification_final_result'] = final_result
-                        
-                    except Exception as e:
-                        st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
-                        st.warning(f"Error Klasifikasi: {e}")
+                            # Klasifikasi Multi-kelas (Softmax)
+                            predicted_class = np.argmax(predictions[0])
+                            confidence = predictions[0][predicted_class]
+                            
+                            st.metric("Kelas Prediksi", f"Class {predicted_class}")
+                            st.metric("Confidence", f"{confidence:.2%}")
+                            
+                            # Tampilkan semua probabilitas
+                            with st.expander("📊 Lihat Semua Probabilitas"):
+                                for i, prob in enumerate(predictions[0]):
+                                    st.progress(float(prob), text=f"Class {i}: {prob:.4f}")
 
-
-        st.markdown("---") # Garis pemisah antara input dan output
-        
-        # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
-        if st.session_state.get('classification_final_result') is not None:
-            final_result = st.session_state['classification_final_result']
-            
-            st.markdown("### Hasil Klasifikasi AI")
-            
-            if final_result == "Pizza":
-                st.success(f"🎉 Selamat! Objek ini terklasifikasi sebagai {final_result}.")
-            else:
-                st.info(f"😕 Objek ini terklasifikasi sebagai {final_result} (mungkin makanan atau masakan lain).")
-
-            st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
-        else:
-            # SPASI KOSONG PENGGANTI PLACEHOLDER TEKS
-            st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
-
-
-    else:
-        # Pesan ini akan muncul jika model gagal dimuat
-        st.warning("Model Klasifikasi kustom tidak dapat dimuat. Silakan periksa pesan error di atas untuk detail diagnosis.")
-
-
-# ----------------- MENU REKOMENDASI -----------------
-with tabs[3]:
-    clear_inactive_results(3)
-    st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🌟</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_html=True)
-    
-    menu = {
-        'pizza_spesial': [
-            {'nama': 'Pizza Margherita Klasik', 'deskripsi': 'Saus tomat otentik, Mozzarella segar, dan daun Basil. Kesempurnaan Italia.', 'harga': 'Rp 85.000'},
-            {'nama': 'Pizza Pepperoni AI', 'deskripsi': 'Daging pepperoni premium dan keju yang dideteksi AI, dijamin terbaik.', 'harga': 'Rp 95.000'}
-        ],
-        'non_pizza_spesial': [
-            {'nama': 'Spaghetti Bolognese Pijjahut', 'deskripsi': 'Spaghetti al dente dengan saus daging rahasia yang kaya rasa.', 'harga': 'Rp 65.000'},
-            {'nama': 'Caesar Salad Segar', 'deskripsi': 'Salad sehat dengan ayam panggang, crouton, dan dressing Caesar creamy.', 'harga': 'Rp 55.000'}
-        ],
-        'dessert_minuman': [
-            {'nama': 'Lava Cake Cokelat Panas', 'deskripsi': 'Dessert wajib untuk menutup hidangan Anda.', 'harga': 'Rp 40.000'},
-            {'nama': 'Es Teh Lemon Segar', 'deskripsi': 'Pendingin yang sempurna setelah makan pizza pedas.', 'harga': 'Rp 20.000'}
-        ]
-    }
-    
-    col_rec1, col_rec2 = st.columns(2)
-    
-    if st.session_state['classification'] == 'pizza':
-        st.markdown("""
-        <div class='card' style='background: linear-gradient(45deg, #ffe0b2, #ffcc80); border-color: #ff9800;'>
-            <p style='font-size: 1.5rem; text-align: center; color: #d84315; font-weight: bold;'>🎉 Gambar Anda adalah <span style='font-weight: bold;'>PIZZA</span>! 🎉</p>
-            <p style='font-size: 1.1rem; text-align: center;'>Karena Anda suka pizza, kami rekomendasikan untuk mencoba varian lain atau pendamping yang pas!</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        with col_rec1:
-            st.markdown("### 🍕 Varian Pizza Wajib Coba")
-            for item in menu['pizza_spesial']:
-                st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
-        
-        with col_rec2:
-            st.markdown("### 🍹 Minuman & Dessert")
-            for item in menu['dessert_minuman']:
-                st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
-        
-    elif st.session_state['classification'] == 'not_pizza':
-        st.markdown("""
-        <div class='card' style='background: linear-gradient(45deg, #e1f5fe, #b3e5fc); border-color: #0288d1;'>
-            <p style='font-size: 1.5rem; text-align: center; color: #01579b; font-weight: bold;'>🥗 Gambar Anda <span style='font-weight: bold;'>BUKAN PIZZA</span>!</p>
-            <p style='font-size: 1.1rem; text-align: center;'>Jika Anda mencari alternatif selain pizza, coba menu non-pizza andalan kami. Dijamin tidak kalah lezat!</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        with col_rec1:
-            st.markdown("### 🍝 Pilihan Non-Pizza Terbaik")
-            for item in menu['non_pizza_spesial']:
-                st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
-        
-        with col_rec2:
-            st.markdown("### 🍰 Dessert untuk Melengkapi")
-            for item in menu['dessert_minuman']:
-                st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
-        
-    else:
-        st.markdown("""
-        <div class='recommendation-alert'>
-            <p>
-                <span class='icon'>🍕</span> 
-                <span style='font-weight: bold;'>Silakan lakukan Klasifikasi Gambar (Tab ke-3) terlebih dahulu</span> untuk mendapatkan rekomendasi menu personal yang paling akurat.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-
-# ----------------- KONTAK KAMI -----------------
-with tabs[4]:
-    clear_inactive_results(4)
-    st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
-    st.markdown("""
-    <div class='card'>
-        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut.</p>
-        <div class='contact-info'>
-            <p><span style='font-weight: bold;'>📍 Alamat:</span> Jl. Digitalisasi No. 101, Kota Streamlit, Kode Pos 404 </p>
-            <p><span style='font-weight: bold;'>📞 Telepon:</span> (021) 123-PIZZA (74992)</p>
-            <p><span style='font-weight: bold;'>📧 Email:</span> <a href='mailto:pijjahut.ai@gmail.com' style='color: #cc0000 !important; text-decoration: none;'>pijjahut.ai@gmail.com</a></p>
-            <p><span style='font-weight: bold;'>🕒 Jam Buka:</span> Setiap Hari, 10:00 - 22:00 WIB</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-
-# ----------------- TENTANG KAMI -----------------
-with tabs[5]:
-    clear_inactive_results(5)
-    st.markdown("<h2 class='section-title'>Tentang Pijjahut ℹ️</h2>", unsafe_allow_html=True)
-    st.markdown(f"""
-    <div class='card'>
-        <p style='font-size: 1.4rem;'>Pijjahut didirikan dengan visi untuk membawa teknologi <span style='font-weight: bold;'>Kecerdasan Buatan</span> ke ranah kuliner. Kami percaya bahwa data dan algoritma dapat meningkatkan pengalaman bersantap Anda.</p>
-        <p>Proyek ini dikembangkan oleh <span style='font-weight: bold;'>Dini Arifatul Nasywa</span> sebagai bagian dari eksplorasi pada topik:</p>
-        <ul>
-            <li><span style='font-weight: bold;'>Deteksi Objek (YOLOv8):</span> Digunakan untuk mengenali peralatan makan dasar, piring dan gelas.</li>
-            <li><span style='font-weight: bold;'>Klasifikasi Gambar (Model Kustom Keras):</span> Dimanfaatkan untuk mengidentifikasi produk utama kami: Pizza.</li>
-            <li><span style='font-weight: bold;'>Platform:</span> Dibangun menggunakan <span style='font-weight: bold;'>Streamlit</span> untuk tampilan antarmuka yang interaktif dan <span style='font-weight: bold;'>user-friendly</span>.</li>
-        </ul>
-        <p>Terima kasih telah menjadi bagian dari perjalanan inovatif ini!</p>
-        <div style='text-align: center; margin-top: 2rem;'>
-            <p style='font-style: italic; color: #cc0000;'>#AIxKuliner #Pijjahut #DiniArifatulNasywa</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-# ========================== FOOTER ==========================
+# Footer
 st.markdown("---")
-st.markdown("<p class='footer'>© 2024 Pijjahut. Dibuat dengan 🍕 dan ❤️ oleh Dini Arifatul Nasywa.</p>", unsafe_allow_html=True)
+st.markdown("📌 Dibuat oleh Dini Arifatul Nasywa | Powered by Streamlit 🚀")

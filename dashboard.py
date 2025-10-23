@@ -217,7 +217,7 @@ def load_yolo_model(path):
 
 @st.cache_resource
 def load_classification_model():
-    # >>>>>> PENYESUAIAN KRUSIAL: PATH MODEL DIUBAH KE DINIARIFATUL_Laporan2.h5 <<<<<<
+    # PATH MODEL KLASIFIKASI KUSTOM DARI PERMINTAAN TERAKHIR ANDA
     MODEL_PATH = 'model/DINIARIFATUL_Laporan2.h5' 
     
     # Cek keberadaan file sebelum memuat
@@ -417,13 +417,13 @@ with tabs[2]:
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
             
-            # UKURAN DIUBAH KE 224x224 SESUAI PERMINTAAN
-            image_class_resized = image_pil.resize((224, 224)) 
+            # >>>>>> PENYESUAIAN KRUSIAL: UKURAN DIUBAH KE 64x64 UNTUK MENGHILANGKAN ERROR DIMENSI <<<<<<
+            image_class_resized = image_pil.resize((64, 64)) 
             
             st.session_state['classification_image_input'] = image_class_resized
             
-            # Perbarui caption untuk mencerminkan ukuran 224x224
-            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
+            # Perbarui caption untuk mencerminkan ukuran 64x64
+            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 64x64 agar sesuai model)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
@@ -467,7 +467,7 @@ with tabs[2]:
                         
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
-                        st.warning("Peringatan: Jika error masih terjadi (seperti ketidaksesuaian dimensi), artinya model **DINIARIFATUL_Laporan2.h5** Anda juga memiliki arsitektur yang tidak sesuai dengan input 224x224 yang diberikan.")
+                        st.warning(f"Error Klasifikasi: {e}")
 
 
         st.markdown("---") # Garis pemisah antara input dan output

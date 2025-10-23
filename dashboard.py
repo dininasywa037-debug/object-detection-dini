@@ -417,12 +417,13 @@ with tabs[2]:
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
             
-            # >>>>>> PENYESUAIAN KRITIS: UKURAN DIUBAH KE 96x96 UNTUK MENGHASILKAN 9216 FITUR <<<<<<
-            image_class_resized = image_pil.resize((96, 96)) 
+            # >>>>>> PENYESUAIAN KRITIS DIKEMBALIKAN KE 224x224 SESUAI PERMINTAAN <<<<<<
+            image_class_resized = image_pil.resize((224, 224)) 
             
             st.session_state['classification_image_input'] = image_class_resized
             
-            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 96x96)", use_container_width=True)
+            # Perbarui caption untuk mencerminkan ukuran 224x224
+            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
@@ -466,7 +467,7 @@ with tabs[2]:
                         
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
-                        st.warning("Perhatian: Error masih terjadi meskipun input telah diubah. Jika demikian, ada ketidaksesuaian mendasar antara arsitektur model (.h5) dan data pelatihan yang Anda gunakan. Coba ganti `(96, 96)` menjadi `(48, 48)` di kode Anda.")
+                        st.error("PERINGATAN KERAS: Model Anda (BISMILLAHDINI2_Laporan2.h5) **masih mengharapkan 9216 fitur**, meskipun Anda memberikan input 224x224. Ini mengkonfirmasi ketidaksesuaian arsitektur model. Solusi terbaik adalah melatih ulang model dengan input 224x224 dan arsitektur yang benar, atau kembali ke ukuran 96x96/48x48.")
 
 
         st.markdown("---") # Garis pemisah antara input dan output

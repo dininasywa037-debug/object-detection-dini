@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (Revisi Header & Penghapusan Emotikon Berputar) ==========================
+# ========================== CUSTOM STYLE (Revisi Header & File Uploader) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -29,29 +29,22 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
-        /* REVISI HEADER: Lebih besar, berjarak, dan 100% di tengah */
+        /* HEADER: Besar, berjarak, dan di tengah */
         .main-title {
             text-align: center;
-            font-size: 15vw; /* Dibuat jauh lebih besar dan responsif */
+            font-size: 15vw; 
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
-            text-shadow: 6px 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(204,0,0,0.8); /* Bayangan lebih dramatis */
+            text-shadow: 6px 6px 20px rgba(0,0,0,0.6), 0 0 50px rgba(204,0,0,0.8); 
             margin-top: 1rem;
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
-            /* Pastikan centering bekerja */
             width: 100%;
             display: block; 
-            letter-spacing: 15px; /* Menjauhkan jarak antar huruf */
+            letter-spacing: 15px; 
         }
-        
-        /* HAPUS: Animasi spin dan pseudo-element::before/::after */
-        /* HAPUS: @keyframes spin { ... } */
-        /* HAPUS: .main-title::before { ... } */
-        /* HAPUS: .main-title::after { ... } */
-        /* END REVISI HEADER */
         
         .subtitle {
             text-align: center;
@@ -108,6 +101,53 @@ st.markdown("""
             font-size: 1.1rem;
             position: relative;
         }
+        
+        /* ANCHOR: CUSTOM CSS UNTUK FILE UPLOADER */
+        /* Menargetkan kontainer Streamlit untuk File Uploader */
+        /* Ini adalah CSS yang lebih spesifik untuk Streamlit 1.x / 2.x */
+        .stFileUploader {
+            /* Margin atau padding agar tidak terlalu mepet */
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Menargetkan area dropzone */
+        .stFileUploader > div:first-child > div:first-child {
+            /* Menggunakan gaya 'card' yang lembut */
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 3px dashed #ff5722; /* Border dashed merah bata */
+            border-radius: 25px; /* Border lebih melengkung */
+            padding: 2.5rem 1.5rem; /* Padding lebih besar */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Bayangan lembut */
+            transition: all 0.3s ease;
+        }
+
+        /* Efek hover untuk area dropzone */
+        .stFileUploader > div:first-child > div:first-child:hover {
+            border: 3px dashed #cc0000;
+            background-color: #fff8e1; /* Warna latar sedikit berubah */
+        }
+
+        /* Menargetkan tombol 'Browse files' */
+        .stFileUploader button {
+            background: linear-gradient(45deg, #cc0000, #a00000); /* Merah gelap */
+            color: #fff !important;
+            border: none;
+            border-radius: 15px !important;
+            padding: 0.5rem 1.5rem !important;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        /* Mengatur teks di dalam dropzone */
+        .stFileUploader .css-1by9afl p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d84315 !important;
+            text-shadow: none;
+        }
+        /* END ANCHOR: CUSTOM CSS UNTUK FILE UPLOADER */
     </style>
 """, unsafe_allow_html=True)
 
@@ -198,7 +238,6 @@ with tabs[0]:
 
     st.markdown("<br><br>", unsafe_allow_html=True) 
     
-    # BAGIAN TESTIMONIAL TELAH DIHAPUS
 
 # ----------------- DETEKSI OBJEK -----------------
 with tabs[1]:
@@ -214,6 +253,7 @@ with tabs[1]:
     yolo_model = load_yolo_model(YOLO_MODEL_PATH)
     
     if yolo_model:
+        # File Uploader dengan styling baru
         uploaded_file = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo")
 
         if uploaded_file:
@@ -255,6 +295,7 @@ with tabs[2]:
     classification_model = load_classification_model()
     
     if classification_model:
+        # File Uploader dengan styling baru
         uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify")
 
         if uploaded_file_class:

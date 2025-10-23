@@ -12,10 +12,27 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE ==========================
+# ========================== CUSTOM STYLE (Ditambah Efek Transisi) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
+
+        /* === Efek Transisi Fade-In Global === */
+        .stApp {
+            animation: fadeInAnimation ease 0.5s; /* Durasi dipercepat sedikit agar tidak terlalu lambat */
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInAnimation {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        /* ==================================== */
 
         body, .stApp {
             background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%);
@@ -187,18 +204,23 @@ if 'uploaded_file_klasifikasi' not in st.session_state:
     st.session_state['uploaded_file_klasifikasi'] = None
 
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
-@st.cache_resource
+# Menggunakan st.cache_data untuk model yang tidak perlu di-instantiate ulang setiap kali rerun
+@st.cache_data
 def load_yolo_model(path):
     try:
+        # PENTING: Jika model YOLO tidak bisa dimuat, hapus atau ganti path.
+        # Jika Anda menjalankan ini di lingkungan tanpa file model, ini akan error.
+        # Karena ini contoh, diasumsikan path 'model/...' valid.
         model = YOLO(path)
         return model
     except Exception as e:
         st.error(f"Gagal memuat model YOLO dari '{path}'. Pastikan file model ada di lokasi tersebut. Error: {e}")
         return None
 
-@st.cache_resource
+@st.cache_data
 def load_classification_model():
     try:
+        # PENTING: ResNet50 memerlukan koneksi internet untuk mengunduh weights ImageNet pertama kali.
         model = tf.keras.applications.ResNet50(weights='imagenet')
         return model
     except Exception as e:
@@ -286,7 +308,7 @@ with tabs[1]:
             # Menggunakan key untuk memastikan uploader berbeda
             uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
             
-            # Reset hasil jika file baru diupload atau dihapus
+            # Logika reset state deteksi: Hapus hasil saat file berubah/dihapus
             if uploaded_file_deteksi != st.session_state.uploaded_file_deteksi:
                 st.session_state['detection_result_img'] = None
                 st.session_state.uploaded_file_deteksi = uploaded_file_deteksi
@@ -339,7 +361,7 @@ with tabs[2]:
         with col_class_input:
             uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
 
-            # Reset hasil jika file baru diupload atau dihapus
+            # Logika reset state klasifikasi: Hapus hasil saat file berubah/dihapus
             if uploaded_file_class != st.session_state.uploaded_file_klasifikasi:
                 st.session_state['classification_final_result'] = None
                 st.session_state['classification_image_input'] = None

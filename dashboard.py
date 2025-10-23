@@ -614,7 +614,7 @@ with tabs[5]:
             <li><span style='font-weight: bold;'>Deteksi Objek (YOLOv8):</span> Digunakan untuk mengenali peralatan makan dasar, piring dan gelas.</li>
             <li><span style='font-weight: bold;'>Klasifikasi Gambar (Model Kustom Keras):</span> Dimanfaatkan untuk mengidentifikasi produk utama kami: Pizza.</li>
             <li><span style='font-weight: bold;'>Platform:</span> Dibangun menggunakan <span style='font-weight: bold;'>Streamlit</span> untuk tampilan antarmuka yang interaktif dan <span style='font-weight: bold;'>user-friendly</span>.</li>
-            <li><span style='font-weight: bold;'>Nilai Threshold Klasifikasi:</span> Ditetapkan sebesar 0.4.</li>
+            <li><span style='font-weight: bold;'>Nilai Threshold Klasifikasi:</span> Ditetapkan sebesar 0,4.</li>
         </ul>
         <p>Terima kasih telah menjadi bagian dari perjalanan inovatif ini!</p>
         <div style='text-align: center; margin-top: 2rem;'>

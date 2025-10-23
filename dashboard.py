@@ -168,6 +168,9 @@ st.markdown("""
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             font-size: 1.1rem;
             position: relative;
+            /* === Border yang diminta user === */
+            border: 2px solid #ff5722; 
+            /* ============================== */
         }
         
         /* CUSTOM CSS FILE UPLOADER */
@@ -259,8 +262,6 @@ if 'last_yolo_uploader' not in st.session_state:
 if 'last_classify_uploader' not in st.session_state:
     st.session_state['last_classify_uploader'] = None
 
-# >>> TIDAK ADA INISIALISASI SESSION STATE UNTUK 'testimonials' <<<
-
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
 def load_yolo_model(path):
@@ -339,7 +340,7 @@ with tabs[0]:
     </div>
     """, unsafe_allow_html=True)
     
-    # Bagian Apa Kata Pengguna Kami (Versi Tanpa Testimoni Dinamis)
+    # Bagian Apa Kata Pengguna Kami (Tanpa Testimoni Dinamis)
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Apa Kata Pengguna Kami</h2>", unsafe_allow_html=True)
     
     # Konten Testimoni yang di-hardcode
@@ -347,7 +348,7 @@ with tabs[0]:
     
     with col1:
         st.markdown("""
-        <div class='menu-item' style='min-height: 180px;'>
+        <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem;'>
             "Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"
             <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
                 - Balqis, Food Blogger
@@ -357,7 +358,7 @@ with tabs[0]:
     
     with col2:
         st.markdown("""
-        <div class='menu-item' style='min-height: 180px;'>
+        <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem;'>
             "Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!"
             <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
                 - Oja, Tech Enthusiast
@@ -367,7 +368,7 @@ with tabs[0]:
 
     with col3:
         st.markdown("""
-        <div class='menu-item' style='min-height: 180px;'>
+        <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem;'>
             "Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran."
             <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
                 - Syira, Pelanggan Setia
@@ -377,7 +378,7 @@ with tabs[0]:
 
     with col4:
         st.markdown("""
-        <div class='menu-item' style='min-height: 180px;'>
+        <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem;'>
             "Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!"
             <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
                 - Marlin, Desainer Grafis

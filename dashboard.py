@@ -89,7 +89,7 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
-        /* === JUDUL UTAMA (Diperbaiki jarak dan shadow) === */
+        /* === JUDUL UTAMA === */
         .main-title {
             text-align: center;
             font-size: clamp(4rem, 10vw, 8rem);
@@ -97,7 +97,7 @@ st.markdown("""
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
             
-            /* Efek shadow/glow yang lebih tajam dan elegan */
+            /* Efek shadow/glow */
             text-shadow: 
                 -3px -3px 0px rgba(255, 255, 255, 0.8), 
                 3px 3px 0px #8b0000, 
@@ -110,7 +110,7 @@ st.markdown("""
             position: relative;
             width: 100%;
             display: block; 
-            letter-spacing: 45px; /* Jarak antar huruf yang dipercantik */
+            letter-spacing: 12px;
         }
         /* ============================================ */
 
@@ -259,6 +259,16 @@ if 'last_yolo_uploader' not in st.session_state:
 if 'last_classify_uploader' not in st.session_state:
     st.session_state['last_classify_uploader'] = None
 
+# >>> PENAMBAHAN SESSION STATE UNTUK TESTIMONI BARU <<<
+if 'testimonials' not in st.session_state:
+    st.session_state['testimonials'] = [
+        {'author': 'Balqis, Food Blogger', 'quote': 'Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!'},
+        {'author': 'Oja, Tech Enthusiast', 'quote': 'Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!'},
+        {'author': 'Syira, Pelanggan Setia', 'quote': 'Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran.'},
+        {'author': 'Marlin, Desainer Grafis', 'quote': 'Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!'}
+    ]
+# =========================================================
+
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
 def load_yolo_model(path):
@@ -340,26 +350,53 @@ with tabs[0]:
     # Bagian Apa Kata Pengguna Kami
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Apa Kata Pengguna Kami</h2>", unsafe_allow_html=True)
     
-    col_k1, col_k2, col_k3, col_k4 = st.columns(4)
+    # >>> KODE BARU UNTUK INPUT DAN DISPLAY TESTIMONI <<<
+    # DIBAGI MENJADI DUA KOLOM BESAR: INPUT (40%) dan TAMPILAN (60%)
+    col_input, col_display = st.columns([0.4, 0.6])
     
-    # Data Testimoni
-    testimonials = [
-        ("Balqis, Food Blogger", "Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"),
-        ("Oja, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!"),
-        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran."),
-        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!")
-    ]
+    # ------------------ KOLOM INPUT TESTIMONI (Kiri) ------------------
+    with col_input:
+        st.markdown("<h3 style='color: #cc0000; font-family: Pacifico, cursive; text-align: center; margin-bottom: 1rem;'>Berikan Testimoni Anda!</h3>", unsafe_allow_html=True)
+        
+        with st.form(key='testimonial_form', clear_on_submit=True):
+            input_name = st.text_input("Nama Anda dan Profesi (Contoh: Budi, Chef)", max_chars=50)
+            input_quote = st.text_area("Testimoni Anda tentang Pijjahut", height=100, max_chars=200)
+            submit_button = st.form_submit_button(label='Kirim Testimoni ❤️', type="primary")
 
-    for i, (col, (author, quote)) in enumerate(zip([col_k1, col_k2, col_k3, col_k4], testimonials)):
-        with col:
-            st.markdown(f"""
-            <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem; border: 2px solid #ff5722;'>
-                "{quote}"
-                <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
-                    - {author}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+            if submit_button:
+                if input_name and input_quote:
+                    new_testimonial = {
+                        'author': input_name,
+                        'quote': input_quote
+                    }
+                    # Tambahkan testimoni baru ke session state (di awal list agar langsung terlihat)
+                    st.session_state['testimonials'].insert(0, new_testimonial)
+                    st.success("Testimoni Anda berhasil dikirim dan akan muncul di samping!")
+                else:
+                    st.warning("Mohon lengkapi Nama/Profesi dan Testimoni.")
+
+    # ------------------ KOLOM DISPLAY TESTIMONI (Kanan) ------------------
+    with col_display:
+        st.markdown("<h3 style='color: #cc0000; font-family: Pacifico, cursive; text-align: center; margin-bottom: 1rem;'>Apa Kata Mereka:</h3>", unsafe_allow_html=True)
+        
+        # Membuat 2 kolom di dalam kolom kanan untuk menampung testimoni agar lebih ringkas
+        cols_t = st.columns(2)
+        
+        testimonials_list = st.session_state['testimonials']
+        
+        for i, item in enumerate(testimonials_list):
+            col = cols_t[i % 2] # Mengganti kolom untuk tata letak 2x2
+            
+            with col:
+                st.markdown(f"""
+                <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem; border: 2px solid #ff5722;'>
+                    "{item['quote']}"
+                    <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
+                        - {item['author']}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+    # >>> AKHIR KODE BARU <<<
 
 
     st.markdown("---")
@@ -637,7 +674,7 @@ with tabs[4]:
     st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut!</p>
+        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut.</p>
         <div class='contact-info'>
             <p><span style='font-weight: bold;'>📍 Alamat:</span> Jl. Digitalisasi No. 101, Kota Streamlit, Kode Pos 404 </p>
             <p><span style='font-weight: bold;'>📞 Telepon:</span> (021) 123-PIZZA (74992)</p>

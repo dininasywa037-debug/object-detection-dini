@@ -13,8 +13,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE ==========================
-# (CSS Tetap Sama, karena sudah sangat baik)
+# ========================== CUSTOM STYLE (PERBAIKAN FOKUS PADA JUDUL) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -33,7 +32,7 @@ st.markdown("""
 
         .main-title {
             text-align: center;
-            font-size: 8rem; /* Ukuran diperkecil sedikit agar lebih fokus */
+            font-size: 8rem; 
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
@@ -42,7 +41,7 @@ st.markdown("""
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
-            line-height: 1.2; /* Menjaga jarak baris */
+            line-height: 1.2; 
         }
         
         @media (max-width: 600px) {
@@ -51,12 +50,13 @@ st.markdown("""
             }
         }
 
+        /* PERBAIKAN: Posisikan emoji di sisi kiri dan kanan elemen, bukan di tengah atas */
         .main-title::before {
             content: '🍕';
             position: absolute;
-            left: 50%;
-            transform: translateX(-150%) translateY(-100%);
-            top: 0;
+            left: 50%; /* Mulai dari tengah */
+            transform: translateX(-250%) translateY(0%); /* Geser ke kiri dari tengah */
+            top: 10%; /* Rata dengan bagian atas teks */
             font-size: 4rem;
             animation: spin 3s linear infinite;
         }
@@ -64,9 +64,9 @@ st.markdown("""
         .main-title::after {
             content: '🍕';
             position: absolute;
-            right: 50%;
-            transform: translateX(150%) translateY(-100%);
-            top: 0;
+            right: 50%; /* Mulai dari tengah */
+            transform: translateX(250%) translateY(0%); /* Geser ke kanan dari tengah */
+            top: 10%; /* Rata dengan bagian atas teks */
             font-size: 4rem;
             animation: spin 3s linear infinite reverse;
         }
@@ -105,12 +105,12 @@ st.markdown("""
         }
 
         .section-title {
-            font-size: 2.8rem; /* Dibuat sedikit lebih besar */
+            font-size: 2.8rem; 
             font-weight: 700;
             color: #ff5722 !important;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
             margin-top: 2rem;
-            margin-bottom: 1.5rem; /* Tambahkan margin bawah */
+            margin-bottom: 1.5rem; 
             text-align: center;
             font-family: 'Pacifico', cursive;
             animation: slideInLeft 1.5s ease-in-out;
@@ -189,7 +189,7 @@ st.markdown("""
             border-radius: 15px;
             animation: grow 2s ease-in-out;
             position: relative;
-            margin: 2rem 0; /* Tambahkan margin vertikal */
+            margin: 2rem 0; 
         }
 
         hr::after {
@@ -210,7 +210,7 @@ st.markdown("""
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
-            padding: 2.5rem; /* Padding lebih besar */
+            padding: 2.5rem; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             margin-bottom: 2rem;
             border: 3px solid #d7ccc8;
@@ -245,14 +245,14 @@ st.markdown("""
             background: linear-gradient(45deg, rgba(255, 248, 220, 0.95), rgba(255, 235, 204, 0.95));
             border-radius: 20px;
             padding: 2rem;
-            margin: 0.8rem 0; /* Margin lebih besar */
+            margin: 0.8rem 0; 
             text-align: center;
             font-weight: 600;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transition: transform 0.4s ease, box-shadow 0.4s ease;
             font-size: 1.1rem;
             position: relative;
-            border: 2px solid #ffcc80; /* Garis tepi menu */
+            border: 2px solid #ffcc80; 
         }
 
         .menu-item:hover {
@@ -296,7 +296,7 @@ st.markdown("""
         }
 
         img:hover {
-            transform: scale(1.02); /* Sedikit diperkecil agar tidak terlalu agresif */
+            transform: scale(1.02); 
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
 
@@ -309,7 +309,7 @@ st.markdown("""
             font-style: italic;
             text-align: center;
             transition: transform 0.3s ease;
-            border-left: 5px solid #ff5722; /* Garis vertikal pemanis */
+            border-left: 5px solid #ff5722; 
         }
 
         .testimonial:hover {
@@ -340,30 +340,23 @@ if 'classification' not in st.session_state:
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
 def load_yolo_model(path):
-    # Pastikan path model benar
     if not os.path.exists(path):
-        # st.error(f"File model YOLO tidak ditemukan di: {path}") # Komentar ini dinonaktifkan untuk tampilan yang lebih rapi
         return None
     try:
         model = YOLO(path)
         return model
     except Exception as e:
-        # st.error(f"Gagal memuat model YOLO: {e}") # Komentar ini dinonaktifkan untuk tampilan yang lebih rapi
         return None
 
 @st.cache_resource
 def load_classification_model():
     try:
-        # Pemuatan ResNet50 standar
-        # st.info("Memuat ResNet50. Ini hanya terjadi sekali.")
         model = tf.keras.applications.ResNet50(weights='imagenet')
         return model
     except Exception as e:
-        # st.error(f"Gagal memuat model Klasifikasi: {e}. Pastikan Anda memiliki koneksi internet.") # Komentar ini dinonaktifkan untuk tampilan yang lebih rapi
         return None
 
 # ========================== HORIZONTAL NAVIGATION (Tabs at Top) ==========================
-# Ganti nama tab agar lebih menarik
 tabs = st.tabs(["Beranda ✨", "Deteksi Alat Makan 🍽️", "Klasifikasi Makanan 📸", "Menu Rekomendasi 🎁", "Kontak Kami 💌", "Tentang Proyek 💡"])
 
 # ========================== MAIN CONTENT BASED ON TABS ==========================
@@ -372,6 +365,7 @@ tabs = st.tabs(["Beranda ✨", "Deteksi Alat Makan 🍽️", "Klasifikasi Makana
 with tabs[0]:
     st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut: Rasa dan Teknologi!</h2>", unsafe_allow_html=True)
     
+    # PERUBAHAN: Menghapus bagian "Fitur Unggulan Kami"
     st.markdown(f"""
     <div class='card'>
         <p style='font-size: 1.4rem; text-align: center; font-style: italic;'>
@@ -381,23 +375,9 @@ with tabs[0]:
         <p style='font-size: 1.2rem;'>
             Kami menghadirkan dimensi baru dalam pengalaman kuliner Anda dengan menggabungkan <span style='font-weight: bold; color: #cc0000;'>Kecerdasan Buatan (AI)</span> dengan hidangan Italia klasik. Dari deteksi peralatan makan hingga personalisasi menu, Pijjahut adalah restoran masa depan.
         </p>
-        <hr>
-        <h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2rem;'>Fitur Unggulan Kami 🤖</h3>
-        
-        <div class="row">
-        <div class="col-md-4 menu-item" style="border-color: #e64a19; margin-top: 10px;">
-            <p style='font-weight: bold;'>🍽️ Deteksi Akurat</p>
-            <p style='font-size: 0.9rem;'>Model <span style='font-weight: bold;'>YOLO</span> siap mengidentifikasi piring dan gelas Anda secara *real-time*.</p>
-        </div>
-        <div class="col-md-4 menu-item" style="border-color: #e64a19; margin-top: 10px;">
-            <p style='font-weight: bold;'>🔍 Klasifikasi Cerdas</p>
-            <p style='font-size: 0.9rem;'>Resep rahasia? Model <span style='font-weight: bold;'>ResNet50</span> kami tahu apakah itu benar-benar pizza atau bukan.</p>
-        </div>
-        <div class="col-md-4 menu-item" style="border-color: #e64a19; margin-top: 10px;">
-            <p style='font-weight: bold;'>✨ Rekomendasi Personal</p>
-            <p style='font-size: 0.9rem;'>Menu spesial disesuaikan berdasarkan hasil klasifikasi Anda. Nikmati pengalaman yang lebih intim.</p>
-        </div>
-        </div>
+        <p style='font-size: 1.2rem;'>
+            Coba fitur kami: <span style='font-weight: bold;'>Deteksi Alat Makan</span> menggunakan YOLO dan <span style='font-weight: bold;'>Klasifikasi Makanan</span> menggunakan ResNet50 untuk mendapatkan **Rekomendasi Menu Personal** dari kami!
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -515,7 +495,7 @@ with tabs[2]:
                         
                         # LOGIKA PENENTUAN KLASIFIKASI
                         is_pizza = False
-                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'foccacia', 'gong_gong'] # Tambahkan keyword jika perlu
+                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'foccacia', 'gong_gong'] 
                         main_label = decoded_predictions[0][1].replace('_', ' ').title()
                         
                         # Cek apakah ada keyword "pizza" di Top 5 prediksi

@@ -217,13 +217,13 @@ def load_yolo_model(path):
 
 @st.cache_resource
 def load_classification_model():
-    # PATH MODEL KLASIFIKASI KUSTOM ANDA
-    MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' 
+    # >>>>>> PENYESUAIAN KRUSIAL: PATH MODEL DIUBAH KE BISMILLAHDINI_Laporan2.h5 <<<<<<
+    MODEL_PATH = 'model/BISMILLAHDINI_Laporan2.h5' 
     
     # Cek keberadaan file sebelum memuat
     if not os.path.exists(MODEL_PATH):
         st.error(f"❌ File model klasifikasi TIDAK DITEMUKAN di: '{MODEL_PATH}'.")
-        st.error("Pastikan file BISMILLAHDINI2_Laporan2.h5 ada di dalam folder 'model'.")
+        st.error("Pastikan file BISMILLAHDINI_Laporan2.h5 ada di dalam folder 'model'.")
         return None
 
     try:
@@ -397,7 +397,7 @@ with tabs[2]:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (BISMILLAHDINI2_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
+        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda (BISMILLAHDINI_Laporan2.h5)</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -417,7 +417,7 @@ with tabs[2]:
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
             
-            # >>>>>> PENYESUAIAN KRITIS DIKEMBALIKAN KE 224x224 SESUAI PERMINTAAN <<<<<<
+            # >>>>>> PENYESUAIAN KRUSIAL: UKURAN DIUBAH KE 224x224 SESUAI PERMINTAAN <<<<<<
             image_class_resized = image_pil.resize((224, 224)) 
             
             st.session_state['classification_image_input'] = image_class_resized
@@ -467,7 +467,7 @@ with tabs[2]:
                         
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
-                        st.error("PERINGATAN KERAS: Model Anda (BISMILLAHDINI2_Laporan2.h5) **masih mengharapkan 9216 fitur**, meskipun Anda memberikan input 224x224. Ini mengkonfirmasi ketidaksesuaian arsitektur model. Solusi terbaik adalah melatih ulang model dengan input 224x224 dan arsitektur yang benar, atau kembali ke ukuran 96x96/48x48.")
+                        st.warning("Pastikan file model `BISMILLAHDINI_Laporan2.h5` di folder `model/` Anda sudah benar-benar dilatih dengan input 224x224 dan arsitektur `Flatten` yang sesuai.")
 
 
         st.markdown("---") # Garis pemisah antara input dan output

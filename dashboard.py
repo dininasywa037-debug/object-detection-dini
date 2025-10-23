@@ -156,13 +156,79 @@ with tabs[0]:
     
    # Testimonial Section
     st.markdown("<h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2rem;'>Apa Kata Pengguna Kami</h3>", unsafe_allow_html=True)
+    
+    # Menggunakan 2 kolom
     col1, col2 = st.columns(2)
+    
+    # Testimonial 1 (Kiri Atas)
     with col1:
-        st.markdown("<div class='testimonial'>'Pizza' di sini luar biasa. <span style='font-weight: bold;'>AI-nya sangat keren</span>, deteksi piringnya cepat dan tepat!' - Balqis, <span style='color:#ff5722;'>Food Blogger</span></div>", unsafe_allow_html=True)
-        st.markdown("<div class='testimonial'>'Rekomendasi menu berdasarkan klasifikasi <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran.' - Syira, <span style='color:#ff5722;'>Pelanggan Setia</span></div>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class='testimonial'>
+                <p style='margin: 0;'>
+                    <span style='font-size: 1.5rem; color: #ff5722;'>⭐</span> 
+                    'Pizza' di sini luar biasa. 
+                    <span style='font-weight: bold;'>AI-nya sangat keren</span>, deteksi piringnya cepat dan tepat!' 
+                </p>
+                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
+                    - Balqis, <span style='color:#ff5722; font-weight: bold;'>Food Blogger</span>
+                </p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        # Testimonial 2 (Kiri Bawah)
+        st.markdown(
+            """
+            <div class='testimonial'>
+                <p style='margin: 0;'>
+                    <span style='font-size: 1.5rem; color: #ff5722;'>🤩</span> 
+                    'Rekomendasi menu berdasarkan klasifikasi 
+                    <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran.'
+                </p>
+                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
+                    - Syira, <span style='color:#ff5722; font-weight: bold;'>Pelanggan Setia</span>
+                </p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+    
+    # Testimonial 3 (Kanan Atas)
     with col2:
-        st.markdown("<div class='testimonial'>'Mengunggah foto dan langsung tahu itu pizza atau bukan. <span style='font-weight: bold;'>Pengalaman kuliner yang inovatif</span>.' - Oja, <span style='color:#ff5722;'>Tech Enthusiast</span></div>", unsafe_allow_html=True)
-        st.markdown("<div class='testimonial'>'Desain web yang cantik dan fungsional. Saya suka <span style='font-weight: bold;'>estetika Pijjahut</span>!' - Marlin, <span style='color:#ff5722;'>Desainer Grafis</span></div>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class='testimonial'>
+                <p style='margin: 0;'>
+                    <span style='font-size: 1.5rem; color: #ff5722;'>💡</span> 
+                    'Mengunggah foto dan langsung tahu itu pizza atau bukan. 
+                    <span style='font-weight: bold;'>Pengalaman kuliner yang inovatif</span>.'
+                </p>
+                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
+                    - Oja, <span style='color:#ff5722; font-weight: bold;'>Tech Enthusiast</span>
+                </p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
+        
+        # Testimonial 4 (Kanan Bawah)
+        st.markdown(
+            """
+            <div class='testimonial'>
+                <p style='margin: 0;'>
+                    <span style='font-size: 1.5rem; color: #ff5722;'>🎨</span> 
+                    'Desain web yang cantik dan fungsional. Saya suka 
+                    <span style='font-weight: bold;'>estetika Pijjahut</span>!'
+                </p>
+                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
+                    - Marlin, <span style='color:#ff5722; font-weight: bold;'>Desainer Grafis</span>
+                </p>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
 # ----------------- DETEKSI OBJEK -----------------
 with tabs[1]:
     st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)

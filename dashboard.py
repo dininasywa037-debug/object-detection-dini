@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (Revisi Header & File Uploader & Peringatan Rekomendasi) ==========================
+# ========================== CUSTOM STYLE ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -102,7 +102,7 @@ st.markdown("""
             position: relative;
         }
         
-        /* ANCHOR: CUSTOM CSS FILE UPLOADER */
+        /* CUSTOM CSS FILE UPLOADER */
         .stFileUploader {
             margin-top: 1rem;
             margin-bottom: 1rem;
@@ -135,14 +135,13 @@ st.markdown("""
             color: #d84315 !important;
             text-shadow: none;
         }
-        /* END ANCHOR: CUSTOM CSS FILE UPLOADER */
 
-        /* ANCHOR: CUSTOM CSS PESAN PERINGATAN REKOMENDASI */
+        /* CUSTOM CSS PESAN PERINGATAN REKOMENDASI */
         .recommendation-alert {
             padding: 1.5rem;
-            border: 3px solid #ffcc00; /* Warna kuning yang lebih hangat */
+            border: 3px solid #ffcc00; 
             border-radius: 15px;
-            background: linear-gradient(45deg, #fff3e0, #ffecb3); /* Gradien kuning-putih */
+            background: linear-gradient(45deg, #fff3e0, #ffecb3); 
             text-align: center;
             margin-top: 1.5rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -151,7 +150,7 @@ st.markdown("""
 
         .recommendation-alert p {
             margin: 0;
-            color: #e65100 !important; /* Warna oranye gelap */
+            color: #e65100 !important; 
             font-size: 1.25rem;
             font-weight: 600;
             text-shadow: none;
@@ -160,21 +159,28 @@ st.markdown("""
         .recommendation-alert .icon {
             font-size: 1.8rem;
             margin-right: 10px;
-            color: #cc0000 !important; /* Ikon warna merah khas Pijjahut */
+            color: #cc0000 !important; 
         }
-        /* END ANCHOR: CUSTOM CSS PESAN PERINGATAN REKOMENDASI */
     </style>
 """, unsafe_allow_html=True)
 
 # ========================== HEADER ==========================
-# JUDUL UTAMA (Besar, berjarak, tanpa emotikon berputar)
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================
+# Inisialisasi state untuk klasifikasi
 if 'classification' not in st.session_state:
     st.session_state['classification'] = 'none'
+
+# Inisialisasi state untuk hasil deteksi/klasifikasi (kontrol tampilan)
+if 'detection_result_img' not in st.session_state:
+    st.session_state['detection_result_img'] = None
+if 'classification_final_result' not in st.session_state:
+    st.session_state['classification_final_result'] = None
+if 'classification_image_input' not in st.session_state:
+    st.session_state['classification_image_input'] = None
 
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
@@ -263,18 +269,19 @@ with tabs[1]:
     </div>
     """, unsafe_allow_html=True)
     
-    # Ganti path model ini sesuai dengan lokasi model Anda
     YOLO_MODEL_PATH = 'model/DINI ARIFATUL NASYWA_Laporan 4.pt'
     yolo_model = load_yolo_model(YOLO_MODEL_PATH)
     
     if yolo_model:
-        # File Uploader dengan styling baru
         uploaded_file = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo")
 
+        col_input, col_output = st.columns(2) 
+        
+        # Logika reset state deteksi
+        if uploaded_file is None:
+            st.session_state['detection_result_img'] = None
+        
         if uploaded_file:
-            # PENGGUNAAN KOLOM UNTUK INPUT DAN OUTPUT BERSEBELAHAN
-            col_input, col_output = st.columns(2) 
-
             image = Image.open(uploaded_file)
             
             with col_input:
@@ -285,15 +292,19 @@ with tabs[1]:
                     try:
                         results = yolo_model(image)
                         result_img = results[0].plot()  
-                        # Konversi dari BGR (output YOLO) ke RGB (display Streamlit)
                         result_img_rgb = Image.fromarray(result_img[..., ::-1])
                         
-                        with col_output:
-                            st.image(result_img_rgb, caption="Hasil Deteksi YOLO", use_container_width=True)
+                        # Simpan hasil ke session state
+                        st.session_state['detection_result_img'] = result_img_rgb
 
                         st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat deteksi: {e}. Pastikan format gambar dan model benar.")
+        
+        # Tampilkan output hanya jika ada di session state
+        if st.session_state['detection_result_img'] is not None:
+            with col_output:
+                st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
     else:
         st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
 
@@ -310,24 +321,29 @@ with tabs[2]:
     classification_model = load_classification_model()
     
     if classification_model:
-        # File Uploader dengan styling baru
         uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify")
 
-        if uploaded_file_class:
-            # PENGGUNAAN KOLOM UNTUK INPUT DAN OUTPUT BERSEBELAHAN
-            col_class_input, col_class_output = st.columns(2)
+        col_class_input, col_class_output = st.columns(2)
+        
+        # Logika reset state klasifikasi
+        if uploaded_file_class is None:
+            st.session_state['classification_final_result'] = None
+            st.session_state['classification_image_input'] = None
 
+        if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
-            image_class = image_pil.resize((224, 224))
+            image_class_resized = image_pil.resize((224, 224))
+            
+            # Simpan input yang diredimension ke session state untuk ditampilkan
+            st.session_state['classification_image_input'] = image_class_resized
             
             with col_class_input:
-                st.image(image_class, caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
+                st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
                     try:
-                        img_array = np.array(image_class)
-                        # Handle grayscale dan RGBA
+                        img_array = np.array(image_class_resized)
                         if img_array.ndim == 2:
                             img_array = np.stack((img_array,)*3, axis=-1)
                         if img_array.shape[2] == 4:
@@ -336,10 +352,8 @@ with tabs[2]:
                         preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
                         
                         predictions = classification_model.predict(preprocessed_img)
-                        # Mengambil Top 5 prediksi
                         decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
                         
-                        # LOGIKA PENENTUAN KLASIFIKASI
                         is_pizza = False
                         pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
                         
@@ -347,25 +361,37 @@ with tabs[2]:
                             if any(keyword in label.lower() for keyword in pizza_keywords):
                                 is_pizza = True
                                 
-                        # Tampilkan hasil di kolom kanan
-                        with col_class_output:
-                            st.markdown("### Hasil Klasifikasi AI")
-                            if is_pizza:
-                                final_result = "Pizza"
-                                st.session_state['classification'] = 'pizza'
-                                st.balloons()
-                                st.success(f"🎉 Selamat! Objek ini terklasifikasi sebagai {final_result}.")
-                            else:
-                                final_result = "Bukan Pizza"
-                                st.session_state['classification'] = 'not_pizza'
-                                st.snow()
-                                st.info(f"😕 Objek ini terklasifikasi sebagai {final_result} (mungkin makanan atau masakan lain).")
-                                
-                            st.markdown(f"---")
-                            st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
+                        
+                        # Simpan hasil akhir ke session state
+                        if is_pizza:
+                            final_result = "Pizza"
+                            st.session_state['classification'] = 'pizza'
+                            st.balloons()
+                        else:
+                            final_result = "Bukan Pizza"
+                            st.session_state['classification'] = 'not_pizza'
+                            st.snow()
+                        
+                        st.session_state['classification_final_result'] = final_result
                         
                     except Exception as e:
                         st.error(f"Terjadi kesalahan saat klasifikasi: {e}")
+        
+        # Tampilkan output klasifikasi hanya jika ada di session state
+        if st.session_state['classification_final_result'] is not None:
+            final_result = st.session_state['classification_final_result']
+            
+            with col_class_output:
+                st.markdown("### Hasil Klasifikasi AI")
+                
+                if final_result == "Pizza":
+                    st.success(f"🎉 Selamat! Objek ini terklasifikasi sebagai {final_result}.")
+                else:
+                    st.info(f"😕 Objek ini terklasifikasi sebagai {final_result} (mungkin makanan atau masakan lain).")
+
+                st.markdown(f"---")
+                st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
+
     else:
         st.warning("Model Klasifikasi (ResNet50) tidak dapat dimuat. Pastikan TensorFlow terinstal dengan benar dan weights ImageNet dapat diakses.")
 
@@ -373,7 +399,7 @@ with tabs[2]:
 # ----------------- MENU REKOMENDASI -----------------
 with tabs[3]:
     st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🌟</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_allow_html=True)
     
     menu = {
         'pizza_spesial': [
@@ -429,7 +455,7 @@ with tabs[3]:
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
     else:
-        # Pesan untuk meminta klasifikasi (Menggunakan CSS Baru)
+        # Pesan untuk meminta klasifikasi (CSS Cantik)
         st.markdown("""
         <div class='recommendation-alert'>
             <p>

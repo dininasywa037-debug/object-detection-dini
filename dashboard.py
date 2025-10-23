@@ -399,7 +399,8 @@ with tabs[2]:
 # ----------------- MENU REKOMENDASI -----------------
 with tabs[3]:
     st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🌟</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_allow_html=True)
+    # FIX: Koreksi dari unsafe_allow_allow_html=True menjadi unsafe_allow_html=True
+    st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_html=True)
     
     menu = {
         'pizza_spesial': [

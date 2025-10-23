@@ -457,10 +457,8 @@ with tabs[2]:
                             pizza_probability = predictions[0][1] # Asumsi index 1 adalah kelas Pizza
                         
                         # 3. Logika Klasifikasi (Ambil Keputusan)
-                        # >>> PERBAIKAN: NAIKKAN THRESHOLD UNTUK MENGATASI OVERCONFIDENCE <<<
-                        # Jika model selalu memprediksi Pizza, naikkan THRESHOLD.
-                        # Nilai 0.7 adalah nilai coba-coba yang lebih konservatif. (DIUBAH DARI 0.95 KE 0.7)
-                        THRESHOLD = 0.7 
+                        # >>> PERUBAHAN: NILAI THRESHOLD MENJADI 0.6 SESUAI PERMINTAAN ANDA <<<
+                        THRESHOLD = 0.6 
                         
                         if pizza_probability > THRESHOLD:
                             final_result = "Pizza"

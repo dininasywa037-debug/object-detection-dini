@@ -4,6 +4,7 @@ import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os 
+from io import BytesIO
 
 # ========================== CONFIG PAGE ==========================
 st.set_page_config(
@@ -12,27 +13,23 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (Ditambah Efek Transisi) ==========================
+# ========================== CUSTOM STYLE (Fokus pada Transisi Halus) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
 
-        /* === Efek Transisi Fade-In Global === */
+        /* === Efek Transisi Fade-In Global untuk Tampilan Tab yang Lebih Halus === */
         .stApp {
-            animation: fadeInAnimation ease 0.5s; /* Durasi dipercepat sedikit agar tidak terlalu lambat */
+            animation: fadeInAnimation ease 0.4s; 
             animation-iteration-count: 1;
             animation-fill-mode: forwards;
         }
 
         @keyframes fadeInAnimation {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
-        /* ==================================== */
+        /* ====================================================================== */
 
         body, .stApp {
             background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #ede0c8 100%);
@@ -46,7 +43,6 @@ st.markdown("""
             text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
-        /* HEADER: Besar, berjarak, dan di tengah */
         .main-title {
             text-align: center;
             font-size: 15vw; 
@@ -187,45 +183,59 @@ st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Detek
 st.markdown("---")
 
 # ========================== INITIALIZE SESSION STATE ==========================
-# Inisialisasi state untuk klasifikasi
+# Inisialisasi semua state yang diperlukan
 if 'classification' not in st.session_state:
     st.session_state['classification'] = 'none'
 
-# Inisialisasi state untuk hasil deteksi/klasifikasi (kontrol tampilan)
 if 'detection_result_img' not in st.session_state:
     st.session_state['detection_result_img'] = None
 if 'classification_final_result' not in st.session_state:
     st.session_state['classification_final_result'] = None
 if 'classification_image_input' not in st.session_state:
     st.session_state['classification_image_input'] = None
-if 'uploaded_file_deteksi' not in st.session_state:
-    st.session_state['uploaded_file_deteksi'] = None
-if 'uploaded_file_klasifikasi' not in st.session_state:
-    st.session_state['uploaded_file_klasifikasi'] = None
+
+# Tambahkan state tracker untuk uploader (untuk kontrol flicker yang lebih baik)
+if 'last_yolo_uploader' not in st.session_state:
+    st.session_state['last_yolo_uploader'] = None
+if 'last_classify_uploader' not in st.session_state:
+    st.session_state['last_classify_uploader'] = None
 
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
-# Menggunakan st.cache_data untuk model yang tidak perlu di-instantiate ulang setiap kali rerun
-@st.cache_data
+# Menggunakan st.cache_resource untuk objek berat seperti model ML
+@st.cache_resource
 def load_yolo_model(path):
     try:
-        # PENTING: Jika model YOLO tidak bisa dimuat, hapus atau ganti path.
-        # Jika Anda menjalankan ini di lingkungan tanpa file model, ini akan error.
-        # Karena ini contoh, diasumsikan path 'model/...' valid.
+        # PENTING: Ganti path model Anda jika berbeda
         model = YOLO(path)
         return model
     except Exception as e:
         st.error(f"Gagal memuat model YOLO dari '{path}'. Pastikan file model ada di lokasi tersebut. Error: {e}")
         return None
 
-@st.cache_data
+@st.cache_resource
 def load_classification_model():
     try:
-        # PENTING: ResNet50 memerlukan koneksi internet untuk mengunduh weights ImageNet pertama kali.
         model = tf.keras.applications.ResNet50(weights='imagenet')
         return model
     except Exception as e:
         st.error(f"Gagal memuat model Klasifikasi: {e}. Pastikan Anda memiliki koneksi internet dan instalasi TensorFlow/Keras benar.")
         return None
+
+# ========================== KONTROL STATE SAAT BERPINDAH TAB ==========================
+# Fungsi untuk membersihkan hasil dari tab yang TIDAK aktif (meminimalkan flicker)
+# Fungsi ini dipanggil di awal setiap tab.
+def clear_inactive_results(current_tab_index):
+    # Tab Deteksi Objek (Index 1)
+    if current_tab_index != 1 and st.session_state.get('detection_result_img') is not None:
+        st.session_state['detection_result_img'] = None
+
+    # Tab Klasifikasi Gambar (Index 2)
+    if current_tab_index != 2:
+        if st.session_state.get('classification_final_result') is not None:
+            st.session_state['classification_final_result'] = None
+        if st.session_state.get('classification_image_input') is not None:
+            st.session_state['classification_image_input'] = None
+
 
 # ========================== HORIZONTAL NAVIGATION (Tabs at Top) ==========================
 tabs = st.tabs(["Beranda 🏠", "Deteksi Objek 🍽️", "Klasifikasi Gambar 🍕", "Menu Rekomendasi 🌟", "Kontak Kami 📞", "Tentang Kami ℹ️"])
@@ -234,6 +244,7 @@ tabs = st.tabs(["Beranda 🏠", "Deteksi Objek 🍽️", "Klasifikasi Gambar �
 
 # ----------------- BERANDA -----------------
 with tabs[0]:
+    clear_inactive_results(0)
     st.markdown("<h2 class='section-title'>Jelajahi Inovasi AI Kuliner</h2>", unsafe_allow_html=True)
     
     # KARTU SAMBUTAN
@@ -288,6 +299,7 @@ with tabs[0]:
 
 # ----------------- DETEKSI OBJEK -----------------
 with tabs[1]:
+    clear_inactive_results(1)
     st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -300,18 +312,17 @@ with tabs[1]:
     
     if yolo_model:
         
-        # Kolom untuk Input (Uploader & Tombol) dan Output (Gambar)
         col_input_deteksi, col_output_deteksi = st.columns(2) 
 
         # --- Bagian Input ---
         with col_input_deteksi:
-            # Menggunakan key untuk memastikan uploader berbeda
+            # Menggunakan key "yolo_uploader"
             uploaded_file_deteksi = st.file_uploader("Upload Gambar Piring atau Gelas (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="yolo_uploader")
             
-            # Logika reset state deteksi: Hapus hasil saat file berubah/dihapus
-            if uploaded_file_deteksi != st.session_state.uploaded_file_deteksi:
+            # PENTING: Logika reset hasil jika file baru diupload atau dihapus
+            if st.session_state.get('last_yolo_uploader') != uploaded_file_deteksi:
                 st.session_state['detection_result_img'] = None
-                st.session_state.uploaded_file_deteksi = uploaded_file_deteksi
+                st.session_state['last_yolo_uploader'] = uploaded_file_deteksi # Update tracker
 
             if uploaded_file_deteksi:
                 image = Image.open(uploaded_file_deteksi)
@@ -320,11 +331,12 @@ with tabs[1]:
                 if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
                     with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
                         try:
+                            # Model inference
                             results = yolo_model(image)
                             result_img = results[0].plot()  
+                            # Ubah dari BGR (YOLO default) ke RGB (PIL/Streamlit default)
                             result_img_rgb = Image.fromarray(result_img[..., ::-1])
                             
-                            # Simpan hasil ke session state
                             st.session_state['detection_result_img'] = result_img_rgb
                             st.success("Deteksi berhasil! Objek piring/gelas telah ditandai.")
                         except Exception as e:
@@ -332,11 +344,9 @@ with tabs[1]:
 
         # --- Bagian Output ---
         with col_output_deteksi:
-            # Tampilkan output hanya jika ada di session state
-            if st.session_state['detection_result_img'] is not None:
+            if st.session_state.get('detection_result_img') is not None:
                 st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
             else:
-                 # Placeholder saat belum ada hasil
                 st.markdown("<div style='height: 300px; border: 2px dashed #ff5722; border-radius: 15px; text-align: center; padding-top: 100px; color: #ff5722; font-weight: bold;'>HASIL DETEKSI AKAN MUNCUL DI SINI</div>", unsafe_allow_html=True)
     else:
         st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
@@ -344,6 +354,7 @@ with tabs[1]:
 
 # ----------------- KLASIFIKASI GAMBAR -----------------
 with tabs[2]:
+    clear_inactive_results(2)
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -361,17 +372,16 @@ with tabs[2]:
         with col_class_input:
             uploaded_file_class = st.file_uploader("Upload Gambar untuk Klasifikasi (.jpg, .jpeg, .png)", type=["jpg", "jpeg", "png"], key="classify_uploader")
 
-            # Logika reset state klasifikasi: Hapus hasil saat file berubah/dihapus
-            if uploaded_file_class != st.session_state.uploaded_file_klasifikasi:
+            # PENTING: Logika reset hasil jika file baru diupload atau dihapus
+            if st.session_state.get('last_classify_uploader') != uploaded_file_class:
                 st.session_state['classification_final_result'] = None
                 st.session_state['classification_image_input'] = None
-                st.session_state.uploaded_file_klasifikasi = uploaded_file_class
+                st.session_state['last_classify_uploader'] = uploaded_file_class # Update tracker
 
             if uploaded_file_class:
                 image_pil = Image.open(uploaded_file_class)
                 image_class_resized = image_pil.resize((224, 224))
                 
-                # Simpan input yang diredimension ke session state untuk ditampilkan
                 st.session_state['classification_image_input'] = image_class_resized
                 
                 st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
@@ -391,14 +401,14 @@ with tabs[2]:
                             decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
                             
                             is_pizza = False
-                            pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
+                            # Gunakan keywords yang lebih luas dari ImageNet untuk makanan utama
+                            pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'focaccia', 'quiche'] 
                             
                             for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
                                 if any(keyword in label.lower() for keyword in pizza_keywords):
                                     is_pizza = True
                                     
                             
-                            # Simpan hasil akhir ke session state
                             if is_pizza:
                                 final_result = "Pizza"
                                 st.session_state['classification'] = 'pizza'
@@ -415,8 +425,7 @@ with tabs[2]:
 
         # --- Bagian Output ---
         with col_class_output:
-            # Tampilkan output klasifikasi hanya jika ada di session state
-            if st.session_state['classification_final_result'] is not None:
+            if st.session_state.get('classification_final_result') is not None:
                 final_result = st.session_state['classification_final_result']
                 
                 st.markdown("### Hasil Klasifikasi AI")
@@ -429,16 +438,17 @@ with tabs[2]:
                 st.markdown(f"---")
                 st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
             else:
-                # Placeholder saat belum ada hasil
                 st.markdown("<div style='height: 300px; border: 2px dashed #ff5722; border-radius: 15px; text-align: center; padding-top: 100px; color: #ff5722; font-weight: bold;'>HASIL KLASIFIKASI AKAN MUNCUL DI SINI</div>", unsafe_allow_html=True)
 
     else:
-        st.warning("Model Klasifikasi (ResNet50) tidak dapat dimuat. Pastikan TensorFlow terinstal dengan benar dan weights ImageNet dapat diakses.")
+        st.warning("Model Klasifikasi (ResNet50) tidak dapat dimuat. Pastikan TensorFlow terinstal dengan benar.")
 
 
 # ----------------- MENU REKOMENDASI -----------------
 with tabs[3]:
+    clear_inactive_results(3)
     st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🌟</h2>", unsafe_allow_html=True)
+    # KOREKSI: Pastikan sintaks HTML di sini benar
     st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_html=True)
     
     menu = {
@@ -495,7 +505,6 @@ with tabs[3]:
                 st.markdown(f"<div class='menu-item'><span style='font-weight: bold;'>{item['nama']}</span> <br> <span style='font-size: 0.9rem;'>{item['deskripsi']}</span> <br> <span style='color:#ff5722; font-weight: bold;'>{item['harga']}</span></div>", unsafe_allow_html=True)
         
     else:
-        # Pesan untuk meminta klasifikasi (CSS Cantik)
         st.markdown("""
         <div class='recommendation-alert'>
             <p>
@@ -508,6 +517,7 @@ with tabs[3]:
 
 # ----------------- KONTAK KAMI -----------------
 with tabs[4]:
+    clear_inactive_results(4)
     st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
@@ -524,6 +534,7 @@ with tabs[4]:
 
 # ----------------- TENTANG KAMI -----------------
 with tabs[5]:
+    clear_inactive_results(5)
     st.markdown("<h2 class='section-title'>Tentang Pijjahut ℹ️</h2>", unsafe_allow_html=True)
     st.markdown(f"""
     <div class='card'>

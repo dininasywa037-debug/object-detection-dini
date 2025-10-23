@@ -265,7 +265,7 @@ with tabs[0]:
     
     # Data Testimoni (Sesuai dengan image_d4dc50.png)
     testimonials = [
-        ("Balqis, Food Blogger", "Pizza di luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"),
+        ("Balqis, Food Blogger", "Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"),
         ("Oja, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!"),
         ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran."),
         ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!")

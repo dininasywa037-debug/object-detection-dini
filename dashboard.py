@@ -213,11 +213,16 @@ def load_yolo_model(path):
 
 @st.cache_resource
 def load_classification_model():
+    # GANTI DENGAN PATH KE MODEL KLASIFIKASI KEMBARAN ANDA
+    MODEL_PATH = 'model/BISMILLAHDINI2_Laporan2.h5' # <--- GANTI PATH INI
+    
     try:
-        model = tf.keras.applications.ResNet50(weights='imagenet')
+        # Menggunakan tf.keras.models.load_model untuk model kustom Keras
+        model = tf.keras.models.load_model(MODEL_PATH) 
         return model
     except Exception as e:
-        st.error(f"Gagal memuat model Klasifikasi: {e}. Pastikan Anda memiliki koneksi internet dan instalasi TensorFlow/Keras benar.")
+        # Jika model kustom tidak ditemukan, beri peringatan spesifik
+        st.error(f"Gagal memuat model Klasifikasi kustom dari '{MODEL_PATH}'. Pastikan file model ada dan formatnya benar. Error: {e}")
         return None
 
 # ========================== KONTROL STATE SAAT BERPINDAH TAB ==========================
@@ -263,12 +268,12 @@ with tabs[0]:
     
     col_k1, col_k2, col_k3, col_k4 = st.columns(4)
     
-    # Data Testimoni (Sesuai dengan image_d4dc50.png)
+    # Data Testimoni
     testimonials = [
-        ("Balqis, Food Blogger", "Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"),
-        ("Oja, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!"),
-        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran."),
-        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!")
+        ("Balfis, Food Blogger", "Pizza di luar biasa. **AI-nya sangat keren**, deteksi piringnya cepat dan tepat!"),
+        ("Oija, Tech Enthusiast", "Mengunggah foto dan langsung tahu itu pizza atau bukan. **Pengalaman kuliner yang inovatif**!"),
+        ("Syira, Pelanggan Setia", "Rekomendasi menu berdasarkan klasifikasi **sangat akurat** dan bikin penasaran."),
+        ("Marlin, Desainer Grafis", "Desain web yang cantik dan fungsional. Saya suka **estetika Pijjahut**!")
     ]
 
     for i, (col, (author, quote)) in enumerate(zip([col_k1, col_k2, col_k3, col_k4], testimonials)):
@@ -284,7 +289,10 @@ with tabs[0]:
 
 
     st.markdown("---")
+
+    # Judul Fitur Canggih Kami sudah disamakan
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Fitur Canggih Kami</h2>", unsafe_allow_html=True)
+    
     # Bagian Fitur Canggih (3 Kolom)
     col_feat1, col_feat2, col_feat3 = st.columns(3)
     
@@ -302,7 +310,7 @@ with tabs[0]:
         <div class='menu-item'>
             <p style='font-size: 2rem;'>✨</p>
             <span style='font-weight: bold; color: #ff5722;'>Klasifikasi Pizza Akurat</span>
-            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Menganalisis gambar untuk mengidentifikasi apakah itu pizza atau bukan dengan <span style='font-weight: bold;'>ResNet50</span>.</p>
+            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Menganalisis gambar untuk mengidentifikasi apakah itu pizza atau bukan dengan <span style='font-weight: bold;'>Model Kustom Keras</span>.</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -379,7 +387,7 @@ with tabs[2]:
     st.markdown("<h2 class='section-title'>Klasifikasi Gambar Pizza 🍕</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>ResNet50</span> kami akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
+        <p>Bingung apakah yang Anda lihat adalah pizza? Upload gambarnya! Model klasifikasi berbasis <span style='font-weight: bold;'>Model Kustom Anda</span> akan memberi tahu Anda. Hasil ini akan menentukan rekomendasi menu spesial.</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -398,42 +406,51 @@ with tabs[2]:
 
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
-            image_class_resized = image_pil.resize((224, 224))
+            # Pastikan ukuran ini sesuai dengan input model kustom Anda (umumnya 224x224 atau 150x150)
+            image_class_resized = image_pil.resize((224, 224)) 
             
             st.session_state['classification_image_input'] = image_class_resized
             
             st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
-                with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
+                with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):
                     try:
-                        img_array = np.array(image_class_resized)
+                        # 1. Konversi dan Pra-pemrosesan Sederhana (sesuai dengan Pelatihan Model Kustom)
+                        img_array = np.array(image_class_resized, dtype=np.float32)
+                        
+                        # Handle Grayscale/Alpha channel
                         if img_array.ndim == 2:
                             img_array = np.stack((img_array,)*3, axis=-1)
                         if img_array.shape[2] == 4:
                             img_array = img_array[:,:,:3] 
+                        
+                        # Normalisasi (Asumsi model dilatih dengan normalisasi 0-1)
+                        img_array /= 255.0
+                        
+                        # Tambahkan dimensi batch 
+                        final_img_input = np.expand_dims(img_array, axis=0)
 
-                        preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
+                        # 2. Prediksi Menggunakan Model Kustom
+                        predictions = classification_model.predict(final_img_input)
                         
-                        predictions = classification_model.predict(preprocessed_img)
-                        decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
+                        # Asumsi: Model Kustom Anda menggunakan Sigmoid dan output 1 probabilitas untuk kelas "Pizza"
+                        # Ganti logika ini jika model Anda menggunakan Softmax (output > 1 probabilitas)
+                        pizza_probability = predictions[0][0] 
                         
-                        is_pizza = False
-                        pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'focaccia', 'quiche'] 
+                        # 3. Logika Klasifikasi (Ambil Keputusan)
+                        THRESHOLD = 0.5 
                         
-                        for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
-                            if any(keyword in label.lower() for keyword in pizza_keywords):
-                                is_pizza = True
-                                
-                        
-                        if is_pizza:
+                        if pizza_probability > THRESHOLD:
                             final_result = "Pizza"
                             st.session_state['classification'] = 'pizza'
                             st.balloons()
+                            st.info(f"Probabilitas Klasifikasi: **{pizza_probability:.2f}** (Threshold > {THRESHOLD})")
                         else:
                             final_result = "Bukan Pizza"
                             st.session_state['classification'] = 'not_pizza'
                             st.snow()
+                            st.info(f"Probabilitas Klasifikasi: **{pizza_probability:.2f}** (Threshold < {THRESHOLD})")
                         
                         st.session_state['classification_final_result'] = final_result
                         
@@ -460,7 +477,7 @@ with tabs[2]:
 
 
     else:
-        st.warning("Model Klasifikasi (ResNet50) tidak dapat dimuat. Pastikan TensorFlow terinstal dengan benar.")
+        st.warning(f"Model Klasifikasi kustom tidak dapat dimuat dari path yang ditentukan. Pastikan file model Anda benar.")
 
 
 # ----------------- MENU REKOMENDASI -----------------
@@ -560,7 +577,7 @@ with tabs[5]:
         <p>Proyek ini dikembangkan oleh <span style='font-weight: bold;'>Dini Arifatul Nasywa</span> sebagai bagian dari eksplorasi pada topik:</p>
         <ul>
             <li><span style='font-weight: bold;'>Deteksi Objek (YOLOv8):</span> Digunakan untuk mengenali peralatan makan dasar, piring dan gelas.</li>
-            <li><span style='font-weight: bold;'>Klasifikasi Gambar (ResNet50):</span> Dimanfaatkan untuk mengidentifikasi produk utama kami: Pizza.</li>
+            <li><span style='font-weight: bold;'>Klasifikasi Gambar (Model Kustom Keras):</span> Dimanfaatkan untuk mengidentifikasi produk utama kami: Pizza.</li>
             <li><span style='font-weight: bold;'>Platform:</span> Dibangun menggunakan <span style='font-weight: bold;'>Streamlit</span> untuk tampilan antarmuka yang interaktif dan <span style='font-weight: bold;'>user-friendly</span>.</li>
         </ul>
         <p>Terima kasih telah menjadi bagian dari perjalanan inovatif ini!</p>

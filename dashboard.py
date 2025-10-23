@@ -416,12 +416,13 @@ with tabs[2]:
 
         if uploaded_file_class:
             image_pil = Image.open(uploaded_file_class)
-            # Resolusi 224x224. Ubah jika model Anda dilatih dengan ukuran yang berbeda!
-            image_class_resized = image_pil.resize((224, 224)) 
+            
+            # >>>>>> RESOLUSI DIUBAH KE 112x112 UNTUK MENGATASI ERROR (9216 vs 36864) <<<<<<
+            image_class_resized = image_pil.resize((112, 112)) 
             
             st.session_state['classification_image_input'] = image_class_resized
             
-            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 224x224)", use_container_width=True)
+            st.image(st.session_state['classification_image_input'], caption="Gambar Input Anda (diresize ke 112x112)", use_container_width=True)
 
             if st.button("Klasifikasikan Sekarang 🔍", type="primary", key="classify_btn"):
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan Model Kustom Anda..."):

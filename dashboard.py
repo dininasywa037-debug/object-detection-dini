@@ -635,7 +635,7 @@ with tabs[4]:
     st.markdown("<h2 class='section-title'>Hubungi Kami 📞</h2>", unsafe_allow_html=True)
     st.markdown("""
     <div class='card'>
-        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut.</p>
+        <p style='font-size: 1.2rem; text-align: center;'>Ada pertanyaan, masukan, atau ingin memesan langsung? Jangan ragu untuk menghubungi tim Pijjahut!</p>
         <div class='contact-info'>
             <p><span style='font-weight: bold;'>📍 Alamat:</span> Jl. Digitalisasi No. 101, Kota Streamlit, Kode Pos 404 </p>
             <p><span style='font-weight: bold;'>📞 Telepon:</span> (021) 123-PIZZA (74992)</p>

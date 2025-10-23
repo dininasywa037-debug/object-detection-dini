@@ -259,15 +259,7 @@ if 'last_yolo_uploader' not in st.session_state:
 if 'last_classify_uploader' not in st.session_state:
     st.session_state['last_classify_uploader'] = None
 
-# >>> SESSION STATE UNTUK TESTIMONI <<<
-if 'testimonials' not in st.session_state:
-    st.session_state['testimonials'] = [
-        {'author': 'Balqis, Food Blogger', 'quote': 'Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!'},
-        {'author': 'Oja, Tech Enthusiast', 'quote': 'Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!'},
-        {'author': 'Syira, Pelanggan Setia', 'quote': 'Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran.'},
-        {'author': 'Marlin, Desainer Grafis', 'quote': 'Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!'}
-    ]
-# =========================================================
+# >>> TIDAK ADA INISIALISASI SESSION STATE UNTUK 'testimonials' <<<
 
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
@@ -347,57 +339,52 @@ with tabs[0]:
     </div>
     """, unsafe_allow_html=True)
     
-    # >>> KODE BARU UNTUK FORMULIR TESTIMONI (Di Atas) <<<
-    st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Berikan Testimoni Anda ❤️</h2>", unsafe_allow_html=True)
-    
-    # Menggunakan form Streamlit agar input dipertahankan saat tombol ditekan
-    with st.form(key='testimonial_form', clear_on_submit=True):
-        col_form1, col_form2 = st.columns([0.4, 0.6])
-        
-        with col_form1:
-            input_name = st.text_input("Nama Anda dan Profesi (Contoh: Budi, Chef)", max_chars=50)
-            submit_button = st.form_submit_button(label='Kirim Testimoni ❤️', type="primary")
-
-        with col_form2:
-            input_quote = st.text_area("Testimoni Anda tentang Pijjahut", height=50, max_chars=200)
-
-        if submit_button:
-            if input_name and input_quote:
-                new_testimonial = {
-                    'author': input_name,
-                    'quote': input_quote
-                }
-                # Tambahkan testimoni baru ke session state (di awal list agar langsung terlihat)
-                st.session_state['testimonials'].insert(0, new_testimonial)
-                st.success("Testimoni Anda berhasil dikirim dan akan muncul di bawah!")
-            else:
-                st.warning("Mohon lengkapi Nama/Profesi dan Testimoni.")
-    
-    # Bagian Tampilan Testimoni (Diletakkan di Bawah dalam 4 Kolom)
+    # Bagian Apa Kata Pengguna Kami (Versi Tanpa Testimoni Dinamis)
     st.markdown("<h2 class='section-title' style='margin-top: 3rem;'>Apa Kata Pengguna Kami</h2>", unsafe_allow_html=True)
     
-    # Membuat 4 kolom untuk menampung testimoni
-    col_t1, col_t2, col_t3, col_t4 = st.columns(4)
-    cols_t = [col_t1, col_t2, col_t3, col_t4] # Daftar kolom
+    # Konten Testimoni yang di-hardcode
+    col1, col2, col3, col4 = st.columns(4)
     
-    testimonials_list = st.session_state['testimonials']
+    with col1:
+        st.markdown("""
+        <div class='menu-item' style='min-height: 180px;'>
+            "Pijjahut luar biasa. AI-nya sangat keren, deteksi piringnya cepat dan tepat!"
+            <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
+                - Balqis, Food Blogger
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
-    # Mengiterasi dan menempatkan setiap testimoni ke salah satu dari 4 kolom secara bergantian
-    for i, item in enumerate(testimonials_list):
-        col = cols_t[i % 4] # Mengganti kolom (0, 1, 2, 3, 0, 1, ...)
-        
-        with col:
-            st.markdown(f"""
-            <div class='menu-item' style='min-height: 180px; text-align: left; font-style: italic; font-size: 0.95rem; border: 2px solid #ff5722;'>
-                "{item['quote']}"
-                <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
-                    - {item['author']}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-    # >>> AKHIR KODE TESTIMONI BARU <<<
+    with col2:
+        st.markdown("""
+        <div class='menu-item' style='min-height: 180px;'>
+            "Mengunggah foto dan langsung tahu itu pizza atau bukan. Pengalaman kuliner yang inovatif!"
+            <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
+                - Oja, Tech Enthusiast
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
+    with col3:
+        st.markdown("""
+        <div class='menu-item' style='min-height: 180px;'>
+            "Rekomendasi menu berdasarkan klasifikasi sangat akurat dan bikin penasaran."
+            <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
+                - Syira, Pelanggan Setia
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
 
+    with col4:
+        st.markdown("""
+        <div class='menu-item' style='min-height: 180px;'>
+            "Desain web yang cantik dan fungsional. Saya suka estetika Pijjahut!"
+            <p style='margin-top: 10px; font-weight: bold; font-style: normal; font-size: 0.9rem; color: #a00000;'>
+                - Marlin, Desainer Grafis
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    
     st.markdown("---")
 
     # Judul Fitur Canggih Kami
@@ -479,7 +466,6 @@ with tabs[1]:
         st.markdown("---") # Garis pemisah antara input dan output
         
         # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
-        # BARIS INI TELAH DIKOREKSI GAYA DAN INDENTASINYA
         st.markdown("<h2 class='section-title'>Hasil Deteksi</h2>", unsafe_allow_html=True)
         if st.session_state.get('detection_result_img') is not None:
             st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)

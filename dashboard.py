@@ -438,7 +438,8 @@ with tabs[1]:
         st.markdown("---") # Garis pemisah antara input dan output
         
         # --- Bagian Output (Di Bawah Input - FULL WIDTH) ---
-        st.markdown("### Hasil Deteksi")
+          st.markdown("<h2 class='section-title'>Hasil Deteksi</h2>", unsafe_allow_html=True)
+    st.markdown("""
         if st.session_state.get('detection_result_img') is not None:
             st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
         else:

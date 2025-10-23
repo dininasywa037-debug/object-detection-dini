@@ -205,7 +205,6 @@ if 'last_classify_uploader' not in st.session_state:
 @st.cache_resource
 def load_yolo_model(path):
     try:
-        # PENTING: Ganti path model Anda jika berbeda
         model = YOLO(path)
         return model
     except Exception as e:
@@ -223,7 +222,6 @@ def load_classification_model():
 
 # ========================== KONTROL STATE SAAT BERPINDAH TAB ==========================
 # Fungsi untuk membersihkan hasil dari tab yang TIDAK aktif (meminimalkan flicker)
-# Fungsi ini dipanggil di awal setiap tab.
 def clear_inactive_results(current_tab_index):
     # Tab Deteksi Objek (Index 1)
     if current_tab_index != 1 and st.session_state.get('detection_result_img') is not None:
@@ -347,7 +345,8 @@ with tabs[1]:
             if st.session_state.get('detection_result_img') is not None:
                 st.image(st.session_state['detection_result_img'], caption="Hasil Deteksi YOLO", use_container_width=True)
             else:
-                st.markdown("<div style='height: 300px; border: 2px dashed #ff5722; border-radius: 15px; text-align: center; padding-top: 100px; color: #ff5722; font-weight: bold;'>HASIL DETEKSI AKAN MUNCUL DI SINI</div>", unsafe_allow_html=True)
+                 # SPASI KOSONG PENGGANTI PLACEHOLDER TEKS
+                st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True) 
     else:
         st.warning(f"Model YOLO tidak dapat dimuat dari '{YOLO_MODEL_PATH}'. Pastikan file tersedia.")
 
@@ -401,7 +400,6 @@ with tabs[2]:
                             decoded_predictions = tf.keras.applications.resnet50.decode_predictions(predictions, top=5)[0] 
                             
                             is_pizza = False
-                            # Gunakan keywords yang lebih luas dari ImageNet untuk makanan utama
                             pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel', 'focaccia', 'quiche'] 
                             
                             for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
@@ -438,7 +436,9 @@ with tabs[2]:
                 st.markdown(f"---")
                 st.markdown(f"<p style='font-size: 1.8rem; text-align: center; font-weight: bold; color: #cc0000;'>Kesimpulan AI: {final_result}</p>", unsafe_allow_html=True)
             else:
-                st.markdown("<div style='height: 300px; border: 2px dashed #ff5722; border-radius: 15px; text-align: center; padding-top: 100px; color: #ff5722; font-weight: bold;'>HASIL KLASIFIKASI AKAN MUNCUL DI SINI</div>", unsafe_allow_html=True)
+                # SPASI KOSONG PENGGANTI PLACEHOLDER TEKS
+                st.markdown("<div style='height: 300px;'></div>", unsafe_allow_html=True)
+
 
     else:
         st.warning("Model Klasifikasi (ResNet50) tidak dapat dimuat. Pastikan TensorFlow terinstal dengan benar.")
@@ -448,7 +448,6 @@ with tabs[2]:
 with tabs[3]:
     clear_inactive_results(3)
     st.markdown("<h2 class='section-title'>Rekomendasi Menu Spesial 🌟</h2>", unsafe_allow_html=True)
-    # KOREKSI: Pastikan sintaks HTML di sini benar
     st.markdown("<p style='text-align: center;'>Rekomendasi ini didasarkan pada hasil klasifikasi gambar Anda di tab sebelumnya. Mari kita lihat apa yang cocok untuk Anda!</p>", unsafe_allow_html=True)
     
     menu = {

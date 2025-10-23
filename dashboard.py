@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-import os # Keep os for potential path handling, but simplify its use
+import os # Keep os for potential path handling
 
 # ========================== CONFIG PAGE ==========================
 st.set_page_config(
@@ -12,7 +12,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ========================== CUSTOM STYLE (No changes needed, looks good) ==========================
+# ========================== CUSTOM STYLE (Revisi Header) ==========================
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&family=Great+Vibes&display=swap');
@@ -26,12 +26,13 @@ st.markdown("""
 
         * {
             color: #3e2723 !important;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5); 
         }
 
+        /* REVISI HEADER */
         .main-title {
             text-align: center;
-            font-size: 10vw; /* Reduced size and made responsive */
+            font-size: 10vw; 
             font-weight: 900;
             font-family: 'Great Vibes', cursive;
             color: #cc0000 !important;
@@ -40,8 +41,41 @@ st.markdown("""
             margin-bottom: 0.5rem;
             animation: bounceIn 2s ease-in-out, pulse 3s infinite;
             position: relative;
+            display: inline-block; 
+            margin: 1rem auto 0.5rem auto; 
+            padding: 0 50px; 
+            display: table; 
         }
-        /* ... (Keep the rest of your custom CSS, as it's purely visual and functional) ... */
+        
+        /* Definisi animasi putar */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Emotikon Pizza Berputar (Kiri) */
+        .main-title::before {
+            content: '🍕';
+            font-size: 0.5em; 
+            position: absolute;
+            left: -5px; 
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 3s linear infinite;
+        }
+        
+        /* Emotikon Api Berputar (Kanan) */
+        .main-title::after {
+            content: '🔥';
+            font-size: 0.5em; 
+            position: absolute;
+            right: -5px; 
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 3s linear infinite reverse; 
+        }
+        /* END REVISI HEADER */
+        
         .subtitle {
             text-align: center;
             color: #5d4037 !important;
@@ -74,7 +108,6 @@ st.markdown("""
             position: relative;
             overflow: hidden;
         }
-        /* ... (Other CSS styles omitted for brevity in this response) ... */
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
@@ -102,6 +135,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========================== HEADER ==========================
+# JUDUL UTAMA DENGAN ANIMASI BERPUTAR
 st.markdown("<h1 class='main-title'>Pijjahut</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Selamat datang di restoran pizza terbaik. Deteksi piring dan gelas Anda, klasifikasikan gambar pizza, dan dapatkan rekomendasi menu spesial.</p>", unsafe_allow_html=True)
 st.markdown("---")
@@ -113,24 +147,20 @@ if 'classification' not in st.session_state:
 # ========================== UTILITY FUNCTIONS (Load Models) ==========================
 @st.cache_resource
 def load_yolo_model(path):
-    # Model path check is simplified to rely on YOLO's internal error handling
-    # The try-except block here is critical for deployment stability.
     try:
         model = YOLO(path)
         return model
     except Exception as e:
-        # A more generic error if the file is missing or corrupted
         st.error(f"Gagal memuat model YOLO dari '{path}'. Pastikan file model ada di lokasi tersebut. Error: {e}")
         return None
 
 @st.cache_resource
 def load_classification_model():
     try:
-        # Pemuatan ResNet50 standar (requires internet for weights download on first run)
         model = tf.keras.applications.ResNet50(weights='imagenet')
         return model
     except Exception as e:
-        st.error(f"Gagal memuat model Klasifikasi: {e}. Pastikan Anda memiliki koneksi internet (atau weights sudah diunduh) dan instalasi TensorFlow/Keras benar.")
+        st.error(f"Gagal memuat model Klasifikasi: {e}. Pastikan Anda memiliki koneksi internet dan instalasi TensorFlow/Keras benar.")
         return None
 
 # ========================== HORIZONTAL NAVIGATION (Tabs at Top) ==========================
@@ -140,95 +170,59 @@ tabs = st.tabs(["Beranda 🏠", "Deteksi Objek 🍽️", "Klasifikasi Gambar �
 
 # ----------------- BERANDA -----------------
 with tabs[0]:
-    st.markdown("<h2 class='section-title'>Selamat Datang di Pijjahut</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='section-title'>Jelajahi Inovasi AI Kuliner</h2>", unsafe_allow_html=True)
+    
+    # KARTU SAMBUTAN
     st.markdown(f"""
-    <div class='card'>
-        <p style='font-size: 1.4rem;'>Kami menggabungkan kecanggihan <span style='font-weight: bold;'>Kecerdasan Buatan (AI)</span> dengan cita rasa pizza yang luar biasa. Coba fitur <span style='font-weight: bold;'>Deteksi Objek</span> kami untuk mengenali peralatan makan, atau gunakan <span style='font-weight: bold;'>Klasifikasi Gambar</span> untuk mengetahui apakah itu pizza, dan dapatkan <span style='font-weight: bold;'>Rekomendasi Menu</span> personal dari kami!</p>
-        <p><span style='font-weight: bold;'>Fitur Canggih:</span></p>
-        <ul>
-            <li><span style='font-weight: bold;'>Deteksi Cepat:</span> Mengenali piring dan gelas dengan model <span style='font-weight: bold;'>YOLO</span> yang terlatih.</li>
-            <li><span style='font-weight: bold;'>Klasifikasi Cerdas:</span> Mengidentifikasi gambar sebagai pizza atau bukan pizza menggunakan arsitektur <span style='font-weight: bold;'>ResNet50</span>.</li>
-            <li><span style='font-weight: bold;'>Personalisasi:</span> Rekomendasi menu yang disesuaikan dengan hasil klasifikasi Anda.</li>
-        </ul>
-        <p>Mari kita mulai petualangan kuliner digital Anda!</p>
+    <div class='card' style='background: linear-gradient(180deg, #ffeedd 0%, #fffaf0 100%); border-color: #ff9800;'>
+        <p style='font-size: 1.5rem; text-align: center; color: #3e2723;'>
+            Kami menyajikan pengalaman kuliner masa depan dengan integrasi <span style='font-weight: bold; color: #cc0000;'>Kecerdasan Buatan (AI)</span>.
+            Temukan sajian terbaik, mulai dari deteksi peralatan makan hingga rekomendasi menu personal.
+        </p>
+        <p style='font-size: 1.1rem; text-align: center; font-style: italic; color: #5d4037;'>
+            Satu gigitan, satu algoritma yang sempurna.
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
-   # Testimonial Section
-    st.markdown("<h3 style='text-align: center; color: #ff5722; font-family: Pacifico, cursive; font-size: 2rem;'>Apa Kata Pengguna Kami</h3>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    st.markdown("<h3 style='text-align: center; color: #5d4037; font-family: Pacifico, cursive; font-size: 2.2rem; margin-bottom: 1.5rem;'>Fitur Canggih Kami</h3>", unsafe_allow_html=True)
     
-    # Menggunakan 2 kolom
-    col1, col2 = st.columns(2)
+    # Bagian Fitur Canggih (3 Kolom)
+    col_feat1, col_feat2, col_feat3 = st.columns(3)
     
-    # Testimonial 1 (Kiri Atas)
-    with col1:
-        st.markdown(
-            """
-            <div class='testimonial'>
-                <p style='margin: 0;'>
-                    <span style='font-size: 1.5rem; color: #ff5722;'>⭐</span> 
-                    'Pizza' di sini luar biasa. 
-                    <span style='font-weight: bold;'>AI-nya sangat keren</span>, deteksi piringnya cepat dan tepat!' 
-                </p>
-                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
-                    - Balqis, <span style='color:#ff5722; font-weight: bold;'>Food Blogger</span>
-                </p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-        
-        # Testimonial 2 (Kiri Bawah)
-        st.markdown(
-            """
-            <div class='testimonial'>
-                <p style='margin: 0;'>
-                    <span style='font-size: 1.5rem; color: #ff5722;'>🤩</span> 
-                    'Rekomendasi menu berdasarkan klasifikasi 
-                    <span style='font-weight: bold;'>sangat akurat</span> dan bikin penasaran.'
-                </p>
-                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
-                    - Syira, <span style='color:#ff5722; font-weight: bold;'>Pelanggan Setia</span>
-                </p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
+    with col_feat1:
+        st.markdown("""
+        <div class='menu-item'>
+            <p style='font-size: 2rem;'>🍽️</p>
+            <span style='font-weight: bold; color: #ff5722;'>Deteksi Objek Meja</span>
+            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Mengenali piring dan gelas di meja Anda secara instan menggunakan model <span style='font-weight: bold;'>YOLO</span>.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_feat2:
+        st.markdown("""
+        <div class='menu-item'>
+            <p style='font-size: 2rem;'>✨</p>
+            <span style='font-weight: bold; color: #ff5722;'>Klasifikasi Pizza Akurat</span>
+            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Menganalisis gambar untuk mengidentifikasi apakah itu pizza atau bukan dengan <span style='font-weight: bold;'>ResNet50</span>.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_feat3:
+        st.markdown("""
+        <div class='menu-item'>
+            <p style='font-size: 2rem;'>🎁</p>
+            <span style='font-weight: bold; color: #ff5722;'>Rekomendasi Personal</span>
+            <p style='font-size: 0.95rem; margin-top: 0.5rem;'>Dapatkan saran menu spesial yang disesuaikan berdasarkan hasil klasifikasi Anda.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br><br>", unsafe_allow_html=True) 
     
-    # Testimonial 3 (Kanan Atas)
-    with col2:
-        st.markdown(
-            """
-            <div class='testimonial'>
-                <p style='margin: 0;'>
-                    <span style='font-size: 1.5rem; color: #ff5722;'>💡</span> 
-                    'Mengunggah foto dan langsung tahu itu pizza atau bukan. 
-                    <span style='font-weight: bold;'>Pengalaman kuliner yang inovatif</span>.'
-                </p>
-                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
-                    - Oja, <span style='color:#ff5722; font-weight: bold;'>Tech Enthusiast</span>
-                </p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
-        
-        # Testimonial 4 (Kanan Bawah)
-        st.markdown(
-            """
-            <div class='testimonial'>
-                <p style='margin: 0;'>
-                    <span style='font-size: 1.5rem; color: #ff5722;'>🎨</span> 
-                    'Desain web yang cantik dan fungsional. Saya suka 
-                    <span style='font-weight: bold;'>estetika Pijjahut</span>!'
-                </p>
-                <p style='margin: 5px 0 0; font-size: 0.9rem;'>
-                    - Marlin, <span style='color:#ff5722; font-weight: bold;'>Desainer Grafis</span>
-                </p>
-            </div>
-            """, 
-            unsafe_allow_html=True
-        )
+    # BAGIAN TESTIMONIAL SUDAH DIHAPUS
+
 # ----------------- DETEKSI OBJEK -----------------
 with tabs[1]:
     st.markdown("<h2 class='section-title'>Deteksi Objek di Meja Makan 🍽️</h2>", unsafe_allow_html=True)
@@ -239,7 +233,6 @@ with tabs[1]:
     """, unsafe_allow_html=True)
     
     # Ganti path model ini sesuai dengan lokasi model Anda
-    # Pastikan file model ada di direktori yang sama atau relatif terhadap file script ini
     YOLO_MODEL_PATH = 'model/DINI ARIFATUL NASYWA_Laporan 4.pt'
     yolo_model = load_yolo_model(YOLO_MODEL_PATH)
     
@@ -258,10 +251,8 @@ with tabs[1]:
             if st.button("Deteksi Sekarang 🚀", type="primary", key="detect_obj"):
                 with st.spinner("⏳ Memproses deteksi objek dengan YOLO..."):
                     try:
-                        # YOLO runs directly on the PIL Image object
                         results = yolo_model(image)
-                        # The .plot() method returns a numpy array (BGR format)
-                        result_img = results[0].plot() 
+                        result_img = results[0].plot()  
                         # Konversi dari BGR (output YOLO) ke RGB (display Streamlit)
                         result_img_rgb = Image.fromarray(result_img[..., ::-1])
                         
@@ -303,10 +294,10 @@ with tabs[2]:
                 with st.spinner("⏳ Mengklasifikasikan gambar dengan ResNet50..."):
                     try:
                         img_array = np.array(image_class)
-                        # ResNet50 requires 3 color channels (RGB)
-                        if img_array.ndim == 2: # handle grayscale
+                        # Handle grayscale dan RGBA
+                        if img_array.ndim == 2:
                             img_array = np.stack((img_array,)*3, axis=-1)
-                        if img_array.shape[2] == 4: # handle RGBA
+                        if img_array.shape[2] == 4:
                             img_array = img_array[:,:,:3] 
 
                         preprocessed_img = tf.keras.applications.resnet50.preprocess_input(np.expand_dims(img_array, axis=0))
@@ -317,12 +308,9 @@ with tabs[2]:
                         
                         # LOGIKA PENENTUAN KLASIFIKASI
                         is_pizza = False
-                        # Daftar keyword yang dianggap sebagai "Pizza"
                         pizza_keywords = ['pizza', 'cheese_pizza', 'hot_dog', 'bagel'] 
                         
-                        # Cek apakah ada keyword "pizza" di Top 5 prediksi
                         for i, (imagenet_id, label, confidence) in enumerate(decoded_predictions):
-                            # The check is correctly done: if any keyword is in the label
                             if any(keyword in label.lower() for keyword in pizza_keywords):
                                 is_pizza = True
                                 
@@ -440,7 +428,6 @@ with tabs[4]:
     </div>
     """, unsafe_allow_html=True)
     
-  
 
 # ----------------- TENTANG KAMI -----------------
 with tabs[5]:
